@@ -1,0 +1,7 @@
+PokeEngine Struct Heirarchy
+
+Management     1. sessionman
+Wrappers       2. npc		  player
+Func Wrappers  3. charmover
+Components     4. mapman      window  	  monsters
+Constants      5. constants
