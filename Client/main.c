@@ -462,15 +462,10 @@ void physics()
 	pk_supdateMapCols(ALL, &ses);
 	pk_buildColMapC(p1.mover, &ses.map);
 
-	pk_supdate(&ses);
+	pk_supdateWindows(&ses);
 	pk_supdateNpcs(&ses);
 
 	pk_updateChar(&p1.mover);
-		/*if(ses.windOpen && !ses.npcs[i].pause) {
-			pk_ttogglePause(&ses.npcs[i]);
-		} else if(!ses.windOpen && ses.npcs[i].pause) {
-			pk_ttogglePause(&ses.npcs[i]);
-		}*/
 }
 
 void gameLoop()

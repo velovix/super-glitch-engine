@@ -95,18 +95,25 @@ void pk_sstepBattle(monster_t pMon, sessionMan_t* ses) {
 	}
 }
 
-void pk_supdate(sessionMan_t* session) {
-	pk_updateWindow(&session->w_menu);
-	pk_updateWindow(&session->w_bDialog);
-	pk_updateWindow(&session->w_bMenu);
+void pk_supdateWindows(sessionMan_t* ses) {
+	pk_updateWindow(&ses->w_menu);
+	pk_updateWindow(&ses->w_bDialog);
+	pk_updateWindow(&ses->w_bMenu);
+
+	for(int i=0; i<MAX_NPCS; i++) {
+		pk_updateWindow(&ses->npcs[i].dialog);
+	}
 }
 
 void pk_supdateNpcs(sessionMan_t* ses) {
+	if(ses->currWindow != NULL) {
+		return;
+	}
+
 	for(int i=0; i<MAX_NPCS; i++) {
 		if(ses->npcs[i].active) {
 			pk_tupdate(&ses->npcs[i],
-				pk_findCols(ses->map, ses->npcs[i].mover.x/BLOCK_SIZE, ses->npcs[i].mover.y/BLOCK_SIZE));
-			pk_updateWindow(&ses->npcs[i].dialog);
+			pk_findCols(ses->map, ses->npcs[i].mover.x/BLOCK_SIZE, ses->npcs[i].mover.y/BLOCK_SIZE));
 		}
 	}
 }
