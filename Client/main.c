@@ -114,9 +114,9 @@ void setWindows()
 	pk_setWOptionFunc(6, &quitGame, &ses.w_menu);
 	
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, &ses.npcs[0].dialog);
-	pk_setWindowText("^Hi I am a girl no^^joke dude|", true, &ses.npcs[0].dialog);
+	pk_setWindowText("^I am a girl.^^No joke.|", true, &ses.npcs[0].dialog);
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, &ses.npcs[1].dialog);
-	pk_setWindowText("^I am but a^^hapless nerd|", true, &ses.npcs[1].dialog);
+	pk_setWindowText("^I am but a^^hapless nerd.|", true, &ses.npcs[1].dialog);
 
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, false, &ses.w_bDialog);
 	pk_setWindowText("^No data specified|", true, &ses.w_bDialog);
@@ -136,7 +136,7 @@ void setClips()
 		clipNPCs[i].y = BLOCK_SIZE*i;
 		clipNPCs[i].w = clipNPCs[i].h = BLOCK_SIZE;
 	}
-	for(int i=0; i<70; i++) {
+	for(int i=0; i<75; i++) {
 		clipChars[i].x = 0;
 		clipChars[i].y = CHAR_SIZE*i;
 		clipChars[i].w = clipChars[i].h = CHAR_SIZE;
@@ -471,13 +471,6 @@ void physics()
 		} else if(!ses.windOpen && ses.npcs[i].pause) {
 			pk_ttogglePause(&ses.npcs[i]);
 		}*/
-
-	/*if(pk_isWindowFinished(ses.w_bDialog) && !ses.w_bMenu.active) {
-		pk_toggleWindow(&ses.w_bMenu);
-		pk_clearWindow(&ses.w_bDialog);
-		pk_setWindowText("|", true, &ses.w_bDialog);
-		ses.currWindow = &ses.w_bMenu;
-	}*/
 }
 
 void gameLoop()

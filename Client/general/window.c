@@ -57,10 +57,10 @@ void pk_updateWindow(window_t* window) {
 		int x, y = 1;
 		int lastOptDraw = 0;
 		for(int i=0; i<window->dispChar; i++) {
-			if(pk_getCharValue(window->text[inc]) == '^') {
+			if(pk_getCharValue(window->text[inc]) == CE_NEWLINE) {
 				x=1;
 				y++;
-			} else if(pk_getCharValue(window->text[inc]) == '+') {
+			} else if(pk_getCharValue(window->text[inc]) == CE_OPTION) {
 				if(lastOptDraw == window->selOpt) {
 					window->dispTiles[x+(y*window->w)] = SELARROW;
 				} else {
@@ -84,13 +84,15 @@ void pk_updateWindow(window_t* window) {
 
 void pk_setWindowText(char* s_text, bool s_txtScroll, window_t* window) {
 
+	pk_clearWindow(window);
+
 	window->txtScroll = s_txtScroll;
 
 	int inc = 0;
-	while(s_text[inc] != '|') {
+	while(pk_getCharValue(s_text[inc]) != CE_ENDSTR) {
 		window->text[inc] = s_text[inc];
 		inc++;
-		if(s_text[inc] == '+') {
+		if(pk_getCharValue(s_text[inc]) == CE_OPTION) {
 			window->optCnt++;
 		}
 	}
@@ -102,6 +104,8 @@ void pk_setWindowText(char* s_text, bool s_txtScroll, window_t* window) {
 		window->dispChar = inc;
 	}
 	window->strLength = inc;
+
+	window->finished = false;
 }
 
 char* pk_getWindowText(window_t* window) {
@@ -187,9 +191,19 @@ int pk_getCharValue(char c) {
 	} else if(c == ' ') {
 		return SPACE;
 	} else if(c == '+') {
-		return '+';
+		return CE_OPTION;
 	} else if(c == '^') {
-		return '^';
+		return CE_NEWLINE;
+	} else if(c == '!') {
+		return EXCLAMATION;
+	} else if(c == '?') {
+		return QUESTION;
+	} else if(c == '.') {
+		return PERIOD;
+	} else if(c == '\"') {
+		return QUOTATION;
+	} else if(c == '|') {
+		return CE_ENDSTR;
 	} else {
 		return SPACE;
 	}

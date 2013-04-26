@@ -38,8 +38,9 @@
 #define BATS_GO			2
 #define BATS_SEL		3
 #define BATS_FOEATT		4
-#define BATS_PATT		5
-#define BATS_FINISH		6
+#define BATS_PLRATT		5
+#define BATS_RESULT		6
+#define BATS_FINISH		7
 
 // Misc Constants
 #define PHYS_DELAY		25
@@ -80,15 +81,25 @@
 #define COFF			0
 #define LETTERS_C		COFF
 #define LETTERS_L		COFF+26
-#define NUMBERS			COFF+52
+#define NUMBERS			COFF+57
 #define SPACE			COFF+62
-#define SELARROW		COFF+63
-#define WCORNER_TL		COFF+64
-#define WCORNER_TR		COFF+65
-#define WCORNER_BR		COFF+66
-#define WCORNER_BL		COFF+67
-#define WHORIZ			COFF+68
-#define WVERT			COFF+69
+#define PERIOD			COFF+63
+#define EXCLAMATION		COFF+64
+#define QUESTION		COFF+65
+#define QUOTATION		COFF+66
+#define CURRICON		COFF+67
+#define SELARROW		COFF+68
+#define WCORNER_TL		COFF+69
+#define WCORNER_TR		COFF+70
+#define WCORNER_BR		COFF+71
+#define WCORNER_BL		COFF+72
+#define WHORIZ			COFF+73
+#define WVERT			COFF+74
+
+// Character Exceptions
+#define CE_NEWLINE		200
+#define CE_OPTION		201
+#define CE_ENDSTR		202
 
 // AI Patterns
 #define AI_TURN			1
