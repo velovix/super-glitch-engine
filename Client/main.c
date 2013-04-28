@@ -18,7 +18,6 @@ bool quit = false;
 bool mute = false;
 
 // PokeEngine stuff
-player_t p1;
 sessionMan_t ses;
 
 // Framerate stuff
@@ -72,7 +71,7 @@ void quitGame() {
 // Object Loading Functions
 void setMonsters()
 {
-	ses.moves[PK_NOMOVE] 	= pk_initMove( 0,  0, "---         ", &pk_m_nomove);
+	ses.moves[PK_NOMOVE] 	= pk_initMove( 0,  0, "NULL        ", &pk_m_nomove);
 	ses.moves[PK_TACKLE] 	= pk_initMove(30, 30, "TACKLE      ", &pk_m_tackle);
 	ses.moves[PK_EXPLOSION] = pk_initMove( 5,  5, "EXPLOSION   ", &pk_m_explosion);
 
@@ -93,7 +92,7 @@ void setMonsters()
 
 void setNpcs()
 {
-	p1 = pk_pinit(10*BLOCK_SIZE,11*BLOCK_SIZE, C_PLAYER);
+	ses.p1 = pk_pinit(10*BLOCK_SIZE,11*BLOCK_SIZE, C_PLAYER);
 	ses.npcs[0] = pk_tinit(BLOCK_SIZE*12, BLOCK_SIZE*13, BLOCK_SIZE*12, BLOCK_SIZE*12, 1, C_GIRL, LEFT, AI_WANDER, false);
 	ses.npcs[1] = pk_tinit(BLOCK_SIZE*13, BLOCK_SIZE*12, BLOCK_SIZE*13, BLOCK_SIZE*11, 1, C_SCI, LEFT, AI_TURN, false);
 
@@ -102,26 +101,19 @@ void setNpcs()
 		moves[i] = PK_TACKLE;
 	}
 	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[PK_CHARIZARD], false, 
-		ses.bMons[PK_NIDOQUEEN].bs, &moves[0]), &p1);
+		ses.bMons[PK_NIDOQUEEN].bs, &moves[0]), &ses.p1);
 	pk_tsetMonster(pk_initMonster(25, 50, &ses.bMons[PK_NIDOQUEEN], false, 
 		ses.bMons[PK_NIDOQUEEN].bs, &moves[0]), &ses.npcs[1]);
 }
 
 void setWindows()
-{
-	pk_initWindow((WIND_WIDTH)*CHAR_SIZE, 0,WIND_WIDTH, 16, false, &ses.w_menu);
-	pk_setWindowText("^+POKEDEX^^+POKEMON^^+ITEM^^+ASH^^+SAVE^^+OPTION^^+EXIT|", false, &ses.w_menu);
-	pk_setWOptionFunc(6, &quitGame, &ses.w_menu);
-	
-	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, &ses.npcs[0].dialog);
+{	
+	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[0].dialog);
 	pk_setWindowText("^I am a girl.^^No joke.|", true, &ses.npcs[0].dialog);
-	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, &ses.npcs[1].dialog);
+	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[1].dialog);
 	pk_setWindowText("^I am but a^^hapless nerd.|", true, &ses.npcs[1].dialog);
 
-	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, false, &ses.w_bDialog);
-	pk_setWindowText("^No data specified|", true, &ses.w_bDialog);
-	pk_initWindow(SCREEN_WIDTH-(12*CHAR_SIZE), SCREEN_HEIGHT-(6*CHAR_SIZE), 12, 6, false, &ses.w_bMenu);
-	pk_setWindowText("^+FIGHT+PK^^+ITEM +RUN|", false, &ses.w_bMenu);
+	pk_setWOptionFunc(6, &quitGame, &ses.w_menu);
 }
 
 void setClips()
@@ -170,8 +162,8 @@ void apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destination, 
 	SDL_Rect offset;
 
 	if(scrolls) {
-		offset.x = x - (p1.mover.x-(SCREEN_WIDTH/2))-16;
-		offset.y = y - (p1.mover.y-(SCREEN_HEIGHT/2));
+		offset.x = x - (ses.p1.mover.x-(SCREEN_WIDTH/2))-16;
+		offset.y = y - (ses.p1.mover.y-(SCREEN_HEIGHT/2));
 	} else {
 		offset.x = x;
 		offset.y = y;
@@ -241,25 +233,25 @@ trainerNPC_t* isHere(int thing, int x, int y)
 
 void checkKeys(Uint8 *keyStates)
 {
-	col_t col = pk_findCols(ses.map, p1.mover.x/BLOCK_SIZE, p1.mover.y/BLOCK_SIZE);
+	col_t col = pk_findCols(ses.map, ses.p1.mover.x/BLOCK_SIZE, ses.p1.mover.y/BLOCK_SIZE);
 
 	if(ses.mode == SES_OVERWORLD && !ses.windOpen) {
 		if(keyStates[SDLK_DOWN]) {
-			pk_moveChar(DOWN, col.down, &p1.mover);
+			pk_moveChar(DOWN, col.down, &ses.p1.mover);
 		} else if(keyStates[SDLK_UP]) {
-			pk_moveChar(UP, col.up, &p1.mover);
+			pk_moveChar(UP, col.up, &ses.p1.mover);
 		} else if(keyStates[SDLK_LEFT]) {
-			pk_moveChar(LEFT, col.left, &p1.mover);
+			pk_moveChar(LEFT, col.left, &ses.p1.mover);
 		} else if(keyStates[SDLK_RIGHT]) {
-			pk_moveChar(RIGHT, col.right, &p1.mover);
+			pk_moveChar(RIGHT, col.right, &ses.p1.mover);
 		}
 
 		if(keyStates[SDLK_z]) {
-			if(keyStatesBuf[SDLK_z] == false && p1.mover.x == p1.mover.nextX && p1.mover.y == p1.mover.nextY) {
-				switch(p1.mover.dir) {
+			if(keyStatesBuf[SDLK_z] == false && ses.p1.mover.x == ses.p1.mover.nextX && ses.p1.mover.y == ses.p1.mover.nextY) {
+				switch(ses.p1.mover.dir) {
 				trainerNPC_t *tNPC;
 				case LEFT:
-					tNPC = isHere(NPC, p1.mover.x-BLOCK_SIZE, p1.mover.y);
+					tNPC = isHere(NPC, ses.p1.mover.x-BLOCK_SIZE, ses.p1.mover.y);
 					if(tNPC != NULL) {
 						pk_toggleWindow(&tNPC->dialog);
 						tNPC->mover.dir = RIGHT;
@@ -267,7 +259,7 @@ void checkKeys(Uint8 *keyStates)
 					}
 					break;
 				case RIGHT:
-					tNPC = isHere(NPC, p1.mover.x+BLOCK_SIZE, p1.mover.y);
+					tNPC = isHere(NPC, ses.p1.mover.x+BLOCK_SIZE, ses.p1.mover.y);
 					if( tNPC != NULL) {
 						pk_toggleWindow(&tNPC->dialog);
 						tNPC->mover.dir = LEFT;
@@ -275,7 +267,7 @@ void checkKeys(Uint8 *keyStates)
 					}
 					break;
 				case UP:
-					tNPC = isHere(NPC, p1.mover.x, p1.mover.y-BLOCK_SIZE);
+					tNPC = isHere(NPC, ses.p1.mover.x, ses.p1.mover.y-BLOCK_SIZE);
 					if( tNPC != NULL) {
 						pk_toggleWindow(&tNPC->dialog);
 						tNPC->mover.dir = DOWN;
@@ -283,7 +275,7 @@ void checkKeys(Uint8 *keyStates)
 					}
 					break;
 				case DOWN:
-					tNPC = isHere(NPC, p1.mover.x, p1.mover.y+BLOCK_SIZE);
+					tNPC = isHere(NPC, ses.p1.mover.x, ses.p1.mover.y+BLOCK_SIZE);
 					if( tNPC != NULL) {
 						pk_toggleWindow(&tNPC->dialog);
 						tNPC->mover.dir = UP;
@@ -338,7 +330,7 @@ void checkKeys(Uint8 *keyStates)
 	if(keyStates[SDLK_b]) {
 		if(keyStatesBuf[SDLK_b] == false && ses.mode == SES_OVERWORLD) {
 			pk_sstartBattleW(ses.npcs[1].monsters[0], &ses);
-			pk_sstepBattle(p1.monsters[0], &ses);
+			pk_sstepBattle(ses.p1.monsters[0], &ses);
 			keyStatesBuf[SDLK_b] = true;
 		} else if(keyStatesBuf[SDLK_b] == false && ses.mode == SES_BATTLE) {
 			pk_switchMode(SES_OVERWORLD, &ses);
@@ -350,7 +342,7 @@ void checkKeys(Uint8 *keyStates)
 	}
 
 	if(keyStates[SDLK_m]) {
-		if(keyStatesBuf[SDLK_m] == false && p1.mover.x == p1.mover.nextX && p1.mover.y == p1.mover.nextY) {
+		if(keyStatesBuf[SDLK_m] == false && ses.p1.mover.x == ses.p1.mover.nextX && ses.p1.mover.y == ses.p1.mover.nextY) {
 			pk_toggleWindow(&ses.w_menu);
 			ses.currWindow = &ses.w_menu;
 			keyStatesBuf[SDLK_m] = true;
@@ -416,20 +408,27 @@ void graphics()
 					&clipNPCs[pk_tgetFrame(ses.npcs[i])], true);
 		}
 
-		apply_surface(p1.mover.x, p1.mover.y-4, s_player, s_screen, &clipNPCs[pk_pgetFrame(p1)], true);
+		apply_surface(ses.p1.mover.x, ses.p1.mover.y-4, s_player, s_screen, &clipNPCs[pk_pgetFrame(ses.p1)], true);
 
 		for(int i=0; i<gInc; i++) {
 			apply_surface(grassLocsX[i], grassLocsY[i], s_mapTile, s_screen, &clipTiles[GRASS_OVER], true);
 		}
 	} else if(ses.mode == SES_BATTLE) {
+		apply_surface(0, SCREEN_HEIGHT-(PKMN_SIZE)-(6*CHAR_SIZE), s_bPkmn, s_screen,
+			&clipPkmn[ses.p1.monsters[0].id->backSpr], false);
+		apply_surface(SCREEN_WIDTH-PKMN_SIZE, 0, s_fPkmn, s_screen,
+			&clipPkmn[ses.npcs[1].monsters[0].id->backSpr], false);
+
 		drawWindow(ses.w_bDialog);
 		if(ses.w_bMenu.active) {
 			drawWindow(ses.w_bMenu);
 		}
-		apply_surface(0, SCREEN_HEIGHT-(PKMN_SIZE)-(6*CHAR_SIZE), s_bPkmn, s_screen,
-			&clipPkmn[p1.monsters[0].id->backSpr], false);
-		apply_surface(SCREEN_WIDTH-PKMN_SIZE, 0, s_fPkmn, s_screen,
-			&clipPkmn[ses.npcs[1].monsters[0].id->backSpr], false);
+		if(ses.w_bMoves.active) {
+			drawWindow(ses.w_bMoves);
+		}
+		if(ses.w_bMoveInfo.active) {
+			drawWindow(ses.w_bMoveInfo);
+		}
 	}
 
 	if(ses.w_menu.active) {
@@ -452,20 +451,20 @@ void physics()
 	}
 
 	if(ses.battleStep == BATS_WPA && ses.w_bDialog.finished) {
-		pk_sstepBattle(p1.monsters[0], &ses);
+		pk_sstepBattle(ses.p1.monsters[0], &ses);
 	}
 
 	if(ses.battleStep == BATS_GO && ses.w_bDialog.finished) {
-		pk_sstepBattle(p1.monsters[0], &ses);
+		pk_sstepBattle(ses.p1.monsters[0], &ses);
 	}
 
 	pk_supdateMapCols(ALL, &ses);
-	pk_buildColMapC(p1.mover, &ses.map);
+	pk_buildColMapC(ses.p1.mover, &ses.map);
 
 	pk_supdateWindows(&ses);
 	pk_supdateNpcs(&ses);
 
-	pk_updateChar(&p1.mover);
+	pk_updateChar(&ses.p1.mover);
 }
 
 void gameLoop()

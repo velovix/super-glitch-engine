@@ -4,6 +4,7 @@
 #include "../constants.h"
 #include "../battle/monsters.h"
 #include "../ai/trainer_npc.h"
+#include "../ai/player.h"
 #include <stdbool.h>
 
 typedef struct {
@@ -13,13 +14,13 @@ typedef struct {
 	monster_t attWild;
 	trainerNPC_t* attTrainer;
 
+	player_t p1;
 	trainerNPC_t npcs[MAX_NPCS];
 	move_t moves[MAX_MOVES];
 	baseMonster_t bMons[MAX_MONSTERS];
 
 	window_t w_menu;
-	window_t w_bDialog;
-	window_t w_bMenu;
+	window_t w_bDialog, w_bMenu, w_bMoves, w_bMoveInfo;
 	window_t* currWindow;
 
 	map_t map;
@@ -33,6 +34,7 @@ void pk_supdateMapCols(int, sessionMan_t*);
 void pk_sstartBattleW(monster_t, sessionMan_t*);
 void pk_sstartBattleT(trainerNPC_t*, sessionMan_t*);
 void pk_sstepBattle(monster_t pMon, sessionMan_t*);
+void pk_ssetMoveWind(monster_t mon, sessionMan_t* ses);
 void pk_supdateWindows(sessionMan_t*);
 void pk_supdateNpcs(sessionMan_t*);
 

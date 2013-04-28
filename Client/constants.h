@@ -42,6 +42,10 @@
 #define BATS_RESULT		6
 #define BATS_FINISH		7
 
+// Window Selections
+#define WSEL_NONE		-1
+#define WSEL_BACK		255
+
 // Misc Constants
 #define PHYS_DELAY		25
 #define WIND_WIDTH		10

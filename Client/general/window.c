@@ -1,6 +1,6 @@
 #include "window.h"
 
-void pk_initWindow(int s_x, int s_y, int s_w, int s_h, bool s_closeable, window_t* window) {
+void pk_initWindow(int s_x, int s_y, int s_w, int s_h, bool s_closeable, bool dispDelay, window_t* window) {
 	printf("Initialized a window!\n");
 	window->x = s_x;
 	window->y = s_y;
@@ -11,6 +11,7 @@ void pk_initWindow(int s_x, int s_y, int s_w, int s_h, bool s_closeable, window_
 	window->optCnt = 0;
 	window->active = window->finished = false;
 	window->closeable = s_closeable;
+	window->selection = WSEL_NONE;
 
 	pk_clearWindow(window);
 }
@@ -54,7 +55,8 @@ void pk_updateWindow(window_t* window) {
 		}
 
 		int inc = 0;
-		int x, y = 1;
+		int x, y;
+		x = y = 1;
 		int lastOptDraw = 0;
 		for(int i=0; i<window->dispChar; i++) {
 			if(pk_getCharValue(window->text[inc]) == CE_NEWLINE) {
@@ -87,6 +89,7 @@ void pk_setWindowText(char* s_text, bool s_txtScroll, window_t* window) {
 	pk_clearWindow(window);
 
 	window->txtScroll = s_txtScroll;
+	window->optCnt = 0;
 
 	int inc = 0;
 	while(pk_getCharValue(s_text[inc]) != CE_ENDSTR) {
@@ -162,6 +165,7 @@ void pk_selectWindow(window_t* window) {
 		if(window->funcPtrs[window->selOpt].func != NULL) {
 			window->funcPtrs[window->selOpt].func();
 		}
+		window->selection = window->selOpt;
 		
 	} else if(window->dispChar >= window->strLength && window->optCnt == 0) {
 		window->finished = true;
@@ -175,7 +179,8 @@ void pk_scrollWindowText(window_t* window) {
 	if(window->dispChar < window->strLength) {
 		// Speed up
 	} else if(window->closeable) {
-		window->active = false;
+		pk_toggleWindow(window);
+		window->selection = WSEL_BACK;
 	}
 }
 
@@ -204,6 +209,8 @@ int pk_getCharValue(char c) {
 		return QUOTATION;
 	} else if(c == '|') {
 		return CE_ENDSTR;
+	} else if(c == '/') {
+		return QUOTATION;
 	} else {
 		return SPACE;
 	}
