@@ -69,22 +69,42 @@ void quitGame() {
 }
 
 void setTypes() {
-	ses.types[T_NORMAL] 	= pk_initType("NORMAL  ");
-	ses.types[T_FIRE]		= pk_initType("FIRE    ");
-	ses.types[T_WATER]		= pk_initType("WATER   ");
-	ses.types[T_ELECTRIC]	= pk_initType("ELECTRIC");
-	ses.types[T_ROCK]		= pk_initType("ROCK    ");
-	ses.types[T_GROUND]		= pk_initType("GROUND  ");
-	ses.types[T_FIGHTING]	= pk_initType("FIGHTING");
-	ses.types[T_ICE]		= pk_initType("ICE     ");
-	ses.types[T_FLYING]		= pk_initType("FLYING  ");
-	ses.types[T_BUG]		= pk_initType("BUG     ");
-	ses.types[T_DRAGON]		= pk_initType("DRAGON  ");
-	ses.types[T_GHOST]		= pk_initType("GHOST   ");
-	ses.types[T_GRASS]		= pk_initType("GRASS   ");
-	ses.types[T_POISON]		= pk_initType("POISON  ");
-	ses.types[T_PSYCHIC]	= pk_initType("PSYCHIC ");
-	ses.types[T_NONE]		= pk_initType("???     ");
+	FILE * fTypes;
+	typeHeader_t header;
+	fTypes = fopen("resources/data/type.pke", "r");
+	if(fTypes == NULL) {
+		printf("ERROR: Missing type.pke in resources/data folder!\n");
+	}
+	fread(&header.count, sizeof(int), 1, fTypes);
+	typeEntry_t entry[header.count];
+	for(int i=0; i<header.count; i++) {
+		fread(&entry[i].name, sizeof(char[8]), 1, fTypes);
+		fread(&entry[i].resCnt, sizeof(int), 1, fTypes);
+		fread(&entry[i].weakCnt, sizeof(int), 1, fTypes);
+		fread(&entry[i].invCnt, sizeof(int), 1, fTypes);
+
+		int rEntry[entry[i].resCnt];
+		int wEntry[entry[i].weakCnt];
+		int iEntry[entry[i].invCnt];
+
+		for(int j=0; j<entry[i].resCnt; j++) {
+			fread(&rEntry[j], sizeof(int), 1, fTypes);
+		}
+
+		for(int j=0; j<entry[i].weakCnt; j++) {
+			fread(&wEntry[j], sizeof(int), 1, fTypes);
+		}
+
+		for(int j=0; j<entry[i].invCnt; j++) {
+			fread(&iEntry[j], sizeof(int), 1, fTypes);
+		}
+
+		ses.types[i] = pk_initType(entry[i].name, i);
+
+		pk_setTypeRes(&ses.types[i], entry[i].resCnt, &rEntry[0]);
+		pk_setTypeWeak(&ses.types[i], entry[i].weakCnt, &wEntry[0]);
+		pk_setTypeInv(&ses.types[i], entry[i].invCnt, &iEntry[0]);
+	}
 }
 
 // Object Loading Functions

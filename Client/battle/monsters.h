@@ -13,6 +13,10 @@ typedef struct {
 
 typedef struct {
 	char name[8];
+	int value, resCnt, weakCnt, invCnt;
+	int* res;
+	int* weak;
+	int* inv;
 } type_t;
 
 typedef struct {
@@ -42,14 +46,19 @@ typedef struct {
 
 // Initializers
 stats_t pk_initStats(int att, int def, int spAtt, int spDef, int speed);
-type_t pk_initType(char*);
+type_t pk_initType(char*, int);
 move_t pk_initMove(int s_cpp, int s_bpp, char* name, int type, bool (*s_movePtr) (monster_t*, monster_t*));
 monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bool s_shiny,
 	stats_t s_stats, int* s_moves);
 baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, char* name);
 
 void pk_damage(int amount, monster_t* victim);
-int pk_calcStats(monster_t, int);
+int pk_calcStats(type_t, type_t, type_t);
+
+// Type settings
+void pk_setTypeRes(type_t*, int, int*);
+void pk_setTypeWeak(type_t*, int, int*);
+void pk_setTypeInv(type_t*, int, int*);
 
 // Moves Functions
 bool pk_m_nomove(monster_t* a, monster_t* d);

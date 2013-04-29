@@ -13,22 +13,22 @@
 #define DOWN			4
 
 // Types
-#define T_NORMAL		1
-#define T_FIRE			2
-#define T_WATER			3
-#define T_ROCK			4
-#define T_GROUND		5
-#define T_ELECTRIC		6
-#define T_FLYING		7
-#define T_ICE			8
-#define T_DRAGON		9
-#define T_GHOST			10
-#define T_PSYCHIC		11
-#define T_FIGHTING		12
-#define T_POISON		13
-#define T_GRASS			14
-#define T_BUG			15
-#define T_NONE			16
+#define T_NORMAL		0
+#define T_FIRE			1
+#define T_WATER			2
+#define T_ROCK			3
+#define T_GROUND		4
+#define T_ELECTRIC		5
+#define T_FLYING		6
+#define T_ICE			7
+#define T_DRAGON		8
+#define T_GHOST			9
+#define T_PSYCHIC		10
+#define T_FIGHTING		11
+#define T_POISON		12
+#define T_GRASS			13
+#define T_BUG			14
+#define T_NONE			15
 
 // Move Results
 #define RES_HYPER		1
