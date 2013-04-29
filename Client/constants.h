@@ -12,6 +12,32 @@
 #define UP				3
 #define DOWN			4
 
+// Types
+#define T_NORMAL		1
+#define T_FIRE			2
+#define T_WATER			3
+#define T_ROCK			4
+#define T_GROUND		5
+#define T_ELECTRIC		6
+#define T_FLYING		7
+#define T_ICE			8
+#define T_DRAGON		9
+#define T_GHOST			10
+#define T_PSYCHIC		11
+#define T_FIGHTING		12
+#define T_POISON		13
+#define T_GRASS			14
+#define T_BUG			15
+#define T_NONE			16
+
+// Move Results
+#define RES_HYPER		1
+#define RES_SUPER		2
+#define RES_NORMAL		3
+#define RES_NOTVERY		4
+#define RES_HARDLY		5
+#define RES_NONE		6
+
 // Modes
 #define SES_OVERWORLD	1
 #define SES_BATTLE		3
@@ -27,6 +53,7 @@
 #define MAX_WINDOWS		10
 #define MAX_MOVES		100
 #define MAX_MONSTERS	151
+#define MAX_TYPES		50
 
 // Battle Types
 #define BAT_WILD		1
@@ -99,6 +126,7 @@
 #define WCORNER_BL		COFF+72
 #define WHORIZ			COFF+73
 #define WVERT			COFF+74
+#define SLASH			COFF+75
 
 // Character Exceptions
 #define CE_NEWLINE		200

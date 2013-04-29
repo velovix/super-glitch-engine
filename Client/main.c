@@ -39,7 +39,7 @@ SDL_Surface* s_bPkmn = NULL;
 // SDL Clippers
 SDL_Rect clipTiles[20];
 SDL_Rect clipNPCs[60];
-SDL_Rect clipChars[70];
+SDL_Rect clipChars[76];
 SDL_Rect clipPkmn[8];
 
 // SDL Etc
@@ -57,7 +57,7 @@ int init()
 
     if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 )
     {
-        return -1;    
+        return -1;
     }
 
 	return 0;
@@ -68,12 +68,31 @@ void quitGame() {
 	quit = true;
 }
 
+void setTypes() {
+	ses.types[T_NORMAL] 	= pk_initType("NORMAL  ");
+	ses.types[T_FIRE]		= pk_initType("FIRE    ");
+	ses.types[T_WATER]		= pk_initType("WATER   ");
+	ses.types[T_ELECTRIC]	= pk_initType("ELECTRIC");
+	ses.types[T_ROCK]		= pk_initType("ROCK    ");
+	ses.types[T_GROUND]		= pk_initType("GROUND  ");
+	ses.types[T_FIGHTING]	= pk_initType("FIGHTING");
+	ses.types[T_ICE]		= pk_initType("ICE     ");
+	ses.types[T_FLYING]		= pk_initType("FLYING  ");
+	ses.types[T_BUG]		= pk_initType("BUG     ");
+	ses.types[T_DRAGON]		= pk_initType("DRAGON  ");
+	ses.types[T_GHOST]		= pk_initType("GHOST   ");
+	ses.types[T_GRASS]		= pk_initType("GRASS   ");
+	ses.types[T_POISON]		= pk_initType("POISON  ");
+	ses.types[T_PSYCHIC]	= pk_initType("PSYCHIC ");
+	ses.types[T_NONE]		= pk_initType("???     ");
+}
+
 // Object Loading Functions
 void setMonsters()
 {
-	ses.moves[PK_NOMOVE] 	= pk_initMove( 0,  0, "NULL        ", &pk_m_nomove);
-	ses.moves[PK_TACKLE] 	= pk_initMove(30, 30, "TACKLE      ", &pk_m_tackle);
-	ses.moves[PK_EXPLOSION] = pk_initMove( 5,  5, "EXPLOSION   ", &pk_m_explosion);
+	ses.moves[PK_NOMOVE] 	= pk_initMove( 0,  0, "NULL        ", T_NONE, &pk_m_nomove);
+	ses.moves[PK_TACKLE] 	= pk_initMove(30, 30, "TACKLE      ", T_NORMAL, &pk_m_tackle);
+	ses.moves[PK_EXPLOSION] = pk_initMove( 5,  5, "EXPLOSION   ", T_NORMAL, &pk_m_explosion);
 
 	FILE * fMons;
 	monHeader_t header;
@@ -98,7 +117,11 @@ void setNpcs()
 
 	int moves[4];
 	for(int i=0; i<4; i++) {
-		moves[i] = PK_TACKLE;
+		if(i == 1) {
+			moves[i] = PK_EXPLOSION;
+		} else {
+			moves[i] = PK_TACKLE;
+		}
 	}
 	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[PK_CHARIZARD], false, 
 		ses.bMons[PK_NIDOQUEEN].bs, &moves[0]), &ses.p1);
@@ -128,7 +151,7 @@ void setClips()
 		clipNPCs[i].y = BLOCK_SIZE*i;
 		clipNPCs[i].w = clipNPCs[i].h = BLOCK_SIZE;
 	}
-	for(int i=0; i<75; i++) {
+	for(int i=0; i<76; i++) {
 		clipChars[i].x = 0;
 		clipChars[i].y = CHAR_SIZE*i;
 		clipChars[i].w = clipChars[i].h = CHAR_SIZE;
@@ -496,6 +519,7 @@ int main(int argc, char **argv)
 	printf("==========================================\n\n");
 
 	pk_initSMan(SES_OVERWORLD, &ses);
+	setTypes();
 	setMonsters();
 	setNpcs();
 	setWindows();

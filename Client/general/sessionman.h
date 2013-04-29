@@ -6,6 +6,8 @@
 #include "../ai/trainer_npc.h"
 #include "../ai/player.h"
 #include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 typedef struct {
 	int mode, currMap, battleStep, battleType;
@@ -18,6 +20,7 @@ typedef struct {
 	trainerNPC_t npcs[MAX_NPCS];
 	move_t moves[MAX_MOVES];
 	baseMonster_t bMons[MAX_MONSTERS];
+	type_t types[MAX_TYPES];
 
 	window_t w_menu;
 	window_t w_bDialog, w_bMenu, w_bMoves, w_bMoveInfo;

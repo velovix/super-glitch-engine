@@ -111,15 +111,15 @@ void pk_setWindowText(char* s_text, bool s_txtScroll, window_t* window) {
 	window->finished = false;
 }
 
-char* pk_getWindowText(window_t* window) {
+char* pk_getWindowText(window_t window) {
 	char* out;
 
-	if(window->dispChar > 0) {
-		out = (char*)malloc(window->dispChar*sizeof(char)+1);
-		for(int i=0; i<window->dispChar; i++) {
-			out[i] = window->text[i];
+	if(window.dispChar > 0) {
+		out = (char*)malloc(window.dispChar*sizeof(char)+1);
+		for(int i=0; i<window.dispChar; i++) {
+			out[i] = window.text[i];
 		}
-		out[window->dispChar] = '|';
+		out[window.dispChar] = '|';
 		return out;
 	} else {
 		return "|";
@@ -193,6 +193,8 @@ int pk_getCharValue(char c) {
 		return LETTERS_C + (c-'A');
 	} else if(c >= 'a' && c <= 'z') {
 		return LETTERS_L + (c-'a');
+	} else if(c >= '0' && c <= '9') {
+		return NUMBERS + (c-'0');
 	} else if(c == ' ') {
 		return SPACE;
 	} else if(c == '+') {
@@ -210,7 +212,7 @@ int pk_getCharValue(char c) {
 	} else if(c == '|') {
 		return CE_ENDSTR;
 	} else if(c == '/') {
-		return QUOTATION;
+		return SLASH;
 	} else {
 		return SPACE;
 	}

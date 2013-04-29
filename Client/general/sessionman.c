@@ -18,7 +18,7 @@ void pk_initSMan(int s_mode, sessionMan_t* ses) {
 	pk_setWindowText("^No data specified|", true, &ses->w_bDialog);
 	pk_setWindowText("^+FIGHT+PK^^+ITEM +RUN|", false, &ses->w_bMenu);
 	pk_setWindowText("+NULL^+NULL^+NULL^+NULL|", false, &ses->w_bMoves);
-	pk_setWindowText("TYPE/|", false, &ses->w_bMoveInfo);
+	pk_setWindowText("TYPE/^ FIGHTING^    QQ/QQ|", false, &ses->w_bMoveInfo);
 }
 
 void pk_switchMode(int s_mode, sessionMan_t* session) {
@@ -127,21 +127,41 @@ void pk_ssetMoveWind(monster_t mon, sessionMan_t* ses) {
 	moveTxt[inc] = '|';
 
 	pk_setWindowText(moveTxt, false, &ses->w_bMoves);
+}
 
+void pk_ssetMoveInfoWind(move_t move, sessionMan_t* ses) {
+	char* miTxt = ses->w_bMoveInfo.text;
 
+	for(int i=0; i<8; i++) {
+		miTxt[i+7] = ses->types[move.type].name[i];
+	}
+
+	char pp1[2];		char pp2[2];
+	sprintf(pp1, "%d", ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selOpt]].cpp);
+	sprintf(pp2, "%d", ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selOpt]].bpp);
+	miTxt[20] = pp1[0];	miTxt[21] = pp1[1];
+	miTxt[23] = pp2[0];	miTxt[24] = pp2[1];
+
+	pk_setWindowText(miTxt, false, &ses->w_bMoveInfo);
 }
 
 void pk_supdateWindows(sessionMan_t* ses) {
+
+	pk_ssetMoveInfoWind(ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selOpt]], ses);
+
 	pk_updateWindow(&ses->w_menu);
 	pk_updateWindow(&ses->w_bDialog);
 	pk_updateWindow(&ses->w_bMenu);
 	pk_updateWindow(&ses->w_bMoves);
+	pk_updateWindow(&ses->w_bMoveInfo);
 
 	for(int i=0; i<MAX_NPCS; i++) {
 		pk_updateWindow(&ses->npcs[i].dialog);
 	}
 
 	if(ses->w_bMoves.active && !ses->w_bMoveInfo.active) {
+		pk_toggleWindow(&ses->w_bMoveInfo);
+	} else if(!ses->w_bMoves.active && ses->w_bMoveInfo.active) {
 		pk_toggleWindow(&ses->w_bMoveInfo);
 	}
 
