@@ -119,10 +119,13 @@ void pk_ssetMoveWind(monster_t mon, sessionMan_t* ses) {
 	for(int i=0; i<4; i++) {
 		moveTxt[inc] = '+';	inc++;
 		for(int j=0; j<12; j++) {
-			moveTxt[inc] = ses->moves[ses->p1.monsters[0].moves[0]].name[j];
+			moveTxt[inc] = ses->moves[ses->p1.monsters[0].moves[i]].name[j];
 			inc++;
 		}
-		moveTxt[inc] = '^';	inc++;
+		if(i!=3) {
+			moveTxt[inc] = '^';
+			inc++;
+		}
 	}
 	moveTxt[inc] = '|';
 

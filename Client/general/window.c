@@ -94,10 +94,10 @@ void pk_setWindowText(char* s_text, bool s_txtScroll, window_t* window) {
 	int inc = 0;
 	while(pk_getCharValue(s_text[inc]) != CE_ENDSTR) {
 		window->text[inc] = s_text[inc];
-		inc++;
 		if(pk_getCharValue(s_text[inc]) == CE_OPTION) {
 			window->optCnt++;
 		}
+		inc++;
 	}
 
 	window->text[inc] = '|';
