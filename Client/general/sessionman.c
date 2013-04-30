@@ -180,8 +180,8 @@ void pk_supdateWindows(sessionMan_t* ses) {
 	if(ses->mode == SES_BATTLE && ses->w_bMoves.selection != WSEL_NONE) {
 		if(ses->w_bMoves.selection == WSEL_BACK) {
 			ses->currWindow = &ses->w_bMenu;
-		} else if(ses->w_bMenu.active) {
-			// Do a move
+		} else if(ses->w_bMoves.active) {
+			ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selection]].movePtr(&ses->p1.monsters[0], &ses->attWild);
 		}
 
 		ses->w_bMoves.selection = WSEL_NONE;

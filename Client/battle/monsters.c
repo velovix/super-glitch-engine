@@ -68,8 +68,18 @@ baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, ch
 	return out;
 }
 
-void pk_damage(int amount, monster_t* victim) {
-	victim->health = amount - victim->stats.def;
+int pk_damage(int amount, monster_t* a, monster_t* d) {
+	int damage = (amount)/5;
+	if(damage <= 0) {
+		damage = 1;
+	}
+	d->health -= damage;
+
+	if(d->health < 0) {
+		d->health = 0;
+	}
+
+	return damage;
 }
 
 int pk_calcTyping(type_t mType1, type_t mType2, type_t attType) {
@@ -149,26 +159,31 @@ void pk_setTypeInv(type_t* type, int cnt, int* types) {
 }
 
 bool pk_m_nomove(monster_t* a, monster_t* d) {
+	printf("--- Executed!\n   Hit:   NO\n   Attacker HP: %i\n   Defender HP: %i\n", a->health, d->health);
 	return false;
 }
 
 bool pk_m_tackle(monster_t* a, monster_t* d) {
 	int willHit = rand() % 100;
 	if(willHit >= a->stats.mAcc-0) {
-		pk_damage(40, d);
+		pk_damage(40, a, d);
+		printf("TACKLE Executed!\n   Hit:  YES\n   Attacker HP: %i\n   Defender HP: %i\n", a->health, d->health);
 		return true;
 	}
 	
+	printf("TACKLE Executed!\n   Hit:   NO\n   Attacker HP: %i\n   Defender HP: %i\n", a->health, d->health);
 	return false;
 }
 
 bool pk_m_explosion(monster_t* a, monster_t* d) {
 	int willHit = rand() % 100;
 	if(willHit >= a->stats.mAcc-0) {
-		pk_damage(180, d);
-		pk_damage(999, a);
+		pk_damage(180, a, d);
+		a->health = 0;
+		printf("EXPLOSION Executed!\n   Hit:  YES\n   Attacker HP: %i\n   Defender HP: %i\n", a->health, d->health);
 		return true;
 	}
 
+	printf("EXPLOSION Executed!\n   Hit:   NO\n   Attacker HP: %i\n   Defender HP: %i\n", a->health, d->health);
 	return false;
 }
