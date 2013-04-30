@@ -127,6 +127,18 @@
 #define WHORIZ			COFF+73
 #define WVERT			COFF+74
 #define SLASH			COFF+75
+#define LINE_V			COFF+76
+#define LINE_BL			COFF+77
+#define LINE_H			COFF+78
+#define LINE_RARROW		COFF+79
+#define LINE_LARROW		COFF+80
+#define LINE_BR			COFF+81
+#define LEVEL			COFF+82
+#define BATTLE_H		COFF+83
+#define BATTLE_P		COFF+84
+#define HPBAR_L			COFF+85
+#define HPBAR_MID		COFF+86
+#define HPBAR_R			COFF+87
 
 // Character Exceptions
 #define CE_NEWLINE		200

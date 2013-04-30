@@ -39,7 +39,7 @@ SDL_Surface* s_bPkmn = NULL;
 // SDL Clippers
 SDL_Rect clipTiles[20];
 SDL_Rect clipNPCs[60];
-SDL_Rect clipChars[76];
+SDL_Rect clipChars[88];
 SDL_Rect clipPkmn[8];
 
 // SDL Etc
@@ -112,7 +112,7 @@ void setMonsters()
 {
 	ses.moves[PK_NOMOVE] 	= pk_initMove( 0,  0, "NULL        ", T_NONE, &pk_m_nomove);
 	ses.moves[PK_TACKLE] 	= pk_initMove(30, 30, "TACKLE      ", T_NORMAL, &pk_m_tackle);
-	ses.moves[PK_EXPLOSION] = pk_initMove( 5,  5, "EXPLOSION   ", T_NORMAL, &pk_m_explosion);
+	ses.moves[PK_EXPLOSION] = pk_initMove(15, 15, "EXPLOSION   ", T_NORMAL, &pk_m_explosion);
 
 	FILE * fMons;
 	monHeader_t header;
@@ -171,7 +171,7 @@ void setClips()
 		clipNPCs[i].y = BLOCK_SIZE*i;
 		clipNPCs[i].w = clipNPCs[i].h = BLOCK_SIZE;
 	}
-	for(int i=0; i<76; i++) {
+	for(int i=0; i<88; i++) {
 		clipChars[i].x = 0;
 		clipChars[i].y = CHAR_SIZE*i;
 		clipChars[i].w = clipChars[i].h = CHAR_SIZE;
@@ -423,6 +423,56 @@ void drawWindow(window_t wind)
 	}
 }
 
+void drawBattle() {
+	for(int i=0; i<12; i++) {
+		apply_surface(8+(i*8), 8*0, s_chars, s_screen, &clipChars[pk_getCharValue(ses.attWild.name[i])], false);
+	}
+
+	apply_surface(8*4, 8*1, s_chars, s_screen, &clipChars[LEVEL], false);
+	apply_surface(8*1, 8*2, s_chars, s_screen, &clipChars[LINE_V], false);
+	apply_surface(8*1, 8*3, s_chars, s_screen, &clipChars[LINE_BL], false);
+
+	for(int i=0; i<9; i++) {
+		apply_surface(8*i+(8*2), 8*3, s_chars, s_screen, &clipChars[LINE_H], false);
+	}
+	apply_surface(8*10, 8*3, s_chars, s_screen, &clipChars[LINE_RARROW], false);
+
+	apply_surface(8*2, 8*2, s_chars, s_screen, &clipChars[BATTLE_H], false);
+	apply_surface(8*3, 8*2, s_chars, s_screen, &clipChars[BATTLE_P], false);
+	apply_surface(8*4, 8*2, s_chars, s_screen, &clipChars[HPBAR_L], false);
+	for(int i=0; i<6; i++) {
+		apply_surface(8*5+(8*i), 8*2, s_chars, s_screen, &clipChars[HPBAR_MID], false);
+	}
+	apply_surface(8*10, 8*2, s_chars, s_screen, &clipChars[HPBAR_R], false);
+
+	for(int i=0; i<12; i++) {
+		apply_surface(8*11+(i*8), 8*7, s_chars, s_screen, &clipChars[pk_getCharValue(ses.p1.monsters[0].name[i])], false);
+	}
+
+	apply_surface(8*14, 8*8, s_chars, s_screen, &clipChars[LEVEL], false);
+	apply_surface(8*9, 8*11, s_chars, s_screen, &clipChars[LINE_LARROW], false);
+
+	for(int i=0; i<8; i++) {
+		apply_surface(8*10+(8*i), 8*11, s_chars, s_screen, &clipChars[LINE_H], false);
+	}
+	apply_surface(8*18, 8*11, s_chars, s_screen, &clipChars[LINE_BR], false);
+	apply_surface(8*18, 8*10, s_chars, s_screen, &clipChars[LINE_V], false);
+	apply_surface(8*18, 8*9, s_chars, s_screen, &clipChars[LINE_V], false);
+
+	apply_surface(8*12, 8*9, s_chars, s_screen, &clipChars[HPBAR_L], false);
+	for(int i=0; i<5; i++) {
+		apply_surface(8*(13+i), 8*9, s_chars, s_screen, &clipChars[HPBAR_MID], false);
+	}
+	apply_surface(8*18, 8*9, s_chars, s_screen, &clipChars[HPBAR_R], false);
+
+	apply_surface(8*14, 8*10, s_chars, s_screen, &clipChars[SLASH], false);
+
+	apply_surface(0, SCREEN_HEIGHT-(PKMN_SIZE)-(6*CHAR_SIZE), s_bPkmn, s_screen,
+		&clipPkmn[ses.p1.monsters[0].id->backSpr], false);
+	apply_surface(SCREEN_WIDTH-PKMN_SIZE, 0, s_fPkmn, s_screen,
+		&clipPkmn[ses.npcs[1].monsters[0].id->backSpr], false);
+}
+
 void graphics()
 {
 	if(ses.mode == SES_OVERWORLD) {
@@ -457,10 +507,7 @@ void graphics()
 			apply_surface(grassLocsX[i], grassLocsY[i], s_mapTile, s_screen, &clipTiles[GRASS_OVER], true);
 		}
 	} else if(ses.mode == SES_BATTLE) {
-		apply_surface(0, SCREEN_HEIGHT-(PKMN_SIZE)-(6*CHAR_SIZE), s_bPkmn, s_screen,
-			&clipPkmn[ses.p1.monsters[0].id->backSpr], false);
-		apply_surface(SCREEN_WIDTH-PKMN_SIZE, 0, s_fPkmn, s_screen,
-			&clipPkmn[ses.npcs[1].monsters[0].id->backSpr], false);
+		drawBattle();
 
 		drawWindow(ses.w_bDialog);
 		if(ses.w_bMenu.active) {
