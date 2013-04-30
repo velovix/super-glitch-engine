@@ -1,35 +1,35 @@
-obj = main.o mapman.o trainer_npc.o sessionman.o charmover.o window.o monsters.o player.o
-aflags = -lSDL -lSDL_image -lSDL_mixer
-poflags = -c
-oflags = -std=gnu99
-comp = gcc
+OBJ = main.o mapman.o trainer_npc.o sessionman.o charmover.o window.o monsters.o player.o
+AFLAGS = -lSDL -lSDL_image -lSDL_mixer
+POFLAGS = -c
+OFLAGS = -std=gnu99
+COMP = gcc
 
-all: $(obj)
-	$(comp) -o out/PokeEngine $(obj) $(aflags)
+all: $(OBJ)
+	$(COMP) -o out/PokeEngine $(OBJ) $(AFLAGS)
 
 main.o: main.c
-	$(comp) $(poflags) main.c $(oflags)
+	$(COMP) $(POFLAGS) main.c $(OFLAGS)
 
 mapman.o: general/mapman.h general/mapman.c
-	$(comp) $(poflags) general/mapman.h general/mapman.c $(oflags)
+	$(COMP) $(POFLAGS) general/mapman.h general/mapman.c $(OFLAGS)
 
 trainer_npc.o: ai/trainer_npc.h ai/trainer_npc.c
-	$(comp) $(poflags) ai/trainer_npc.h ai/trainer_npc.c $(oflags)
+	$(COMP) $(POFLAGS) ai/trainer_npc.h ai/trainer_npc.c $(OFLAGS)
 
 sessionman.o: general/sessionman.h general/sessionman.c
-	$(comp) $(poflags) general/sessionman.h general/sessionman.c $(oflags)
+	$(COMP) $(POFLAGS) general/sessionman.h general/sessionman.c $(OFLAGS)
 
 charmover.o: ai/charmover.h ai/charmover.c
-	$(comp) $(poflags) ai/charmover.h ai/charmover.c $(oflags)
+	$(COMP) $(POFLAGS) ai/charmover.h ai/charmover.c $(OFLAGS)
 
 monsters.o: battle/monsters.h battle/monsters.c
-	$(comp) $(poflags) battle/monsters.h battle/monsters.c $(oflags)
+	$(COMP) $(POFLAGS) battle/monsters.h battle/monsters.c $(OFLAGS)
 
 window.o: general/window.h general/window.c
-	$(comp) $(poflags) general/window.h general/window.c $(oflags)
+	$(COMP) $(POFLAGS) general/window.h general/window.c $(OFLAGS)
 
 player.o: ai/player.h ai/player.c
-	$(comp) $(poflags) ai/player.h ai/player.c $(oflags)
+	$(COMP) $(POFLAGS) ai/player.h ai/player.c $(OFLAGS)
 
 clean:
 	rm *.o *.h.gch

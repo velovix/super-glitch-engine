@@ -53,7 +53,7 @@ monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bo
 baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, char* name);
 
 void pk_damage(int amount, monster_t* victim);
-int pk_calcStats(type_t, type_t, type_t);
+int pk_calcTyping(type_t, type_t, type_t);
 
 // Type settings
 void pk_setTypeRes(type_t*, int, int*);

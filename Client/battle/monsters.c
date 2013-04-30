@@ -72,7 +72,7 @@ void pk_damage(int amount, monster_t* victim) {
 	victim->health = amount - victim->stats.def;
 }
 
-int pk_calcStats(type_t mType1, type_t mType2, type_t attType) {
+int pk_calcTyping(type_t mType1, type_t mType2, type_t attType) {
 	int effect = 0;
 
 	if(mType1.value != T_NONE) {
