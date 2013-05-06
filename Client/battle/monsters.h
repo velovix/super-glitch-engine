@@ -7,8 +7,8 @@
 #include "../constants.h"
 
 typedef struct {
-	int att, def, spAtt, spDef, speed;
-	int mAtt, mDef, mSpAtt, mSpDef, mSpeed, mAcc, mEvas;
+	int hp, att, def, spAtt, spDef, speed;
+	int mHp, mAtt, mDef, mSpAtt, mSpDef, mSpeed, mAcc, mEvas;
 } stats_t;
 
 typedef struct {
@@ -29,7 +29,7 @@ typedef struct {
 } baseMonster_t;
 
 typedef struct {
-	int health, experience, type1, type2;
+	int experience, type1, type2;
 	char name [12];
 	baseMonster_t* id;
 	bool shiny;
@@ -45,7 +45,7 @@ typedef struct {
 } move_t;
 
 // Initializers
-stats_t pk_initStats(int att, int def, int spAtt, int spDef, int speed);
+stats_t pk_initStats(int hp, int att, int def, int spAtt, int spDef, int speed);
 type_t pk_initType(char*, int);
 move_t pk_initMove(int s_cpp, int s_bpp, char* name, int type, bool (*s_movePtr) (monster_t*, monster_t*));
 monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bool s_shiny,

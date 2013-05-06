@@ -124,8 +124,8 @@ void setMonsters()
 	monEntry_t mons[header.count];
 	for(int i=0; i<header.count; i++) {
 		fread(&mons[i], sizeof(monEntry_t), 1, fMons);
-		ses.bMons[mons[i].value] = pk_initBaseMonster(pk_initStats(mons[i].att, mons[i].def, mons[i].spAtt, mons[i].spDef,
-			mons[i].speed), pk_initStats(0,0,0,0,0), mons[i].value, mons[i].name);
+		ses.bMons[mons[i].value] = pk_initBaseMonster(pk_initStats(30, mons[i].att, mons[i].def, mons[i].spAtt, mons[i].spDef,
+			mons[i].speed), pk_initStats(0,0,0,0,0,0), mons[i].value, mons[i].name);
 	}
 }
 
@@ -184,6 +184,11 @@ void setClips()
 }
 
 // SDL Shortcut Functions
+void draw_rect(int x, int y, int w, int h, int color) {
+	SDL_Rect rect = {x,y,w,h};
+	SDL_FillRect(s_screen, &rect, color);
+}
+
 SDL_Surface *load_image(char* filename)
 {
 	SDL_Surface* loadedImage = NULL;
@@ -466,6 +471,10 @@ void drawBattle() {
 	apply_surface(8*18, 8*9, s_chars, s_screen, &clipChars[HPBAR_R], false);
 
 	apply_surface(8*14, 8*10, s_chars, s_screen, &clipChars[SLASH], false);
+
+	draw_rect(8*12+3, 8*9+3, 46*((double)ses.p1.monsters[0].stats.mHp/(double)ses.p1.monsters[0].stats.hp), 2, 254);
+
+	draw_rect(8*4+3, 8*2+3, 46*((double)ses.attWild.stats.mHp/(double)ses.attWild.stats.hp), 2, 254);
 
 	apply_surface(0, SCREEN_HEIGHT-(PKMN_SIZE)-(6*CHAR_SIZE), s_bPkmn, s_screen,
 		&clipPkmn[ses.p1.monsters[0].id->backSpr], false);
