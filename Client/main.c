@@ -1,3 +1,7 @@
+/* Super Glitch Engine Client
+ * Copyright Tyler Compton 2013
+ */
+
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 
 #include <SDL/SDL.h>
@@ -12,7 +16,7 @@
 
 #include "fileheaders.h"
 
-#include "PokeEngine.h"
+#include "sge.h"
 
 bool quit = false;
 bool mute = false;

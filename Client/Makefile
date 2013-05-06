@@ -5,7 +5,7 @@ OFLAGS = -std=gnu99
 COMP = gcc
 
 all: $(OBJ)
-	$(COMP) -o out/PokeEngine $(OBJ) $(AFLAGS)
+	$(COMP) -o out/sge $(OBJ) $(AFLAGS)
 
 main.o: main.c
 	$(COMP) $(POFLAGS) main.c $(OFLAGS)
