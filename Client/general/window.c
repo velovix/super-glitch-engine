@@ -111,6 +111,37 @@ void pk_setWindowText(char* s_text, bool s_txtScroll, window_t* window) {
 	window->finished = false;
 }
 
+void pk_setInsWindowText(char* baseText, char* insText, int insStart, int insLen, bool txtScroll, window_t* window) {
+
+	pk_clearWindow(window);
+
+	window->txtScroll = txtScroll;
+	window->optCnt = 0;
+
+	int inc = 0;
+	while(pk_getCharValue(baseText[inc]) != CE_ENDSTR) {
+		window->text[inc] = baseText[inc];
+		if(pk_getCharValue(baseText[inc]) == CE_OPTION) {
+			window->optCnt++;
+		}
+		inc++;
+	}
+
+	for(int i=0; i<insLen; i++) {
+		window->text[insStart+i] = insText[i];
+	}
+
+	window->text[inc] = '|';
+	if(window->txtScroll) {
+		window->dispChar = 0;
+	} else {
+		window->dispChar = inc;
+	}
+	window->strLength = inc;
+
+	window->finished = false;
+}
+
 char* pk_getWindowText(window_t window) {
 	char* out;
 

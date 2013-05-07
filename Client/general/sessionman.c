@@ -87,23 +87,12 @@ void pk_sstepBattle(monster_t pMon, sessionMan_t* ses) {
 		ses->battleStep = BATS_WPA;
 		if(ses->battleType == BAT_WILD) {
 			pk_clearWindow(&ses->w_bDialog);
-			char message[30] =  "^Wild             ^^appeared!|";
-			for(int i=0; i<12; i++) {
-				message[6+i] = ses->attWild.name[i];
-			}
-			pk_setWindowText(message, true, &ses->w_bDialog);
+			pk_setInsWindowText("^Wild             ^^appeared!|", ses->attWild.name, 6, 12, true, &ses->w_bDialog);
 		}
 	} else if(ses->battleStep == BATS_WPA) {
 		pk_clearWindow(&ses->w_bDialog);
 		ses->battleStep = BATS_GO;
-		char message[30] =  "^Go!              |";
-		for(int i=0; i<12; i++) {
-			message[5+i] = pMon.name[i];
-			if(pMon.name[i] == ' ') {
-				printf("!\n");
-			}
-		}
-		pk_setWindowText(message, true, &ses->w_bDialog);
+		pk_setInsWindowText("^Go!              |", pMon.name, 5, 12, true, &ses->w_bDialog);
 	} else if(ses->battleStep == BATS_GO) {
 		pk_clearWindow(&ses->w_bDialog);
 		ses->battleStep = BATS_SEL;
