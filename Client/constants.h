@@ -112,7 +112,7 @@
 #define COFF			0
 #define LETTERS_C		COFF
 #define LETTERS_L		COFF+26
-#define NUMBERS			COFF+57
+#define NUMBERS			COFF+52
 #define SPACE			COFF+62
 #define PERIOD			COFF+63
 #define EXCLAMATION		COFF+64
