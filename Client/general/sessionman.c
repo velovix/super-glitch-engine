@@ -181,8 +181,10 @@ void pk_supdateWindows(sessionMan_t* ses) {
 		if(ses->w_bMoves.selection == WSEL_BACK) {
 			ses->currWindow = &ses->w_bMenu;
 		} else if(ses->w_bMoves.active) {
-			ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selection].value].movePtr(&ses->p1.monsters[0], &ses->attWild);
-			//pk_sstepBattle()
+			if(pk_useMove(ses->w_bMoves.selection, &ses->p1.monsters[0])) {
+				ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selection].value].movePtr(&ses->p1.monsters[0], &ses->attWild);
+			}
+
 		}
 
 		ses->w_bMoves.selection = WSEL_NONE;
