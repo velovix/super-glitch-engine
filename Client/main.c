@@ -138,19 +138,23 @@ void setNpcs()
 	ses.p1 = pk_pinit(10*BLOCK_SIZE,11*BLOCK_SIZE, C_PLAYER);
 	ses.npcs[0] = pk_tinit(BLOCK_SIZE*12, BLOCK_SIZE*13, BLOCK_SIZE*12, BLOCK_SIZE*12, 1, C_GIRL, LEFT, AI_WANDER, false);
 	ses.npcs[1] = pk_tinit(BLOCK_SIZE*13, BLOCK_SIZE*12, BLOCK_SIZE*13, BLOCK_SIZE*11, 1, C_SCI, LEFT, AI_TURN, false);
+	ses.npcs[2] = pk_tinit(BLOCK_SIZE*14, BLOCK_SIZE*17, BLOCK_SIZE*17, BLOCK_SIZE*17, 1, C_MOM, LEFT, AI_WANDER, false);
+	ses.npcs[3] = pk_tinit(BLOCK_SIZE*18, BLOCK_SIZE*21, BLOCK_SIZE*20, BLOCK_SIZE*20, 1, C_FATMAN, LEFT, AI_TURN, false);
 
-	int moves[4];
+	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[PK_CHARIZARD], false, 
+		ses.bMons[PK_NIDOQUEEN].bs), &ses.p1);
+	pk_tsetMonster(pk_initMonster(25, 50, &ses.bMons[PK_NIDOQUEEN], false, 
+		ses.bMons[PK_NIDOQUEEN].bs), &ses.npcs[1]);
+
 	for(int i=0; i<4; i++) {
-		if(i == 1) {
-			moves[i] = PK_EXPLOSION;
+		if(i == 3) {
+			pk_setMove(PK_EXPLOSION, ses.moves[PK_EXPLOSION].bpp, ses.moves[PK_EXPLOSION].bpp, i, &ses.p1.monsters[0]);
+			pk_setMove(PK_EXPLOSION, ses.moves[PK_EXPLOSION].bpp, ses.moves[PK_EXPLOSION].bpp, i, &ses.npcs[1].monsters[0]);
 		} else {
-			moves[i] = PK_TACKLE;
+			pk_setMove(PK_TACKLE, ses.moves[PK_TACKLE].bpp, ses.moves[PK_TACKLE].bpp, i, &ses.p1.monsters[0]);
+			pk_setMove(PK_TACKLE, ses.moves[PK_TACKLE].bpp, ses.moves[PK_TACKLE].bpp, i, &ses.npcs[1].monsters[0]);
 		}
 	}
-	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[PK_CHARIZARD], false, 
-		ses.bMons[PK_NIDOQUEEN].bs, &moves[0]), &ses.p1);
-	pk_tsetMonster(pk_initMonster(25, 50, &ses.bMons[PK_NIDOQUEEN], false, 
-		ses.bMons[PK_NIDOQUEEN].bs, &moves[0]), &ses.npcs[1]);
 }
 
 void setWindows()
@@ -159,6 +163,10 @@ void setWindows()
 	pk_setWindowText("^I am a girl.^^No joke.|", true, &ses.npcs[0].dialog);
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[1].dialog);
 	pk_setWindowText("^I am but a^^hapless nerd.|", true, &ses.npcs[1].dialog);
+	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[2].dialog);
+	pk_setWindowText("^Numbers for you!^^0123456789!|", true, &ses.npcs[2].dialog);
+	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[3].dialog);
+	pk_setWindowText("^Check it out.^^?!/.\"|", true, &ses.npcs[3].dialog);
 
 	pk_setWOptionFunc(6, &quitGame, &ses.w_menu);
 }

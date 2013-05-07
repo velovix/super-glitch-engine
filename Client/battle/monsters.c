@@ -26,7 +26,6 @@ type_t pk_initType(char* name, int value) {
 
 move_t pk_initMove(int s_cpp, int s_bpp, char* name, int type, bool (*s_movePtr) (monster_t*, monster_t*)) {
 	move_t out;
-	out.cpp = s_cpp;
 	out.bpp = s_bpp;
 	out.movePtr = s_movePtr;
 	out.type = type;
@@ -38,8 +37,13 @@ move_t pk_initMove(int s_cpp, int s_bpp, char* name, int type, bool (*s_movePtr)
 	return out;
 }
 
-monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bool s_shiny,
-	stats_t s_stats, int* s_moves) {
+void pk_setMove(int moveVal, int cpp, int bpp, int moveSlot, monster_t* mon) {
+	mon->moves[moveSlot].value = moveVal;
+	mon->moves[moveSlot].cpp = cpp;
+	mon->moves[moveSlot].bpp = bpp;
+}
+
+monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bool s_shiny, stats_t s_stats) {
 	monster_t out;
 	out.stats.mHp = s_health;
 	out.experience = s_experience;
@@ -47,7 +51,8 @@ monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bo
 	out.shiny = s_shiny;
 	out.stats = s_stats;
 	for(int i=0; i<4; i++) {
-		out.moves[i] = s_moves[i];
+		out.moves[i].value = 0;
+		out.moves[i].cpp = out.moves[i].bpp = 0;
 	}
 
 	for(int i=0; i<12; i++) {
@@ -157,6 +162,15 @@ void pk_setTypeInv(type_t* type, int cnt, int* types) {
 	}
 
 	type->invCnt = cnt;
+}
+
+bool pk_useMove(int numb, monster_t* mon) {
+	if(mon->moves[numb].cpp > 0) {
+		mon->moves[numb].cpp--;
+		return true;
+	} else {
+		return false;
+	}
 }
 
 bool pk_m_nomove(monster_t* a, monster_t* d) {

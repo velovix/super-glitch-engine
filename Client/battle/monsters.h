@@ -20,6 +20,11 @@ typedef struct {
 } type_t;
 
 typedef struct {
+	int cpp, bpp;
+	int value;
+} moveMask_t;
+
+typedef struct {
 	int frntSpr, backSpr, iconSpr;
 	stats_t bs;
 	stats_t ev;
@@ -34,12 +39,12 @@ typedef struct {
 	baseMonster_t* id;
 	bool shiny;
 	stats_t stats;
-	int moves[4];
+	moveMask_t moves[4];
 
 } monster_t;
 
 typedef struct {
-	int cpp, bpp, type, power;
+	int bpp, type, power;
 	char name [12];
 	bool (*movePtr) (monster_t*, monster_t*);
 } move_t;
@@ -48,8 +53,7 @@ typedef struct {
 stats_t pk_initStats(int hp, int att, int def, int spAtt, int spDef, int speed);
 type_t pk_initType(char*, int);
 move_t pk_initMove(int s_cpp, int s_bpp, char* name, int type, bool (*s_movePtr) (monster_t*, monster_t*));
-monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bool s_shiny,
-	stats_t s_stats, int* s_moves);
+monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bool s_shiny, stats_t s_stats);
 baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, char* name);
 
 int pk_damage(int amount, monster_t* a, monster_t* d);
@@ -59,6 +63,10 @@ int pk_calcTyping(type_t, type_t, type_t);
 void pk_setTypeRes(type_t*, int, int*);
 void pk_setTypeWeak(type_t*, int, int*);
 void pk_setTypeInv(type_t*, int, int*);
+
+// Monster Functions
+bool pk_useMove(int numb, monster_t* mon);
+void pk_setMove(int moveVal, int cpp, int bpp, int moveSlot, monster_t* mon);
 
 // Moves Functions
 bool pk_m_nomove(monster_t* a, monster_t* d);

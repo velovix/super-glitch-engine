@@ -119,7 +119,7 @@ void pk_ssetMoveWind(monster_t mon, sessionMan_t* ses) {
 	for(int i=0; i<4; i++) {
 		moveTxt[inc] = '+';	inc++;
 		for(int j=0; j<12; j++) {
-			moveTxt[inc] = ses->moves[ses->p1.monsters[0].moves[i]].name[j];
+			moveTxt[inc] = ses->moves[ mon.moves[i].value ].name[j];
 			inc++;
 		}
 		if(i!=3) {
@@ -140,8 +140,8 @@ void pk_ssetMoveInfoWind(move_t move, sessionMan_t* ses) {
 	}
 
 	char pp1[2];		char pp2[2];
-	sprintf(pp1, "%d", ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selOpt]].cpp);
-	sprintf(pp2, "%d", ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selOpt]].bpp);
+	sprintf(pp1, "%d", ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].cpp);
+	sprintf(pp2, "%d", ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].bpp);
 	miTxt[20] = pp1[0];	miTxt[21] = pp1[1];
 	miTxt[23] = pp2[0];	miTxt[24] = pp2[1];
 
@@ -150,7 +150,7 @@ void pk_ssetMoveInfoWind(move_t move, sessionMan_t* ses) {
 
 void pk_supdateWindows(sessionMan_t* ses) {
 
-	pk_ssetMoveInfoWind(ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selOpt]], ses);
+	pk_ssetMoveInfoWind(ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].value], ses);
 
 	pk_updateWindow(&ses->w_menu);
 	pk_updateWindow(&ses->w_bDialog);
@@ -181,7 +181,8 @@ void pk_supdateWindows(sessionMan_t* ses) {
 		if(ses->w_bMoves.selection == WSEL_BACK) {
 			ses->currWindow = &ses->w_bMenu;
 		} else if(ses->w_bMoves.active) {
-			ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selection]].movePtr(&ses->p1.monsters[0], &ses->attWild);
+			ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selection].value].movePtr(&ses->p1.monsters[0], &ses->attWild);
+			//pk_sstepBattle()
 		}
 
 		ses->w_bMoves.selection = WSEL_NONE;
