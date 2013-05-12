@@ -3,7 +3,7 @@
 
 #include "constants.h"
 #include "general/mapman.h"
-#include "ai/trainer_npc.h"
+#include "ai/npc.h"
 #include "ai/charmover.h"
 #include "general/sessionman.h"
 #include "battle/monsters.h"

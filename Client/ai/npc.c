@@ -1,9 +1,9 @@
-#include "trainer_npc.h"
+#include "npc.h"
 
-trainerNPC_t pk_tinit(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite,
+npc_t pk_initNpc(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite,
 	int s_dir, int s_aiType, bool s_fought) {
 
-	trainerNPC_t out;
+	npc_t out;
 
 	out.destX[0] = s_x;
 	out.destY[0] = s_y;
@@ -25,7 +25,7 @@ trainerNPC_t pk_tinit(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_s
 	return out;
 }
 
-void pk_tupdate(trainerNPC_t* npc, col_t col) {
+void pk_updateNpc(npc_t* npc, col_t col) {
 	if(npc->mover.animCycle > CHAR_SPEED) {
 		npc->mover.animCycle = 0;
 	}
@@ -101,19 +101,19 @@ void pk_tupdate(trainerNPC_t* npc, col_t col) {
 	pk_updateWindow(&npc->dialog);
 }
 
-void pk_tsetWindow(window_t s_wind, trainerNPC_t* trainer) {
+void pk_setNpcWindow(window_t s_wind, npc_t* trainer) {
 	trainer->dialog = s_wind;
 }
 
-void pk_tsetMonster(monster_t mon, trainerNPC_t* trainer) {
+void pk_setNpcMonster(monster_t mon, npc_t* trainer) {
 	trainer->monsters[trainer->monCnt] = mon;
 	trainer->monCnt++;
 }
 
-int pk_tgetFrame(trainerNPC_t npc) {
+int pk_getNpcFrame(npc_t npc) {
 	return pk_getCharFrame(npc.sprite, npc.mover);
 }
 
-void pk_ttogglePause(trainerNPC_t* npc) {
+void pk_toggleNpcPause(npc_t* npc) {
 	npc->pause = !npc->pause;
 }

@@ -17,15 +17,15 @@ typedef struct {
 	monster_t monsters[6];
 	charMover_t mover;
 	window_t dialog;
-} trainerNPC_t;
+} npc_t;
 
-trainerNPC_t pk_tinit(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite,
+npc_t pk_initNpc(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite,
 	int s_dir, int s_aiType, bool s_fought);
 
-void pk_tupdate(trainerNPC_t* npc, col_t col);
-void pk_tsetWindow(window_t s_wind, trainerNPC_t* trainer);
-void pk_tsetMonster(monster_t mon, trainerNPC_t* trainer);
-int pk_tgetFrame(trainerNPC_t npc);
-void pk_ttogglePause(trainerNPC_t* npc);
+void pk_updateNpc(npc_t* npc, col_t col);
+void pk_setNpcWindow(window_t s_wind, npc_t* trainer);
+void pk_setNpcMonster(monster_t mon, npc_t* trainer);
+int pk_getNpcFrame(npc_t npc);
+void pk_toggleNpcPause(npc_t* npc);
 
 #endif

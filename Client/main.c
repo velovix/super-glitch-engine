@@ -136,15 +136,15 @@ void setMonsters()
 void setNpcs()
 {
 	ses.p1 = pk_pinit(10*BLOCK_SIZE,11*BLOCK_SIZE, C_PLAYER);
-	ses.npcs[0] = pk_tinit(BLOCK_SIZE*12, BLOCK_SIZE*13, BLOCK_SIZE*12, BLOCK_SIZE*12, 1, C_GIRL, LEFT, AI_WANDER, false);
-	ses.npcs[1] = pk_tinit(BLOCK_SIZE*13, BLOCK_SIZE*12, BLOCK_SIZE*13, BLOCK_SIZE*11, 1, C_SCI, LEFT, AI_TURN, false);
-	ses.npcs[2] = pk_tinit(BLOCK_SIZE*14, BLOCK_SIZE*17, BLOCK_SIZE*17, BLOCK_SIZE*17, 1, C_MOM, LEFT, AI_WANDER, false);
-	ses.npcs[3] = pk_tinit(BLOCK_SIZE*18, BLOCK_SIZE*21, BLOCK_SIZE*20, BLOCK_SIZE*20, 1, C_FATMAN, LEFT, AI_TURN, false);
-	ses.npcs[4] = pk_tinit(BLOCK_SIZE*22, BLOCK_SIZE*17, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, false);
+	ses.npcs[0] = pk_initNpc(BLOCK_SIZE*12, BLOCK_SIZE*13, BLOCK_SIZE*12, BLOCK_SIZE*12, 1, C_GIRL, LEFT, AI_WANDER, false);
+	ses.npcs[1] = pk_initNpc(BLOCK_SIZE*13, BLOCK_SIZE*12, BLOCK_SIZE*13, BLOCK_SIZE*11, 1, C_SCI, LEFT, AI_TURN, false);
+	ses.npcs[2] = pk_initNpc(BLOCK_SIZE*14, BLOCK_SIZE*17, BLOCK_SIZE*17, BLOCK_SIZE*17, 1, C_MOM, LEFT, AI_WANDER, false);
+	ses.npcs[3] = pk_initNpc(BLOCK_SIZE*18, BLOCK_SIZE*21, BLOCK_SIZE*20, BLOCK_SIZE*20, 1, C_FATMAN, LEFT, AI_TURN, false);
+	ses.npcs[4] = pk_initNpc(BLOCK_SIZE*22, BLOCK_SIZE*17, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, false);
 
 	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[PK_CHARIZARD], false, 
 		ses.bMons[PK_NIDOQUEEN].bs), &ses.p1);
-	pk_tsetMonster(pk_initMonster(25, 50, &ses.bMons[PK_NIDOQUEEN], false, 
+	pk_setNpcMonster(pk_initMonster(25, 50, &ses.bMons[PK_NIDOQUEEN], false, 
 		ses.bMons[PK_NIDOQUEEN].bs), &ses.npcs[1]);
 
 	for(int i=0; i<4; i++) {
@@ -278,7 +278,7 @@ void unloadSprites()
 	SDL_Quit();
 }
 
-trainerNPC_t* isHere(int thing, int x, int y)
+npc_t* isHere(int thing, int x, int y)
 {
 	switch(thing) {
 	case NPC:
@@ -313,7 +313,7 @@ void checkKeys(Uint8 *keyStates)
 		if(keyStates[SDLK_z]) {
 			if(keyStatesBuf[SDLK_z] == false && ses.p1.mover.x == ses.p1.mover.nextX && ses.p1.mover.y == ses.p1.mover.nextY) {
 				switch(ses.p1.mover.dir) {
-				trainerNPC_t *tNPC;
+				npc_t *tNPC;
 				case LEFT:
 					tNPC = isHere(NPC, ses.p1.mover.x-BLOCK_SIZE, ses.p1.mover.y);
 					if(tNPC != NULL) {
@@ -523,7 +523,7 @@ void graphics()
 		for(int i=0; i<MAX_NPCS; i++) {
 			if(ses.npcs[i].active)
 				apply_surface(ses.npcs[i].mover.x, ses.npcs[i].mover.y-4, s_npc, s_screen, 
-					&clipNPCs[pk_tgetFrame(ses.npcs[i])], true);
+					&clipNPCs[pk_getNpcFrame(ses.npcs[i])], true);
 		}
 
 		apply_surface(ses.p1.mover.x, ses.p1.mover.y-4, s_player, s_screen, &clipNPCs[pk_pgetFrame(ses.p1)], true);

@@ -69,7 +69,7 @@ void pk_sstartBattleW(monster_t mon, sessionMan_t* ses) {
 	pk_ssetMoveWind(ses->p1.monsters[0], ses);
 }
 
-void pk_sstartBattleT(trainerNPC_t* trainer, sessionMan_t* ses) {
+void pk_sstartBattleT(npc_t* trainer, sessionMan_t* ses) {
 	ses->battleStep = BATS_PRE;
 	ses->battleType = BAT_TRAINER;
 	ses->attTrainer = trainer;
@@ -194,7 +194,7 @@ void pk_supdateNpcs(sessionMan_t* ses) {
 
 	for(int i=0; i<MAX_NPCS; i++) {
 		if(ses->npcs[i].active) {
-			pk_tupdate(&ses->npcs[i],
+			pk_updateNpc(&ses->npcs[i],
 			pk_findCols(ses->map, ses->npcs[i].mover.x/BLOCK_SIZE, ses->npcs[i].mover.y/BLOCK_SIZE));
 		}
 	}

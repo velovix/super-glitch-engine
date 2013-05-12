@@ -1,4 +1,4 @@
-OBJ = main.o mapman.o trainer_npc.o sessionman.o charmover.o window.o monsters.o player.o
+OBJ = main.o mapman.o npc.o sessionman.o charmover.o window.o monsters.o player.o
 AFLAGS = -lSDL -lSDL_image -lSDL_mixer
 POFLAGS = -c
 OFLAGS = -std=gnu99
@@ -13,8 +13,8 @@ main.o: main.c
 mapman.o: general/mapman.h general/mapman.c
 	$(COMP) $(POFLAGS) general/mapman.h general/mapman.c $(OFLAGS)
 
-trainer_npc.o: ai/trainer_npc.h ai/trainer_npc.c
-	$(COMP) $(POFLAGS) ai/trainer_npc.h ai/trainer_npc.c $(OFLAGS)
+npc.o: ai/npc.h ai/npc.c
+	$(COMP) $(POFLAGS) ai/npc.h ai/npc.c $(OFLAGS)
 
 sessionman.o: general/sessionman.h general/sessionman.c
 	$(COMP) $(POFLAGS) general/sessionman.h general/sessionman.c $(OFLAGS)
