@@ -87,26 +87,5 @@ int pk_getCharFrame(int spriteOffset, charMover_t obj) {
 }
 
 void pk_buildColMapC(charMover_t obj, map_t* map) {
-	/*int mX = obj.nextX/CHAR_SPEED;
-	int mY = (obj.nextY/CHAR_SPEED)*mX;
-	if(obj.x != obj.nextX || obj.y != obj.nextY) {
-		map->cData[mX + mY*map->width] = true;
-		switch(obj.dir) {
-		case LEFT:
-			map->cData[mX-1 + mY*map->width] = true;
-		break;
-		case RIGHT:
-			map->cData[mX+1 + mY*map->width] = true;
-		break;
-		case UP:
-			map->cData[mX + (mY+1)*map->width] = true;
-		break;
-		case DOWN:
-			map->cData[mX + (mY-1)*map->width] = true;
-		break;
-		}
-	} else {
-		map->cData[mX + mY*map->width] = true;
-	}*/
 	map->cData[obj.nextX/BLOCK_SIZE+( (obj.nextY/BLOCK_SIZE)*map->width )] = true;
 }

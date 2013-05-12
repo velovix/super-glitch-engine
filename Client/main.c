@@ -57,7 +57,7 @@ int init()
 	}
 
 	s_screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_SWSURFACE);
-	SDL_WM_SetCaption("PokeEngine", NULL);
+	SDL_WM_SetCaption("Super Glitch Engine", NULL);
 
     if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 )
     {
@@ -140,6 +140,7 @@ void setNpcs()
 	ses.npcs[1] = pk_tinit(BLOCK_SIZE*13, BLOCK_SIZE*12, BLOCK_SIZE*13, BLOCK_SIZE*11, 1, C_SCI, LEFT, AI_TURN, false);
 	ses.npcs[2] = pk_tinit(BLOCK_SIZE*14, BLOCK_SIZE*17, BLOCK_SIZE*17, BLOCK_SIZE*17, 1, C_MOM, LEFT, AI_WANDER, false);
 	ses.npcs[3] = pk_tinit(BLOCK_SIZE*18, BLOCK_SIZE*21, BLOCK_SIZE*20, BLOCK_SIZE*20, 1, C_FATMAN, LEFT, AI_TURN, false);
+	ses.npcs[4] = pk_tinit(BLOCK_SIZE*22, BLOCK_SIZE*17, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, false);
 
 	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[PK_CHARIZARD], false, 
 		ses.bMons[PK_NIDOQUEEN].bs), &ses.p1);
@@ -160,13 +161,16 @@ void setNpcs()
 void setWindows()
 {	
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[0].dialog);
-	pk_setWindowText("^I am a girl.^^No joke.|", true, &ses.npcs[0].dialog);
+	pk_setWindowText("{^I am a girl.^^No joke.|", true, &ses.npcs[0].dialog);
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[1].dialog);
-	pk_setWindowText("^I am but a^^hapless nerd.|", true, &ses.npcs[1].dialog);
+	pk_setWindowText("{^I am but a^^hapless nerd.|", true, &ses.npcs[1].dialog);
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[2].dialog);
-	pk_setWindowText("^Numbers for you!^^0123456789!|", true, &ses.npcs[2].dialog);
+	pk_setWindowText("{^Numbers for you!^^0123456789!|", true, &ses.npcs[2].dialog);
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[3].dialog);
-	pk_setWindowText("^Check it out.^^?!/.\"|", true, &ses.npcs[3].dialog);
+	pk_setWindowText("{^Check it out.^^?!/.\"|", true, &ses.npcs[3].dialog);
+	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[4].dialog);
+	pk_setWindowText("{^Hey everyone!^^It is Mortem1r.{^I have here a^^new Birch Box!{^Let us see^^what is inside!|",
+		true, &ses.npcs[4].dialog);
 
 	pk_setWOptionFunc(6, &quitGame, &ses.w_menu);
 }
@@ -277,15 +281,15 @@ void unloadSprites()
 trainerNPC_t* isHere(int thing, int x, int y)
 {
 	switch(thing) {
-		case NPC:
-			for(int i=0; i<MAX_NPCS; i++) {
-				if(ses.npcs[i].active && ses.npcs[i].mover.x == x && ses.npcs[i].mover.y == y &&
-				   ses.npcs[i].mover.x == ses.npcs[i].mover.nextX && 
-				   ses.npcs[i].mover.y == ses.npcs[i].mover.nextY) {
-					return &ses.npcs[i];
-				}
+	case NPC:
+		for(int i=0; i<MAX_NPCS; i++) {
+			if(ses.npcs[i].active && ses.npcs[i].mover.x == x && ses.npcs[i].mover.y == y &&
+			   ses.npcs[i].mover.x == ses.npcs[i].mover.nextX && 
+			   ses.npcs[i].mover.y == ses.npcs[i].mover.nextY) {
+				return &ses.npcs[i];
 			}
-			break;
+		}
+		break;
 	}
 
 	return NULL;
@@ -390,7 +394,7 @@ void checkKeys(Uint8 *keyStates)
 	if(keyStates[SDLK_b]) {
 		if(keyStatesBuf[SDLK_b] == false && ses.mode == SES_OVERWORLD) {
 			pk_sstartBattleW(ses.npcs[1].monsters[0], &ses);
-			pk_sstepBattle(ses.p1.monsters[0], &ses);
+			pk_sstepBattle(&ses, BATS_WPA, ses.npcs[1].monsters[0]);
 			keyStatesBuf[SDLK_b] = true;
 		} else if(keyStatesBuf[SDLK_b] == false && ses.mode == SES_BATTLE) {
 			pk_switchMode(SES_OVERWORLD, &ses);
@@ -562,11 +566,11 @@ void physics()
 	}
 
 	if(ses.battleStep == BATS_WPA && ses.w_bDialog.finished) {
-		pk_sstepBattle(ses.p1.monsters[0], &ses);
+		pk_sstepBattle(&ses, BATS_GO, ses.p1.monsters[0]);
 	}
 
 	if(ses.battleStep == BATS_GO && ses.w_bDialog.finished) {
-		pk_sstepBattle(ses.p1.monsters[0], &ses);
+		pk_sstepBattle(&ses, BATS_SEL, ses.p1.monsters[0]);
 	}
 
 	pk_supdateMapCols(ALL, &ses);

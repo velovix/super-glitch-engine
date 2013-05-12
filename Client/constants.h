@@ -64,10 +64,9 @@
 #define BATS_WPA		1
 #define BATS_GO			2
 #define BATS_SEL		3
-#define BATS_FOEATT		4
-#define BATS_PLRATT		5
-#define BATS_RESULT		6
-#define BATS_FINISH		7
+#define BATS_ATT		4
+#define BATS_RESULT		5
+#define BATS_FINISH		6
 
 // Window Selections
 #define WSEL_NONE		-1
@@ -144,6 +143,7 @@
 #define CE_NEWLINE		200
 #define CE_OPTION		201
 #define CE_ENDSTR		202
+#define CE_FULLSCROLL	203
 
 // AI Patterns
 #define AI_TURN			1

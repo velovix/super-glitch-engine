@@ -12,6 +12,7 @@ void pk_initWindow(int s_x, int s_y, int s_w, int s_h, bool s_closeable, bool di
 	window->active = window->finished = false;
 	window->closeable = s_closeable;
 	window->selection = WSEL_NONE;
+	window->scrollNumb = 1;
 
 	pk_clearWindow(window);
 }
@@ -45,7 +46,7 @@ void pk_updateWindow(window_t* window) {
 			return;
 		}
 
-		if(window->dispChar < window->strLength) {
+		if(window->dispChar < window->stop) {
 			if(window->dispDelay <= 0) {
 				window->dispChar++;
 				window->dispDelay = 1;
@@ -54,15 +55,14 @@ void pk_updateWindow(window_t* window) {
 			}
 		}
 
-		int inc = 0;
 		int x, y;
 		x = y = 1;
 		int lastOptDraw = 0;
-		for(int i=0; i<window->dispChar; i++) {
-			if(pk_getCharValue(window->text[inc]) == CE_NEWLINE) {
+		for(int i=window->start; i<window->dispChar; i++) {
+			if(pk_getCharValue(window->text[i]) == CE_NEWLINE) {
 				x=1;
 				y++;
-			} else if(pk_getCharValue(window->text[inc]) == CE_OPTION) {
+			} else if(pk_getCharValue(window->text[i]) == CE_OPTION) {
 				if(lastOptDraw == window->selOpt) {
 					window->dispTiles[x+(y*window->w)] = SELARROW;
 				} else {
@@ -71,15 +71,11 @@ void pk_updateWindow(window_t* window) {
 				x++;
 				lastOptDraw++;
 			} else {
-				window->dispTiles[x+(y*window->w)] = pk_getCharValue(window->text[inc]);
+				window->dispTiles[x+(y*window->w)] = pk_getCharValue(window->text[i]);
 				x++;
 			}
-			inc++;
 		}
 	} else {
-		if(window->txtScroll) {
-			window->dispChar = 0;
-		}
 		window->dispDelay = 5;
 	}
 }
@@ -97,6 +93,9 @@ void pk_setWindowText(char* s_text, bool s_txtScroll, window_t* window) {
 		if(pk_getCharValue(s_text[inc]) == CE_OPTION) {
 			window->optCnt++;
 		}
+		if(pk_getCharValue(s_text[inc]) == CE_FULLSCROLL) {
+			window->scrollCnt++;
+		}
 		inc++;
 	}
 
@@ -109,52 +108,42 @@ void pk_setWindowText(char* s_text, bool s_txtScroll, window_t* window) {
 	window->strLength = inc;
 
 	window->finished = false;
+
+	pk_fullWindowScroll(window->scrollNumb, window);
 }
 
 void pk_setInsWindowText(char* baseText, char* insText, int insStart, int insLen, bool txtScroll, window_t* window) {
 
-	pk_clearWindow(window);
-
-	window->txtScroll = txtScroll;
-	window->optCnt = 0;
+	char* text = (char*)malloc(128*sizeof(char));
 
 	int inc = 0;
 	while(pk_getCharValue(baseText[inc]) != CE_ENDSTR) {
-		window->text[inc] = baseText[inc];
-		if(pk_getCharValue(baseText[inc]) == CE_OPTION) {
-			window->optCnt++;
-		}
+		text[inc] = baseText[inc];
 		inc++;
 	}
 
 	for(int i=0; i<insLen; i++) {
-		window->text[insStart+i] = insText[i];
+		text[insStart+i] = insText[i];
 	}
 
-	window->text[inc] = '|';
-	if(window->txtScroll) {
-		window->dispChar = 0;
-	} else {
-		window->dispChar = inc;
-	}
-	window->strLength = inc;
+	text[inc] = '|';
 
-	window->finished = false;
+	pk_setWindowText(text, txtScroll, window);
 }
 
 char* pk_getWindowText(window_t window) {
 	char* out;
+	out = (char*)malloc((window.stop-window.start)*sizeof(char));
 
-	if(window.dispChar > 0) {
-		out = (char*)malloc(window.dispChar*sizeof(char)+1);
-		for(int i=0; i<window.dispChar; i++) {
-			out[i] = window.text[i];
-		}
-		out[window.dispChar] = '|';
-		return out;
-	} else {
-		return "|";
+	int inc = 0;
+	for(int i=window.start; i<window.stop; i++) {
+		out[inc] = window.text[i];
+		inc++;
 	}
+
+	out[window.dispChar] = '|';
+
+	return out;
 }
 
 void pk_setWOptionFunc(int s_opt, void (*func)(), window_t* window) {
@@ -168,6 +157,8 @@ void pk_toggleWindow(window_t* window) {
 			pk_clearWindow(window);
 			window->finished = false;
 			window->startLag = 10;
+			window->scrollNumb = 1;
+			pk_fullWindowScroll(1, window);
 			if(window->txtScroll) {
 				window->dispChar = 0;
 			}
@@ -203,6 +194,9 @@ void pk_selectWindow(window_t* window) {
 		if(window->closeable) {
 			window->active = false;
 		}
+	} else if(window->dispChar >= window->stop && window->scrollNumb < window->scrollCnt) {
+		window->scrollNumb++;
+		pk_fullWindowScroll(window->scrollNumb, window);
 	}
 }
 
@@ -212,6 +206,34 @@ void pk_scrollWindowText(window_t* window) {
 	} else if(window->closeable) {
 		pk_toggleWindow(window);
 		window->selection = WSEL_BACK;
+	}
+}
+
+void pk_fullWindowScroll(int scrollCnt, window_t* window) {
+	pk_clearWindow(window);
+	int cnt = 0;
+	for(int i=0; i<128; i++) {
+		if(pk_getCharValue(window->text[i]) == CE_FULLSCROLL) {
+			cnt++;
+		}
+
+		if(cnt == scrollCnt) {
+			window->start = i+1;
+			break;
+		}
+	}
+
+	for(int i=window->start; i<128; i++) {
+		if(pk_getCharValue(window->text[i]) == CE_FULLSCROLL || pk_getCharValue(window->text[i]) == CE_ENDSTR) {
+			window->stop = i;
+			break;
+		}
+	}
+
+	if(window->txtScroll) {
+		window->dispChar = window->start;
+	} else {
+		window->dispChar = window->stop;
 	}
 }
 
@@ -244,6 +266,8 @@ int pk_getCharValue(char c) {
 		return CE_ENDSTR;
 	} else if(c == '/') {
 		return SLASH;
+	} else if(c == '{') {
+		return CE_FULLSCROLL;
 	} else {
 		return SPACE;
 	}

@@ -15,6 +15,7 @@ typedef struct {
 typedef struct {
 	int x, y, w, h;
 	int selOpt, optCnt, strLength, dispChar, dispDelay, startLag, selection;
+	int start, stop, scrollNumb, scrollCnt;
 	bool active, txtScroll, finished, closeable;
 	char text[128];
 	int dispTiles[128*6];
@@ -38,6 +39,7 @@ void pk_toggleWindow(window_t* window);
 void pk_moveSelArrow(int dir, window_t* window);
 void pk_selectWindow(window_t* window);
 void pk_scrollWindowText(window_t* window);
+void pk_fullWindowScroll(int scrollCnt, window_t* window);
 bool pk_isWindowFinished(window_t window);
 
 int pk_getCharValue(char c);

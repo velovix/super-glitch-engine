@@ -14,11 +14,11 @@ void pk_initSMan(int s_mode, sessionMan_t* ses) {
 	pk_initWindow(SCREEN_WIDTH-(15*CHAR_SIZE), SCREEN_HEIGHT-(6*CHAR_SIZE), 15, 6, true, false, &ses->w_bMoves);
 	pk_initWindow(0, SCREEN_HEIGHT-(10*CHAR_SIZE), 11, 5, false, false, &ses->w_bMoveInfo);
 
-	pk_setWindowText("^+POKEDEX^^+POKEMON^^+ITEM^^+ASH^^+SAVE^^+OPTION^^+EXIT|", false, &ses->w_menu);
-	pk_setWindowText("^No data specified|", true, &ses->w_bDialog);
-	pk_setWindowText("^+FIGHT+PK^^+ITEM +RUN|", false, &ses->w_bMenu);
-	pk_setWindowText("+NULL^+NULL^+NULL^+NULL|", false, &ses->w_bMoves);
-	pk_setWindowText("TYPE/^ FIGHTING^    QQ/QQ|", false, &ses->w_bMoveInfo);
+	pk_setWindowText("{^+POKEDEX^^+POKEMON^^+ITEM^^+ASH^^+SAVE^^+OPTION^^+EXIT|", false, &ses->w_menu);
+	pk_setWindowText("{^No data specified|", true, &ses->w_bDialog);
+	pk_setWindowText("{^+FIGHT+PK^^+ITEM +RUN|", false, &ses->w_bMenu);
+	pk_setWindowText("{+NULL^+NULL^+NULL^+NULL|", false, &ses->w_bMoves);
+	pk_setWindowText("{TYPE/^ FIGHTING^    QQ/QQ|", false, &ses->w_bMoveInfo);
 }
 
 void pk_switchMode(int s_mode, sessionMan_t* session) {
@@ -57,7 +57,7 @@ void pk_supdateMapCols(int which, sessionMan_t* ses) {
 }
 
 void pk_sstartBattleW(monster_t mon, sessionMan_t* ses) {
-	ses->battleStep = 0;
+	ses->battleStep = BATS_PRE;
 	ses->battleType = BAT_WILD;
 	ses->attWild = mon;
 
@@ -82,29 +82,35 @@ void pk_sstartBattleT(trainerNPC_t* trainer, sessionMan_t* ses) {
 	pk_ssetMoveWind(ses->p1.monsters[0], ses);
 }
 
-void pk_sstepBattle(monster_t pMon, sessionMan_t* ses) {
-	if(ses->battleStep == BATS_PRE) {
-		ses->battleStep = BATS_WPA;
+void pk_sstepBattle(sessionMan_t* ses, int step, monster_t mon) {
+	switch(step) {
+	case BATS_PRE:
+		break;
+	case BATS_WPA:
 		if(ses->battleType == BAT_WILD) {
 			pk_clearWindow(&ses->w_bDialog);
-			pk_setInsWindowText("^Wild             ^^appeared!|", ses->attWild.name, 6, 12, true, &ses->w_bDialog);
+			pk_setInsWindowText("{^Wild             ^^appeared!|", mon.name, 7, 12, true, &ses->w_bDialog);
 		}
-	} else if(ses->battleStep == BATS_WPA) {
+		break;
+	case BATS_GO:
 		pk_clearWindow(&ses->w_bDialog);
-		ses->battleStep = BATS_GO;
-		pk_setInsWindowText("^Go!              |", pMon.name, 5, 12, true, &ses->w_bDialog);
-	} else if(ses->battleStep == BATS_GO) {
+		pk_setInsWindowText("{^Go!              |", mon.name, 6, 12, true, &ses->w_bDialog);
+		break;
+	case BATS_SEL:
 		pk_clearWindow(&ses->w_bDialog);
-		ses->battleStep = BATS_SEL;
 		ses->currWindow = &ses->w_bMenu;
 		pk_toggleWindow(&ses->w_bMenu);
+		break;
 	}
+
+	ses->battleStep = step;
 }
 
 void pk_ssetMoveWind(monster_t mon, sessionMan_t* ses) {
-	char moveTxt[(12*4)+(2*4)+1];
+	char moveTxt[(12*4)+(2*4)+2];
 
-	int inc = 0;
+	moveTxt[0] = '{';
+	int inc = 1;
 	for(int i=0; i<4; i++) {
 		moveTxt[inc] = '+';	inc++;
 		for(int j=0; j<12; j++) {
@@ -125,14 +131,14 @@ void pk_ssetMoveInfoWind(move_t move, sessionMan_t* ses) {
 	char* miTxt = ses->w_bMoveInfo.text;
 
 	for(int i=0; i<8; i++) {
-		miTxt[i+7] = ses->types[move.type].name[i];
+		miTxt[i+8] = ses->types[move.type].name[i];
 	}
 
 	char pp1[2];		char pp2[2];
 	sprintf(pp1, "%d", ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].cpp);
 	sprintf(pp2, "%d", ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].bpp);
-	miTxt[20] = pp1[0];	miTxt[21] = pp1[1];
-	miTxt[23] = pp2[0];	miTxt[24] = pp2[1];
+	miTxt[21] = pp1[0];	miTxt[22] = pp1[1];
+	miTxt[24] = pp2[0];	miTxt[25] = pp2[1];
 
 	pk_setWindowText(miTxt, false, &ses->w_bMoveInfo);
 }
@@ -172,6 +178,7 @@ void pk_supdateWindows(sessionMan_t* ses) {
 		} else if(ses->w_bMoves.active) {
 			if(pk_useMove(ses->w_bMoves.selection, &ses->p1.monsters[0])) {
 				ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selection].value].movePtr(&ses->p1.monsters[0], &ses->attWild);
+
 			}
 
 		}

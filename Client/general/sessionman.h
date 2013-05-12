@@ -36,7 +36,7 @@ void pk_snewMap(char*, sessionMan_t*);
 void pk_supdateMapCols(int, sessionMan_t*);
 void pk_sstartBattleW(monster_t, sessionMan_t*);
 void pk_sstartBattleT(trainerNPC_t*, sessionMan_t*);
-void pk_sstepBattle(monster_t pMon, sessionMan_t*);
+void pk_sstepBattle(sessionMan_t* ses, int step, monster_t mon);
 void pk_ssetMoveWind(monster_t mon, sessionMan_t* ses);
 void pk_supdateWindows(sessionMan_t*);
 void pk_supdateNpcs(sessionMan_t*);
