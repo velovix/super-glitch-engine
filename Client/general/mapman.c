@@ -57,6 +57,10 @@ void pk_loadMap(char* filename, map_t* map) {
 				break;
 			case 'g':
 				map->data[i] = GRASS;
+				break;
+			case 's':
+				map->data[i] = SIGN;
+				break;
 		}
 	}
 

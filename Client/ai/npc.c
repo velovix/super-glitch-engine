@@ -12,7 +12,6 @@ npc_t pk_initNpc(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite
 
 	out.reach = s_reach;
 	out.sprite = s_sprite;
-	out.mover.dir = s_dir;
 	out.aiType = s_aiType;
 	out.actClock = out.dest = 0;
 	out.fought = s_fought;
@@ -21,6 +20,7 @@ npc_t pk_initNpc(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite
 	out.pause = false;
 
 	pk_initChar(s_x, s_y, &out.mover);
+	out.mover.dir = s_dir;
 
 	return out;
 }

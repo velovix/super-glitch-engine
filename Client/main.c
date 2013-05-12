@@ -42,7 +42,7 @@ SDL_Surface* s_bPkmn = NULL;
 
 // SDL Clippers
 SDL_Rect clipTiles[20];
-SDL_Rect clipNPCs[60];
+SDL_Rect clipNPCs[70];
 SDL_Rect clipChars[88];
 SDL_Rect clipPkmn[8];
 
@@ -136,11 +136,13 @@ void setMonsters()
 void setNpcs()
 {
 	ses.p1 = pk_pinit(10*BLOCK_SIZE,11*BLOCK_SIZE, C_PLAYER);
-	ses.npcs[0] = pk_initNpc(BLOCK_SIZE*12, BLOCK_SIZE*13, BLOCK_SIZE*12, BLOCK_SIZE*12, 1, C_GIRL, LEFT, AI_WANDER, false);
-	ses.npcs[1] = pk_initNpc(BLOCK_SIZE*13, BLOCK_SIZE*12, BLOCK_SIZE*13, BLOCK_SIZE*11, 1, C_SCI, LEFT, AI_TURN, false);
-	ses.npcs[2] = pk_initNpc(BLOCK_SIZE*14, BLOCK_SIZE*17, BLOCK_SIZE*17, BLOCK_SIZE*17, 1, C_MOM, LEFT, AI_WANDER, false);
-	ses.npcs[3] = pk_initNpc(BLOCK_SIZE*18, BLOCK_SIZE*21, BLOCK_SIZE*20, BLOCK_SIZE*20, 1, C_FATMAN, LEFT, AI_TURN, false);
+	ses.npcs[0] = pk_initNpc(BLOCK_SIZE*12, BLOCK_SIZE*13, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, false);
+	ses.npcs[1] = pk_initNpc(BLOCK_SIZE*13, BLOCK_SIZE*12, 0, 0, 1, C_SCI, LEFT, AI_TURN, false);
+	ses.npcs[2] = pk_initNpc(BLOCK_SIZE*14, BLOCK_SIZE*17, 0, 0, 1, C_MOM, LEFT, AI_WANDER, false);
+	ses.npcs[3] = pk_initNpc(BLOCK_SIZE*18, BLOCK_SIZE*21, 0, 0, 1, C_FATMAN, LEFT, AI_NOTHING, false);
 	ses.npcs[4] = pk_initNpc(BLOCK_SIZE*22, BLOCK_SIZE*17, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, false);
+	ses.npcs[5] = pk_initNpc(BLOCK_SIZE*18, BLOCK_SIZE*12, 0, 0, 1, C_SIGN, DOWN, AI_NOTHING, false);
+	ses.npcs[6] = pk_initNpc(BLOCK_SIZE*19, BLOCK_SIZE*21, 0, 0, 1, C_SCI, RIGHT, AI_NOTHING, false);
 
 	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[PK_CHARIZARD], false, 
 		ses.bMons[PK_NIDOQUEEN].bs), &ses.p1);
@@ -165,12 +167,19 @@ void setWindows()
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[1].dialog);
 	pk_setWindowText("{^I am but a^^hapless nerd.|", true, &ses.npcs[1].dialog);
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[2].dialog);
-	pk_setWindowText("{^Numbers for you!^^0123456789!|", true, &ses.npcs[2].dialog);
+	pk_setWindowText("{^Number test^^0123456789!|", true, &ses.npcs[2].dialog);
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[3].dialog);
-	pk_setWindowText("{^Check it out.^^?!/.\"|", true, &ses.npcs[3].dialog);
+	pk_setWindowText("{There is actually^a lot more room in^text boxes than the^real game uses.|",
+		true, &ses.npcs[3].dialog);
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[4].dialog);
-	pk_setWindowText("{^Hey everyone!^^It is Mortem1r.{^I have here a^^new Birch Box!{^Let us see^^what is inside!|",
+	pk_setWindowText("{^This is an example^^of a large string.{^It does not matter^^how long it is.{^SGE can do it!|",
 		true, &ses.npcs[4].dialog);
+	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[5].dialog);
+	pk_setWindowText("{^TRAINER TIPS{^Signs are actually^^just NPCs!{^Sign NPCs are^^invisible.|",
+		true, &ses.npcs[5].dialog);
+	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[6].dialog);
+	pk_setWindowText("{^Letter test.{^abcdefghijklmnop^^qrstuvwxyz{^ABCDEFGHIJKLMNOP^^QRSTUVWXYZ|",
+		true, &ses.npcs[6].dialog);
 
 	pk_setWOptionFunc(6, &quitGame, &ses.w_menu);
 }
@@ -182,7 +191,7 @@ void setClips()
 		clipTiles[i].y = BLOCK_SIZE*i;
 		clipTiles[i].w = clipTiles[i].h = BLOCK_SIZE;
 	}
-	for(int i=0; i<60; i++) {
+	for(int i=0; i<70; i++) {
 		clipNPCs[i].x = 0;
 		clipNPCs[i].y = BLOCK_SIZE*i;
 		clipNPCs[i].w = clipNPCs[i].h = BLOCK_SIZE;

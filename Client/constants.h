@@ -106,6 +106,7 @@
 #define C_GIRL			PSOFF+30
 #define C_FATMAN		PSOFF+40
 #define C_MOM			PSOFF+50
+#define C_SIGN			PSOFF+60
 
 // Character Sprites
 #define COFF			0
@@ -146,6 +147,7 @@
 #define CE_FULLSCROLL	203
 
 // AI Patterns
+#define AI_NOTHING		0
 #define AI_TURN			1
 #define AI_STURN		2
 #define AI_BANDF		3
