@@ -6,7 +6,7 @@
 
 typedef struct {
 	char name [12];
-	int sprite, monCnt;
+	int sprite, monCnt, currMon;
 	bool pause;
 
 	monster_t monsters[6];

@@ -13,7 +13,7 @@ npc_t pk_initNpc(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite
 	out.reach = s_reach;
 	out.sprite = s_sprite;
 	out.aiType = s_aiType;
-	out.actClock = out.dest = 0;
+	out.actClock = out.dest = out.currMon = 0;
 	out.fought = s_fought;
 
 	out.active = true;

@@ -4,6 +4,7 @@ player_t pk_pinit(int x, int y, int sprite) {
 	player_t out;
 	out.sprite = sprite;
 	out.pause = false;
+	out.currMon = 0;
 
 	pk_initChar(x, y, &out.mover);
 

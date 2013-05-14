@@ -11,7 +11,7 @@ typedef struct {
 	int destX[2];
 	int destY[2];
 
-	int reach, sprite, aiType, actClock, dest, monCnt;
+	int reach, sprite, aiType, actClock, dest, monCnt, currMon;
 	bool fought, active, pause, aggro;
 	int targetX, targetY;
 

@@ -411,8 +411,8 @@ void checkKeys(Uint8 *keyStates)
 
 	if(keyStates[SDLK_b]) {
 		if(keyStatesBuf[SDLK_b] == false && ses.mode == SES_OVERWORLD) {
-			pk_sstartBattleW(ses.npcs[1].monsters[0], &ses);
-			pk_sstepBattle(&ses, BATS_WPA, ses.npcs[1].monsters[0]);
+			pk_sstartBattleW(ses.npcs[1].monsters[ses.npcs[1].currMon], &ses);
+			pk_sstepBattle(&ses, BATS_WPA, ses.npcs[1].monsters[ses.npcs[1].currMon]);
 			keyStatesBuf[SDLK_b] = true;
 		} else if(keyStatesBuf[SDLK_b] == false && ses.mode == SES_BATTLE) {
 			pk_switchMode(SES_OVERWORLD, &ses);
@@ -485,7 +485,8 @@ void drawBattle() {
 	apply_surface(8*10, 8*2, s_chars, s_screen, &clipChars[HPBAR_R], false);
 
 	for(int i=0; i<12; i++) {
-		apply_surface(8*11+(i*8), 8*7, s_chars, s_screen, &clipChars[pk_getCharValue(ses.p1.monsters[0].name[i])], false);
+		apply_surface(8*11+(i*8), 8*7, s_chars, s_screen,
+			&clipChars[pk_getCharValue(ses.p1.monsters[ses.p1.currMon].name[i])], false);
 	}
 
 	apply_surface(8*14, 8*8, s_chars, s_screen, &clipChars[LEVEL], false);
@@ -506,14 +507,15 @@ void drawBattle() {
 
 	apply_surface(8*14, 8*10, s_chars, s_screen, &clipChars[SLASH], false);
 
-	draw_rect(8*12+3, 8*9+3, 46*((double)ses.p1.monsters[0].stats.mHp/(double)ses.p1.monsters[0].stats.hp), 2, 254);
+	draw_rect(8*12+3, 8*9+3, 46*((double)ses.p1.monsters[ses.p1.currMon].stats.mHp / 
+		(double)ses.p1.monsters[ses.p1.currMon].stats.hp), 2, 254);
 
 	draw_rect(8*4+3, 8*2+3, 46*((double)ses.attWild.stats.mHp/(double)ses.attWild.stats.hp), 2, 254);
 
 	apply_surface(0, SCREEN_HEIGHT-(PKMN_SIZE)-(6*CHAR_SIZE), s_bPkmn, s_screen,
-		&clipPkmn[ses.p1.monsters[0].id->backSpr], false);
+		&clipPkmn[ses.p1.monsters[ses.p1.currMon].id->backSpr], false);
 	apply_surface(SCREEN_WIDTH-PKMN_SIZE, 0, s_fPkmn, s_screen,
-		&clipPkmn[ses.npcs[1].monsters[0].id->backSpr], false);
+		&clipPkmn[ses.npcs[1].monsters[ses.npcs[1].currMon].id->backSpr], false);
 }
 
 void graphics()
@@ -590,11 +592,11 @@ void physics()
 	}
 
 	if(ses.battleStep == BATS_WPA && ses.w_bDialog.finished) {
-		pk_sstepBattle(&ses, BATS_GO, ses.p1.monsters[0]);
+		pk_sstepBattle(&ses, BATS_GO, ses.p1.monsters[ses.p1.currMon]);
 	}
 
 	if(ses.battleStep == BATS_GO && ses.w_bDialog.finished) {
-		pk_sstepBattle(&ses, BATS_SEL, ses.p1.monsters[0]);
+		pk_sstepBattle(&ses, BATS_SEL, ses.p1.monsters[ses.p1.currMon]);
 	}
 
 	pk_supdateMapCols(ALL, &ses);
