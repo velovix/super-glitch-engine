@@ -1,7 +1,6 @@
 #include "window.h"
 
 void pk_initWindow(int s_x, int s_y, int s_w, int s_h, bool s_closeable, bool dispDelay, window_t* window) {
-	printf("Initialized a window!\n");
 	window->x = s_x;
 	window->y = s_y;
 	window->w = s_w;

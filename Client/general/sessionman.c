@@ -1,6 +1,7 @@
 #include "sessionman.h"
 
 void pk_initSMan(int s_mode, sessionMan_t* ses) {
+	printf("Started SGE session.\n");
 	ses->mode = s_mode;
 	ses->windOpen = false;
 

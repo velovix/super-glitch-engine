@@ -109,6 +109,8 @@ void setTypes() {
 		pk_setTypeWeak(&ses.types[i], entry[i].weakCnt, &wEntry[0]);
 		pk_setTypeInv(&ses.types[i], entry[i].invCnt, &iEntry[0]);
 	}
+
+	printf("Note: Read type info.\n");
 }
 
 // Object Loading Functions
@@ -131,6 +133,8 @@ void setMonsters()
 		ses.bMons[mons[i].value] = pk_initBaseMonster(pk_initStats(30, mons[i].att, mons[i].def, mons[i].spAtt, mons[i].spDef,
 			mons[i].speed), pk_initStats(0,0,0,0,0,0), mons[i].value, mons[i].name);
 	}
+
+	printf("Note: Read monster info.\n");
 }
 
 void setNpcs()
@@ -159,6 +163,8 @@ void setNpcs()
 			pk_setMove(PK_TACKLE, ses.moves[PK_TACKLE].bpp, ses.moves[PK_TACKLE].bpp, i, &ses.npcs[1].monsters[0]);
 		}
 	}
+
+	printf("Note: Read NPC info.\n");
 }
 
 void setWindows()
