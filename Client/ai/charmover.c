@@ -89,3 +89,15 @@ int pk_getCharFrame(int spriteOffset, charMover_t obj) {
 void pk_buildColMapC(charMover_t obj, map_t* map) {
 	map->cData[obj.nextX/BLOCK_SIZE+( (obj.nextY/BLOCK_SIZE)*map->width )] = true;
 }
+
+int pk_faceChar(charMover_t p, charMover_t t) {
+	if(p.x > t.x) {
+		return LEFT;
+	} else if(p.x < t.x) {
+		return RIGHT;
+	} else if(p.y > t.y) {
+		return DOWN;
+	} else if(p.y < t.y) {
+		return UP;
+	}
+}

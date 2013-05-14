@@ -204,6 +204,7 @@ void pk_supdateNpcs(sessionMan_t* ses) {
 				&& ses->npcs[i].mover.y == ses->npcs[i].destY[ses->npcs[i].dest] && !ses->npcs[i].dialog.finished) {
 				pk_toggleWindow(&ses->npcs[i].dialog);
 				ses->currWindow = &ses->npcs[i].dialog;
+				ses->p1.mover.dir = pk_faceChar(ses->p1.mover, ses->npcs[i].mover);
 			} else if(ses->npcs[i].aggro && ses->npcs[i].dialog.finished) {
 				ses->p1.pause = false;
 				ses->npcs[i].aggro = false;

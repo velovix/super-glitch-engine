@@ -17,5 +17,6 @@ void pk_moveChar(int dir, bool move, charMover_t* obj);
 void pk_updateChar(charMover_t* obj);
 int pk_getCharFrame(int spriteOffset, charMover_t obj);
 void pk_buildColMapC(charMover_t obj, map_t* map);
+int pk_faceChar(charMover_t, charMover_t);
 
 #endif

@@ -33,7 +33,7 @@ void pk_updateNpc(npc_t* npc, col_t col) {
 
 	switch(npc->aiType) {
 	case AI_TURN:
-		if(npc->actClock <= 0  && !npc->pause) {
+		if(npc->actClock <= 0 && !npc->pause) {
 			if(npc->mover.dir == 2) {
 				npc->mover.dir = UP;
 			} else if(npc->mover.dir == 3) {
@@ -98,6 +98,11 @@ void pk_updateNpc(npc_t* npc, col_t col) {
 		pk_updateChar(&npc->mover);
 		break;
 	case AI_DEST:
+		if(npc->actClock > 0) {
+			npc->actClock--;
+			break;
+		}
+
 		if(npc->mover.x == npc->mover.nextX && npc->mover.y == npc->mover.nextY && !npc->pause) {
 			if(npc->mover.x < npc->destX[npc->dest]) {
 				pk_moveChar(RIGHT, true, &npc->mover);
@@ -161,6 +166,7 @@ void pk_aggroNpc(int tX, int tY, npc_t* npc) {
 	npc->dest = 0;
 	npc->aggro = true;
 	npc->fought = true;
+	npc->actClock = 30;
 
 	if(npc->mover.dir == LEFT && tX < npc->mover.x && tY == npc->mover.y && 
 		abs(npc->mover.x-tX)/BLOCK_SIZE <= npc->reach) {

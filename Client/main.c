@@ -533,9 +533,15 @@ void graphics()
 		}
 
 		for(int i=0; i<MAX_NPCS; i++) {
-			if(ses.npcs[i].active)
+			if(ses.npcs[i].active) {
 				apply_surface(ses.npcs[i].mover.x, ses.npcs[i].mover.y-4, s_npc, s_screen, 
 					&clipNPCs[pk_getNpcFrame(ses.npcs[i])], true);
+				if(ses.npcs[i].aggro && ses.npcs[i].actClock > 0) {
+					apply_surface(ses.npcs[i].mover.x, ses.npcs[i].mover.y-BLOCK_SIZE-4, s_mapTile, s_screen,
+						&clipTiles[WORD_BUBBLE], true);
+				}
+			}
+
 		}
 
 		apply_surface(ses.p1.mover.x, ses.p1.mover.y-4, s_player, s_screen, &clipNPCs[pk_pgetFrame(ses.p1)], true);

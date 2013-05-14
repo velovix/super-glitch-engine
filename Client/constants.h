@@ -97,6 +97,7 @@
 #define TWO_POLL		MOFF+11
 #define CLEAR			MOFF+12
 #define GRASS_OVER		MOFF+13
+#define WORD_BUBBLE		MOFF+14
 
 // Player Sprites
 #define PSOFF			0
