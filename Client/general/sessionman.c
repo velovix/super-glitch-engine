@@ -193,9 +193,23 @@ void pk_supdateNpcs(sessionMan_t* ses) {
 	}
 
 	for(int i=0; i<MAX_NPCS; i++) {
+
 		if(ses->npcs[i].active) {
-			pk_updateNpc(&ses->npcs[i],
-			pk_findCols(ses->map, ses->npcs[i].mover.x/BLOCK_SIZE, ses->npcs[i].mover.y/BLOCK_SIZE));
+
+			pk_updateNpc(&ses->npcs[i], pk_findCols(ses->map,ses->npcs[i].mover.x/BLOCK_SIZE, ses->npcs[i].mover.y/BLOCK_SIZE));
+			if(!ses->npcs[i].fought && !ses->npcs[i].aggro && pk_canNpcSee(ses->p1.mover.x, ses->p1.mover.y, &ses->npcs[i])) {
+				ses->p1.pause = true;
+				pk_aggroNpc(ses->p1.mover.x, ses->p1.mover.y, &ses->npcs[i]);
+			} else if(ses->npcs[i].aggro && ses->npcs[i].mover.x == ses->npcs[i].destX[ses->npcs[i].dest]
+				&& ses->npcs[i].mover.y == ses->npcs[i].destY[ses->npcs[i].dest] && !ses->npcs[i].dialog.finished) {
+				pk_toggleWindow(&ses->npcs[i].dialog);
+				ses->currWindow = &ses->npcs[i].dialog;
+			} else if(ses->npcs[i].aggro && ses->npcs[i].dialog.finished) {
+				ses->p1.pause = false;
+				ses->npcs[i].aggro = false;
+				pk_sstartBattleW(ses->npcs[i].monsters[0], ses);
+				pk_sstepBattle(ses, BATS_WPA, ses->npcs[i].monsters[0]);
+			}
 		}
 	}
 }

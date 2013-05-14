@@ -12,7 +12,8 @@ typedef struct {
 	int destY[2];
 
 	int reach, sprite, aiType, actClock, dest, monCnt;
-	bool fought, active, pause;
+	bool fought, active, pause, aggro;
+	int targetX, targetY;
 
 	monster_t monsters[6];
 	charMover_t mover;
@@ -27,5 +28,7 @@ void pk_setNpcWindow(window_t s_wind, npc_t* trainer);
 void pk_setNpcMonster(monster_t mon, npc_t* trainer);
 int pk_getNpcFrame(npc_t npc);
 void pk_toggleNpcPause(npc_t* npc);
+bool pk_canNpcSee(int x, int y, npc_t* npc);
+void pk_aggroNpc(int tX, int tY, npc_t* npc);
 
 #endif

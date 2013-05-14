@@ -152,6 +152,7 @@
 #define AI_STURN		2
 #define AI_BANDF		3
 #define AI_WANDER		4
+#define AI_DEST			5
 
 // Window Types
 #define WT_PLAINTXT		1
