@@ -107,6 +107,8 @@ void saveMap() {
 			fwrite(&map[i].data[j], sizeof(char), 1, file);
 		}
 	}
+
+	fclose(file);
 }
 
 void loadMap() {
