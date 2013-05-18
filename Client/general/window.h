@@ -1,3 +1,12 @@
+/* Super Glitch Engine Client
+ * window.h
+ * Copyright Tyler Compton 2013
+ *
+ * Declares a structure window_t. window_t represents a text window.
+ * Also declares a structure funcPointer_t, but it's functionality is to be
+ * depreciated.
+ */
+
 #ifndef WINDOW_H
 #define WINDOW_H
 

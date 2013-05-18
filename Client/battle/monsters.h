@@ -1,3 +1,22 @@
+/* Super Glitch Engine Client
+ * monsters.h
+ * Copyright Tyler Compton 2013
+ *
+ * Declares structures stats_t, type_t, moveMask_t, baseMonster_t, monster_t,
+ * and move_t.
+ * - stats_t represents a monster's stat info and any modifiers to those stats.
+ * - type_t represents information for a type, and should only be referenced by
+ * other structs and never changed beyond initial creation.
+ * - moveMask_t represents the modifyable portion of a move. moveMask_t objects
+ * may be edited, but not the move_t it references.
+ * - baseMonster_t represents information for a monster, and should only be
+ * referenced by other structs and never changed beyond initial creation.
+ * - monster_t is the modifiable portion of a monster. monster_t objects may be
+ * edited, but not the baseMonster_t it references.
+ * - move_t represents information for a move, and shoudl only be referenced by
+ * other sturcts and never changed beyond initial creation.
+ */
+
 #ifndef MONSTERS_H
 #define MONSTERS_H
 

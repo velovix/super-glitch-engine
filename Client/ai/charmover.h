@@ -1,3 +1,10 @@
+/* Super Glitch Engine Client
+ * charmover.h
+ * Copyright Tyler Compton 2013
+ *
+ * Declares a struct charMover_t, which manages overworld movement for objects.
+ */
+
 #ifndef CHARACTERS_H
 #define CHARACTERS_H
 

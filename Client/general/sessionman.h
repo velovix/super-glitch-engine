@@ -1,3 +1,13 @@
+/* Super Glitch Engine Client
+ * sessionman.h
+ * Copyright Tyler Compton 2013
+ *
+ * Declares the sessionMan_t class (short for session manager). sessionMan_t
+ * acts as a wrapper for most other structures. It's designed so that the
+ * main.c file need only declare a sessionMan_t object, which will then manage
+ * all other SGE objects.
+ */
+
 #ifndef SESSIONMAN_H
 #define SESSIONMAN_H
 

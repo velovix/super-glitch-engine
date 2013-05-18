@@ -1,5 +1,9 @@
 /* Super Glitch Engine Client
+ * main.c
  * Copyright Tyler Compton 2013
+ *
+ * Main.c file for the Client portion of SGE. The Client is the program your 
+ * end user would actually run.
  */
 
 #pragma GCC diagnostic ignored "-Wwrite-strings"

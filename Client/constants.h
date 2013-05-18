@@ -1,3 +1,12 @@
+/* Super Glitch Engine Client
+ * constants.h
+ * Copyright Tyler Compton 2013
+ *
+ * Declares universal constants to be used throughout the entirety of the
+ * Client code. The same values are used for these constants in other parts of
+ * SGE as well.
+ */
+
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 

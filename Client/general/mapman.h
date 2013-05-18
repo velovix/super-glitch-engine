@@ -1,3 +1,14 @@
+/* Super Glitch Engine Client
+ * mapman.h
+ * Copyright Tyler Compton 2013
+ *
+ * Creates the map_t and col_t structs for use in managing maps and rooms.
+ * the map_t struct contains data for what tiles are used in the room and the
+ * colision data for that room.
+ * col_t is returned by function pk_findCols and represents which directions
+ * are blocked given a point on the map.
+ */
+
 #ifndef MAPMAN_H
 #define MAPMAN_H
 

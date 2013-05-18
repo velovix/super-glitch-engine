@@ -1,3 +1,13 @@
+/* Super Glitch Engine Client
+ * npc.h
+ * Copyright Tyler Compton 2013
+ *
+ * Creates a struct npc_t and provides functions for modifying it's values.
+ * The npc_t class represents an overworld/battle npc and makes use of the
+ * charmover_t struct for overworld movement. Signs are also traditionally
+ * NPCs with no special movement AI.
+ */
+
 #ifndef TNPC_H
 #define TNPC_H
 

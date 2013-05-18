@@ -1,3 +1,10 @@
+/* Super Glitch Engine Client
+ * fileheaders.h
+ * Copyright Tyler Compton 2013
+ *
+ * Declares structs for various information headers in SGE files.
+ */
+
 #ifndef FILEHEADERS_H
 #define FILEHEADERS_H
 

@@ -1,3 +1,11 @@
+/* Super Glitch Engine Client
+ * player.h
+ * Copyright Tyler Compton 2013
+ *
+ * Declares a struct player_t, which represents a human player. Very similar to
+ * the npc_t struct, but it does not have any AI functionalities.
+ */
+
 #ifndef PLAYER_H
 #define PLAYER_H
 
