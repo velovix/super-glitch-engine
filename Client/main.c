@@ -173,15 +173,13 @@ void setMonsters()
 
 void setNpcs()
 {
-	ses.p1 = pk_pinit(10*BLOCK_SIZE,11*BLOCK_SIZE, C_PLAYER);
-	ses.npcs[0] = pk_initNpc(BLOCK_SIZE*12, BLOCK_SIZE*13, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, true);
-	ses.npcs[1] = pk_initNpc(BLOCK_SIZE*13, BLOCK_SIZE*12, 0, 0, 1, C_SCI, LEFT, AI_TURN, true);
-	ses.npcs[2] = pk_initNpc(BLOCK_SIZE*14, BLOCK_SIZE*17, 0, 0, 1, C_MOM, LEFT, AI_WANDER, true);
-	ses.npcs[3] = pk_initNpc(BLOCK_SIZE*18, BLOCK_SIZE*21, 0, 0, 1, C_FATMAN, LEFT, AI_NOTHING, true);
-	ses.npcs[4] = pk_initNpc(BLOCK_SIZE*22, BLOCK_SIZE*17, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, true);
-	ses.npcs[5] = pk_initNpc(BLOCK_SIZE*18, BLOCK_SIZE*12, 0, 0, 1, C_SIGN, DOWN, AI_NOTHING, true);
-	ses.npcs[6] = pk_initNpc(BLOCK_SIZE*19, BLOCK_SIZE*21, 0, 0, 1, C_SCI, RIGHT, AI_NOTHING, true);
-	ses.npcs[7] = pk_initNpc(BLOCK_SIZE*13, BLOCK_SIZE*24, 0, 0, 4, C_FATMAN, RIGHT, AI_NOTHING, false);
+	ses.p1 = pk_pinit(6*BLOCK_SIZE,11*BLOCK_SIZE, C_PLAYER);
+	ses.npcs[0] = pk_initNpc(BLOCK_SIZE*8, BLOCK_SIZE*8, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, true);
+	ses.npcs[1] = pk_initNpc(BLOCK_SIZE*3, BLOCK_SIZE*7, 0, 0, 1, C_SCI, LEFT, AI_TURN, true);
+	ses.npcs[3] = pk_initNpc(BLOCK_SIZE*3, BLOCK_SIZE*4, 0, 0, 1, C_FATMAN, LEFT, AI_NOTHING, true);
+	ses.npcs[4] = pk_initNpc(BLOCK_SIZE*6, BLOCK_SIZE*5, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, true);
+	ses.npcs[5] = pk_initNpc(BLOCK_SIZE*7, BLOCK_SIZE*7, 0, 0, 1, C_SIGN, DOWN, AI_NOTHING, true);
+	ses.npcs[7] = pk_initNpc(BLOCK_SIZE*4, BLOCK_SIZE*13, 0, 0, 4, C_FATMAN, RIGHT, AI_NOTHING, false);
 
 	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[PK_CHARIZARD], false, 
 		ses.bMons[PK_NIDOQUEEN].bs), &ses.p1);
@@ -207,8 +205,6 @@ void setWindows()
 	pk_setWindowText("{^I am a girl.^^No joke.|", true, &ses.npcs[0].dialog);
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[1].dialog);
 	pk_setWindowText("{^I am but a^^hapless nerd.|", true, &ses.npcs[1].dialog);
-	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[2].dialog);
-	pk_setWindowText("{^Number test^^0123456789!|", true, &ses.npcs[2].dialog);
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[3].dialog);
 	pk_setWindowText("{There is actually^a lot more room in^text boxes than the^real game uses.|",
 		true, &ses.npcs[3].dialog);
@@ -218,9 +214,6 @@ void setWindows()
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[5].dialog);
 	pk_setWindowText("{^TRAINER TIPS{^Signs are actually^^just NPCs!{^Sign NPCs are^^invisible.|",
 		true, &ses.npcs[5].dialog);
-	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[6].dialog);
-	pk_setWindowText("{^Letter test.{^abcdefghijklmnop^^qrstuvwxyz{^ABCDEFGHIJKLMNOP^^QRSTUVWXYZ|",
-		true, &ses.npcs[6].dialog);
 	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[7].dialog);
 	pk_setWindowText("{^I have Pokemon!^^Let's fight!|", true, &ses.npcs[7].dialog);
 
@@ -699,7 +692,11 @@ int main(int argc, char **argv)
 			}
 		}
 
-		SDL_FillRect( s_screen, &s_screen->clip_rect, SDL_MapRGB( s_screen->format, 0xFF, 0xFF, 0xFF ) );
+		if(ses.mode == SES_OVERWORLD) {
+			SDL_FillRect( s_screen, &s_screen->clip_rect, SDL_MapRGB( s_screen->format, 0x00, 0x00, 0x00 ) );
+		} else if(ses.mode == SES_BATTLE) {
+			SDL_FillRect( s_screen, &s_screen->clip_rect, SDL_MapRGB( s_screen->format, 0xFF, 0xFF, 0xFF ) );
+		}
 
 		gameLoop();
 
