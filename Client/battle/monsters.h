@@ -2,11 +2,7 @@
  * monsters.h
  * Copyright Tyler Compton 2013
  *
- * Declares structures stats_t, type_t, moveMask_t, baseMonster_t, monster_t,
- * and move_t.
- * - stats_t represents a monster's stat info and any modifiers to those stats.
- * - type_t represents information for a type, and should only be referenced by
- * other structs and never changed beyond initial creation.
+ * Declares structures moveMask_t, baseMonster_t, monster_t, and move_t.
  * - moveMask_t represents the modifyable portion of a move. moveMask_t objects
  * may be edited, but not the move_t it references.
  * - baseMonster_t represents information for a monster, and should only be
@@ -24,19 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../constants.h"
-
-typedef struct {
-	int hp, att, def, spAtt, spDef, speed;
-	int mHp, mAtt, mDef, mSpAtt, mSpDef, mSpeed, mAcc, mEvas;
-} stats_t;
-
-typedef struct {
-	char name[8];
-	int value, resCnt, weakCnt, invCnt;
-	int* res;
-	int* weak;
-	int* inv;
-} type_t;
+#include "stats.h"
 
 typedef struct {
 	int cpp, bpp;
@@ -69,19 +53,11 @@ typedef struct {
 } move_t;
 
 // Initializers
-stats_t pk_initStats(int hp, int att, int def, int spAtt, int spDef, int speed);
-type_t pk_initType(char*, int);
 move_t pk_initMove(int s_cpp, int s_bpp, char* name, int type, bool (*s_movePtr) (monster_t*, monster_t*));
 monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bool s_shiny, stats_t s_stats);
 baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, char* name);
 
 int pk_damage(int amount, monster_t* a, monster_t* d);
-int pk_calcTyping(type_t, type_t, type_t);
-
-// Type settings
-void pk_setTypeRes(type_t*, int, int*);
-void pk_setTypeWeak(type_t*, int, int*);
-void pk_setTypeInv(type_t*, int, int*);
 
 // Monster Functions
 bool pk_useMove(int numb, monster_t* mon);

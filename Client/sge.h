@@ -7,6 +7,7 @@
 #include "ai/charmover.h"
 #include "general/sessionman.h"
 #include "battle/monsters.h"
+#include "battle/stats.h"
 #include "general/window.h"
 #include "ai/player.h"
 
