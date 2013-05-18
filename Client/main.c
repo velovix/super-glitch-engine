@@ -81,10 +81,9 @@ void loadMap(int val) {
 	mapHeader_f header;
 	fMap = fopen("resources/maps/map.pke", "r");
 	if(fMap == NULL) {
-		printf("ERROR: Missing map.pke in resources/maps folder\n");
+		printf("[ERROR] Missing map.pke in resources/maps folder\n");
 	}
 	fread(&header.count, sizeof(int), 1, fMap);
-	printf("%i\n", val);
 
 	printf("Loading %i Rooms...\n", header.count);
 
@@ -95,8 +94,8 @@ void loadMap(int val) {
 		fread(&rHeader[i].h, sizeof(int), 1, fMap);
 
 		if(i==val) {
-			printf(" | Found map %c! W: %i H: %i\n", rHeader[i].value, rHeader[i].w, rHeader[i].h);
-			printf(" | Map Size: %i\n", rHeader[i].w*rHeader[i].h);
+			printf("   Found map %i! W: %i H: %i\n", (int)rHeader[i].value, rHeader[i].w, rHeader[i].h);
+			printf("   Map Size: %i\n", rHeader[i].w*rHeader[i].h);
 			ses.map.width = rHeader[i].w;
 			ses.map.height = rHeader[i].h;
 			for(int j=0; j<rHeader[i].w*rHeader[i].h; j++) {
@@ -115,7 +114,7 @@ void setTypes() {
 	typeHeader_f header;
 	fTypes = fopen("resources/data/type.pke", "r");
 	if(fTypes == NULL) {
-		printf("ERROR: Missing type.pke in resources/data folder!\n");
+		printf("[ERROR] Missing type.pke in resources/data folder!\n");
 	}
 	fread(&header.count, sizeof(int), 1, fTypes);
 	typeEntry_f entry[header.count];
@@ -148,7 +147,8 @@ void setTypes() {
 		pk_setTypeInv(&ses.types[i], entry[i].invCnt, &iEntry[0]);
 	}
 
-	printf("Note: Read type info.\n");
+	printf("Read type info.\n");
+	printf("   %i types found.\n", header.count);
 }
 
 // Object Loading Functions
@@ -162,7 +162,7 @@ void setMonsters()
 	monHeader_f header;
 	fMons = fopen("resources/data/pk.pke", "r");
 	if(fMons == NULL) {
-		printf("ERROR: Missing pk.pke in resources/data folder!\n");
+		printf("[ERROR] Missing pk.pke in resources/data folder!\n");
 	}
 	fread(&header.count, sizeof(int), 1, fMons);
 	monEntry_f mons[header.count];
@@ -172,7 +172,8 @@ void setMonsters()
 			mons[i].speed), pk_initStats(0,0,0,0,0,0), mons[i].value, mons[i].name);
 	}
 
-	printf("Note: Read monster info.\n");
+	printf("Read monster info.\n");
+	printf("   %i monsters found.\n", header.count);
 }
 
 void setNpcs()
@@ -186,9 +187,9 @@ void setNpcs()
 	ses.npcs[7] = pk_initNpc(BLOCK_SIZE*4, BLOCK_SIZE*13, 0, 0, 4, C_FATMAN, RIGHT, AI_NOTHING, false);
 
 	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[PK_CHARIZARD], false, 
-		ses.bMons[PK_NIDOQUEEN].bs), &ses.p1);
-	pk_setNpcMonster(pk_initMonster(25, 50, &ses.bMons[PK_NIDOQUEEN], false, 
-		ses.bMons[PK_NIDOQUEEN].bs), &ses.npcs[1]);
+		ses.bMons[PK_CHARIZARD].bs), &ses.p1);
+	pk_setNpcMonster(pk_initMonster(25, 50, &ses.bMons[PK_BLASTOISE], false, 
+		ses.bMons[PK_BLASTOISE].bs), &ses.npcs[1]);
 
 	for(int i=0; i<4; i++) {
 		if(i == 3) {
@@ -200,7 +201,7 @@ void setNpcs()
 		}
 	}
 
-	printf("Note: Read NPC info.\n");
+	printf("Read NPC info.\n");
 }
 
 void setWindows()
@@ -443,7 +444,7 @@ void checkKeys(Uint8 *keyStates)
 	if(keyStates[SDLK_b]) {
 		if(keyStatesBuf[SDLK_b] == false && ses.mode == SES_OVERWORLD) {
 			pk_sstartBattleW(ses.npcs[1].monsters[ses.npcs[1].currMon], &ses);
-			pk_sstepBattle(&ses, BATS_WPA, ses.npcs[1].monsters[ses.npcs[1].currMon]);
+			pk_sstepBattle(&ses, BATS_WPA, ses.npcs[1].monsters[ses.npcs[1].currMon], ses.attWild, 0);
 			keyStatesBuf[SDLK_b] = true;
 		} else if(keyStatesBuf[SDLK_b] == false && ses.mode == SES_BATTLE) {
 			pk_switchMode(SES_OVERWORLD, &ses);
@@ -623,11 +624,11 @@ void physics()
 	}
 
 	if(ses.battleStep == BATS_WPA && ses.w_bDialog.finished) {
-		pk_sstepBattle(&ses, BATS_GO, ses.p1.monsters[ses.p1.currMon]);
+		pk_sstepBattle(&ses, BATS_GO, ses.attWild, ses.p1.monsters[ses.p1.currMon], 0);
 	}
 
 	if(ses.battleStep == BATS_GO && ses.w_bDialog.finished) {
-		pk_sstepBattle(&ses, BATS_SEL, ses.p1.monsters[ses.p1.currMon]);
+		pk_sstepBattle(&ses, BATS_SEL, ses.p1.monsters[ses.p1.currMon], ses.attWild, 0);
 	}
 
 	pk_supdateMapCols(ALL, &ses);

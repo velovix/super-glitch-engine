@@ -79,25 +79,57 @@ void pk_sstartBattleT(npc_t* trainer, sessionMan_t* ses) {
 	pk_ssetMoveWind(ses->p1.monsters[0], ses);
 }
 
-void pk_sstepBattle(sessionMan_t* ses, int step, monster_t mon) {
+void pk_sstepBattle(sessionMan_t* ses, int step, monster_t aMon, monster_t dMon, int move) {
 	switch(step) {
 	case BATS_PRE:
 		break;
 	case BATS_WPA:
 		if(ses->battleType == BAT_WILD) {
 			pk_clearWindow(&ses->w_bDialog);
-			pk_setInsWindowText("{^Wild             ^^appeared!|", mon.name, 7, 12, true, &ses->w_bDialog);
+			pk_setInsWindowText("{^Wild             ^^appeared!|", aMon.name, 7, 12, true, &ses->w_bDialog);
 		}
 		break;
 	case BATS_GO:
 		pk_clearWindow(&ses->w_bDialog);
-		pk_setInsWindowText("{^Go!              |", mon.name, 6, 12, true, &ses->w_bDialog);
+		pk_setInsWindowText("{^Go!              |", dMon.name, 6, 12, true, &ses->w_bDialog);
 		break;
 	case BATS_SEL:
 		pk_clearWindow(&ses->w_bDialog);
 		ses->currWindow = &ses->w_bMenu;
 		pk_toggleWindow(&ses->w_bMenu);
 		break;
+	case BATS_ATT:
+		pk_setInsWindowText("{^             ^^used             |", aMon.name,
+			2, 12, true, &ses->w_bDialog);
+		pk_setInsWindowText(ses->w_bDialog.text,
+			ses->moves[aMon.moves[move].value].name,
+			22, 12, true, &ses->w_bDialog);
+		pk_toggleWindow(&ses->w_bMoves);
+		pk_toggleWindow(&ses->w_bMenu);
+		ses->currWindow = &ses->w_bDialog;
+		break;
+	case BATS_RESULT:
+		switch(pk_calcTyping(ses->types[dMon.type1], ses->types[dMon.type2], ses->types[ses->moves[move].type])) {
+		case RES_HYPER:
+			pk_setWindowText("{^Major damage!|", true, &ses->w_bDialog);
+			break;
+		case RES_SUPER:
+			pk_setWindowText("{^It is super^^effective!|", true, &ses->w_bDialog);
+			break;
+		case RES_NORMAL:
+			pk_setWindowText("{^A decent hit!|", true, &ses->w_bDialog);
+			break;
+		case RES_NOTVERY:
+			pk_setWindowText("{^It is not very^^effective...|", true, &ses->w_bDialog);
+			break;
+		case RES_HARDLY:
+			pk_setWindowText("{^It did almost^^nothing...|", true, &ses->w_bDialog);
+			break;
+		case RES_NONE:
+			pk_setWindowText("{^But it failed!|", true, &ses->w_bDialog);
+			break;
+		}
+		ses->currWindow = &ses->w_bDialog;
 	}
 
 	ses->battleStep = step;
@@ -173,14 +205,23 @@ void pk_supdateWindows(sessionMan_t* ses) {
 		if(ses->w_bMoves.selection == WSEL_BACK) {
 			ses->currWindow = &ses->w_bMenu;
 		} else if(ses->w_bMoves.active) {
-			if(pk_useMove(ses->w_bMoves.selection, &ses->p1.monsters[0])) {
-				ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selection].value].movePtr(&ses->p1.monsters[0], &ses->attWild);
-
+			if(pk_useMove(ses->w_bMoves.selection, &ses->p1.monsters[ses->p1.currMon])) {
+				pk_sstepBattle(ses, BATS_ATT, ses->p1.monsters[ses->p1.currMon]
+					, ses->attWild, ses->w_bMoves.selection);
+				ses->moves[ses->p1.monsters[ses->p1.currMon].\
+					moves[ses->w_bMoves.selection].value].\
+					movePtr(&ses->p1.monsters[ses->p1.currMon], &ses->attWild);
 			}
 
 		}
 
 		ses->w_bMoves.selection = WSEL_NONE;
+	}
+	if(ses->mode == SES_BATTLE && ses->w_bDialog.finished) {
+		if(ses->battleStep == BATS_ATT) {
+			pk_sstepBattle(ses, BATS_RESULT, ses->p1.monsters[ses->p1.currMon],
+				ses->attWild, ses->w_bMoves.selection);
+		}
 	}
 }
 
@@ -206,7 +247,7 @@ void pk_supdateNpcs(sessionMan_t* ses) {
 				ses->p1.pause = false;
 				ses->npcs[i].aggro = false;
 				pk_sstartBattleW(ses->npcs[i].monsters[0], ses);
-				pk_sstepBattle(ses, BATS_WPA, ses->npcs[i].monsters[0]);
+				pk_sstepBattle(ses, BATS_WPA, ses->npcs[i].monsters[0], ses->attWild, 0);
 			}
 		}
 	}
