@@ -72,15 +72,49 @@ void quitGame() {
 	quit = true;
 }
 
+void loadMap(int val) {
+	FILE * fMap;
+	mapHeader_f header;
+	fMap = fopen("resources/maps/map.pke", "r");
+	if(fMap == NULL) {
+		printf("ERROR: Missing map.pke in resources/maps folder\n");
+	}
+	fread(&header.count, sizeof(int), 1, fMap);
+	printf("%i\n", val);
+
+	printf("Loading %i Rooms...\n", header.count);
+
+	roomHeader_f rHeader[header.count];
+	for(int i=0; i<=val; i++) {
+		fread(&rHeader[i].value, sizeof(char), 1, fMap);
+		fread(&rHeader[i].w, sizeof(int), 1, fMap);
+		fread(&rHeader[i].h, sizeof(int), 1, fMap);
+
+		if(i==val) {
+			printf(" | Found map %c! W: %i H: %i\n", rHeader[i].value, rHeader[i].w, rHeader[i].h);
+			printf(" | Map Size: %i\n", rHeader[i].w*rHeader[i].h);
+			ses.map.width = rHeader[i].w;
+			ses.map.height = rHeader[i].h;
+			for(int j=0; j<rHeader[i].w*rHeader[i].h; j++) {
+				fread(&ses.map.data[j], sizeof(char), 1, fMap);
+			}
+		} else {
+			fseek(fMap, rHeader[i].w*rHeader[i].h, SEEK_CUR);
+		}
+	}
+
+	fclose(fMap);
+}
+
 void setTypes() {
 	FILE * fTypes;
-	typeHeader_t header;
+	typeHeader_f header;
 	fTypes = fopen("resources/data/type.pke", "r");
 	if(fTypes == NULL) {
 		printf("ERROR: Missing type.pke in resources/data folder!\n");
 	}
 	fread(&header.count, sizeof(int), 1, fTypes);
-	typeEntry_t entry[header.count];
+	typeEntry_f entry[header.count];
 	for(int i=0; i<header.count; i++) {
 		fread(&entry[i].name, sizeof(char[8]), 1, fTypes);
 		fread(&entry[i].resCnt, sizeof(int), 1, fTypes);
@@ -121,15 +155,15 @@ void setMonsters()
 	ses.moves[PK_EXPLOSION] = pk_initMove(15, 15, "EXPLOSION   ", T_NORMAL, &pk_m_explosion);
 
 	FILE * fMons;
-	monHeader_t header;
+	monHeader_f header;
 	fMons = fopen("resources/data/pk.pke", "r");
 	if(fMons == NULL) {
 		printf("ERROR: Missing pk.pke in resources/data folder!\n");
 	}
 	fread(&header.count, sizeof(int), 1, fMons);
-	monEntry_t mons[header.count];
+	monEntry_f mons[header.count];
 	for(int i=0; i<header.count; i++) {
-		fread(&mons[i], sizeof(monEntry_t), 1, fMons);
+		fread(&mons[i], sizeof(monEntry_f), 1, fMons);
 		ses.bMons[mons[i].value] = pk_initBaseMonster(pk_initStats(30, mons[i].att, mons[i].def, mons[i].spAtt, mons[i].spDef,
 			mons[i].speed), pk_initStats(0,0,0,0,0,0), mons[i].value, mons[i].name);
 	}
@@ -244,7 +278,7 @@ void apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destination, 
 	SDL_Rect offset;
 
 	if(scrolls) {
-		offset.x = x - (ses.p1.mover.x-(SCREEN_WIDTH/2))-16;
+		offset.x = x - (ses.p1.mover.x-(SCREEN_WIDTH/2))-BLOCK_SIZE;
 		offset.y = y - (ses.p1.mover.y-(SCREEN_HEIGHT/2));
 	} else {
 		offset.x = x;
@@ -641,7 +675,7 @@ int main(int argc, char **argv)
 	setMonsters();
 	setNpcs();
 	setWindows();
-	pk_snewMap("resources/maps/test.map", &ses);
+	loadMap(0);
 
 	ftime(&lastTime);
 

@@ -38,10 +38,6 @@ void pk_switchMode(int s_mode, sessionMan_t* session) {
 	}
 }
 
-void pk_snewMap(char* filename, sessionMan_t* ses) {
-	pk_loadMap(filename, &ses->map);
-}
-
 void pk_supdateMapCols(int which, sessionMan_t* ses) {
 	pk_clearColMap(&ses->map);
 

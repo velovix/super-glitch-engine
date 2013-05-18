@@ -17,8 +17,6 @@ typedef struct {
 	bool left, right, up, down;
 } col_t;
 
-void pk_loadMap(char* filename, map_t* map);
-
 col_t pk_findCols(map_t map, int x, int y);
 void pk_buildColMapM(map_t* map);
 void pk_clearColMap(map_t* map);
