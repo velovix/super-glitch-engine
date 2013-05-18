@@ -11,25 +11,25 @@ main.o: main.c
 	$(COMP) $(POFLAGS) main.c $(OFLAGS)
 
 mapman.o: general/mapman.h general/mapman.c
-	$(COMP) $(POFLAGS) general/mapman.h general/mapman.c $(OFLAGS)
+	$(COMP) $(POFLAGS) general/mapman.c $(OFLAGS)
 
 npc.o: ai/npc.h ai/npc.c
-	$(COMP) $(POFLAGS) ai/npc.h ai/npc.c $(OFLAGS)
+	$(COMP) $(POFLAGS) ai/npc.c $(OFLAGS)
 
 sessionman.o: general/sessionman.h general/sessionman.c
-	$(COMP) $(POFLAGS) general/sessionman.h general/sessionman.c $(OFLAGS)
+	$(COMP) $(POFLAGS) general/sessionman.c $(OFLAGS)
 
 charmover.o: ai/charmover.h ai/charmover.c
-	$(COMP) $(POFLAGS) ai/charmover.h ai/charmover.c $(OFLAGS)
+	$(COMP) $(POFLAGS) ai/charmover.c $(OFLAGS)
 
 monsters.o: battle/monsters.h battle/monsters.c
-	$(COMP) $(POFLAGS) battle/monsters.h battle/monsters.c $(OFLAGS)
+	$(COMP) $(POFLAGS) battle/monsters.c $(OFLAGS)
 
 window.o: general/window.h general/window.c
-	$(COMP) $(POFLAGS) general/window.h general/window.c $(OFLAGS)
+	$(COMP) $(POFLAGS) general/window.c $(OFLAGS)
 
 player.o: ai/player.h ai/player.c
-	$(COMP) $(POFLAGS) ai/player.h ai/player.c $(OFLAGS)
+	$(COMP) $(POFLAGS) ai/player.c $(OFLAGS)
 
 clean:
-	rm *.o *.h.gch
+	rm *.o
