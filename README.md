@@ -1,14 +1,14 @@
 Super Glitch Engine Info Document
 
-= Table of Contents
-|-- Legal (skimpy)
-|-- Introduction
-|-- Features
-|-- Todo
-|-- FAQ
+= Table of Contents</ br>
+|-- Legal (skimpy)</ br>
+|-- Introduction</ br>
+|-- Features</ br>
+|-- Todo</ br>
+|-- FAQ</ br>
 
 
-= Legal
+= Legal</ br>
     Super Glitch Engine is being coded entirely from scratch,
 and is intended as an homage to the Pokemon series, and more
 specifically, the first generation of Pokemon games (Pokemon
@@ -22,7 +22,7 @@ xaviosx@gmail.com. If you have any other questions, contact me
 at the same address.
 
 
-= Introduction
+= Introduction</ br>
     Super Glitch Engine is an open source, cross-platform clone
 of the Pokemon Red/Blue/Yellow games for Gameboy. It also
 includes tools which allow the user to modify the game data.
@@ -34,7 +34,7 @@ mechanics of moving in the overworld and fighting in turn-based
 battles.
 
 
-= Features
+= Features</ br>
  - Overworld
      - NPC AI (Incomplete)
      - Tile mapping
@@ -50,7 +50,7 @@ battles.
      - Wild battles (Incomplete)
 
 
-= Todo
+= Todo</ br>
 This part is pretty vague, but these are some of the milestones
 I want to hit.
  - Overworld with multiple maps & dynamic loading
@@ -66,8 +66,8 @@ hit, but I'm still very far off from and can't confirm.
  - Full replica of Pokemon Yellow for an example
  - More advanced scripting language for glitching, etc
 
-= FAQ
-Q: What's up with the name "Super Glitch Engine?"
+= FAQ</ br>
+Q: What's up with the name "Super Glitch Engine?"</ br>
 A: Well, there are a couple reasons why I named it that!
   (1) I thought it sounded cool (2) The engine is, at this
   time, pretty unstable (3) I want to eventually implement
@@ -75,14 +75,14 @@ A: Well, there are a couple reasons why I named it that!
   have a scripting language powerful enough for users to do the
   same without having to edit the code.
 
-Q: Why would you want to add glitches into a game purposefully?
+Q: Why would you want to add glitches into a game purposefully?</ br>
 A: I feel like those exploitable glitches are so well known
   that they've become a part of the game experience for some
   people. If I can emulate a piece of that, I'll be getting
   closer to the experience of the actual game.
 
 Q: Why wouldn't I just emulate Pokemon R/B/Y instead of using
-  Super Glitch Engine?
+  Super Glitch Engine?</ br>
 A: If you want to play Pokemon on the computer or on a powerful
   enough mobile device and have no interest in modding it,
   emulation is still your best option. What Super Glitch Engine
@@ -95,13 +95,13 @@ A: If you want to play Pokemon on the computer or on a powerful
   devices that aren't powerful enough to run an emulator.
 
 Q: Your code sucks! Are there no comments? Why did you do this
-  this way? You should be ashamed/crucified!
+  this way? You should be ashamed/crucified!</ br>
 A: Keep in mind that I am almost entirely self-taught. I know
   that's just a lame excuse, but it's true.
   I promise I will start commenting my code soon!
 
 Q: Why did you code Super Glitch Engine in c? Why not Java, C#,
-  C++, or any other language?
+  C++, or any other language?</ br>
 A: The biggest reason why I chose C is so that I could port the
   program over to integrated systems more easily. We'll see how
   that goes. I didn't code it in Java because generally
