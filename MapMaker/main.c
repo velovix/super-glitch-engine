@@ -10,6 +10,7 @@ bool quit = false;
 SDL_Surface* s_screen = NULL;
 SDL_Surface* s_mapTile = NULL;
 SDL_Surface* s_cursor = NULL;
+SDL_Surface* s_door = NULL;
 
 SDL_Event event;
 
@@ -20,8 +21,8 @@ char curVal;
 int camX, camY;
 int width, height;
 int currRoom;
-char doorData[20];
-int currDoor = 0;
+int origRoom = 0;
+bool chooseRoom = false;
 mapData_t map[20];
 
 bool keyStatesBuf[256];
@@ -72,11 +73,15 @@ void apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destination, 
 void load() {
 	s_mapTile = load_image("resources/tiles.png");
 	if(s_mapTile == NULL) {
-		printf("ERROR: Could not find resources/tiles.png!");
+		printf("[ERROR] Could not find resources/tiles.png!\n");
 	}
 	s_cursor = load_image("resources/cursor.png");
 	if(s_cursor == NULL) {
-		printf("ERROR: Could not find resources/cursor.png!");
+		printf("[ERROR] Could not find resources/cursor.png!\n");
+	}
+	s_door = load_image("resources/door.png");
+	if(s_door == NULL) {
+		printf("[ERROR] Could not find resources/door.png!\n");
 	}
 }
 
@@ -91,10 +96,16 @@ void fillRoom(char tile) {
 void saveMap() {
 	FILE* file;
 	file = fopen("map.pke", "w");
+	if(file == NULL) {
+		printf("[ERROR] Could not create map.pke!\n");
+	}
+
+	printf("Saving map...\n");
 
 	mapHeader_f mapHeader;
 	mapHeader.count = MAX_ROOMS;
 	fwrite(&mapHeader.count, sizeof(mapHeader.count), 1, file);
+	printf("   Wrote %i rooms\n", mapHeader.count);
 
 	roomHeader_f roomHeader[MAX_ROOMS];
 	for(int i=0; i<MAX_ROOMS; i++) {
@@ -106,13 +117,51 @@ void saveMap() {
 		for(int j=0; j<map[i].w*map[i].h; j++) {
 			fwrite(&map[i].data[j], sizeof(char), 1, file);
 		}
+
+		for(int j=0; j<map[i].doorCnt; j++) {
+			fwrite(&map[i].doorData[j], sizeof(char), 1, file);
+		}
 	}
 
 	fclose(file);
 }
 
 void loadMap() {
+	FILE * file;
+	file = fopen("map.pke", "r");
+	if(file == NULL) {
+		printf("[ERROR] Couldn't find map.pke!\n");
+	}
 
+	printf("Loading map...\n");
+
+	mapHeader_f header;
+	fread(&header.count, sizeof(header.count), 1, file);
+	printf("   Found %i rooms\n", header.count);
+
+	roomHeader_f roomHeader[header.count];
+	for(int i=0; i<header.count; i++) {
+		map[i].doorCnt = 0;
+		fread(&roomHeader[i].value, sizeof(char), 1, file);
+		fread(&roomHeader[i].w, sizeof(int), 1, file);
+		fread(&roomHeader[i].h, sizeof(int), 1, file);
+		printf("   Room %i: %i, %i\n", i, roomHeader[i].w, roomHeader[i].h);
+		for(int j=0; j<roomHeader[i].w*roomHeader[i].h; j++) {
+			fread(&map[i].data[j], sizeof(char), 1, file);
+			if(map[i].data[j] >= 100) {
+				map[i].doorCnt++;
+			}
+		}
+
+		map[i].w = roomHeader[i].w;
+		map[i].h = roomHeader[i].h;
+
+		for(int j=0; j<map[i].doorCnt; j++) {
+			fread(&map[i].doorData[j], sizeof(char), 1, file);
+		}
+	}
+
+	fclose(file);
 }
 
 void checkKeys(Uint8 *keyStates) {
@@ -195,21 +244,23 @@ void checkKeys(Uint8 *keyStates) {
 		keyStatesBuf[SDLK_d] = false;
 	}
 
-	if(keyStates[SDLK_r]) {
-		if(!keyStatesBuf[SDLK_r]) {
-			printf("Room: ");
-			scanf("%d", &currRoom);
-			keyStatesBuf[SDLK_r] = true;
-		}
-	} else {
-		keyStatesBuf[SDLK_r] = false;
-	}
-
 	if(keyStates[SDLK_p]) {
 		if(!keyStatesBuf[SDLK_p]) {
-			printf("Room for Door: ");
-			scanf("%c", &doorData[currDoor]);
-			currDoor++;
+			if(chooseRoom) {
+				map[origRoom].doorData[map[currRoom].doorCnt] = (char)currRoom;
+				printf("You chose room: %i\n", (int)map[origRoom].doorData[map[currRoom].doorCnt]);
+				map[origRoom].doorCnt++;
+				chooseRoom = false;
+			
+				currRoom = origRoom;
+				if(map[currRoom].data[curX+(curY*map[currRoom].w)] < 100) {
+					map[currRoom].data[curX+(curY*map[currRoom].w)]+=100;
+				}
+			} else {
+				printf("Go to the desired room and press P again\n");
+				chooseRoom = true;
+				origRoom = currRoom;
+			}
 			keyStatesBuf[SDLK_p] = true;
 		}
 	} else {
@@ -218,20 +269,74 @@ void checkKeys(Uint8 *keyStates) {
 
 	if(keyStates[SDLK_s]) {
 		if(!keyStatesBuf[SDLK_s]) {
-			printf("Saved!\n");
 			saveMap();
+			printf("Saved!\n");
 			keyStatesBuf[SDLK_s] = true;
 		}
 	} else {
 		keyStatesBuf[SDLK_s] = false;
+	}
+
+	if(keyStates[SDLK_c]) {
+		if(!keyStatesBuf[SDLK_c]) {
+			map[currRoom].doorCnt = 0;
+			for(int i=0; i<	map[currRoom].w*map[currRoom].h; i++) {
+				if(map[currRoom].data[i] >= 100) {
+					map[currRoom].data[i]-=100;
+				}
+			}
+			keyStatesBuf[SDLK_c] = true;
+		}
+	} else {
+		keyStatesBuf[SDLK_c] = false;
+	}
+
+	if(keyStates[SDLK_l]) {
+		if(!keyStatesBuf[SDLK_l]) {
+			loadMap();
+			printf("Loaded map.pke\n");
+			keyStatesBuf[SDLK_l] = true;
+		}
+	} else {
+		keyStatesBuf[SDLK_l] = false;
+	}
+
+	if(keyStates[SDLK_PAGEUP]) {
+		if(!keyStatesBuf[SDLK_PAGEUP]) {
+			if(currRoom < MAX_ROOMS) {
+				currRoom++;
+			}
+			keyStatesBuf[SDLK_PAGEUP] = true;
+		}
+	} else {
+		keyStatesBuf[SDLK_PAGEUP] = false;
+	}
+
+	if(keyStates[SDLK_PAGEDOWN]) {
+		if(!keyStatesBuf[SDLK_PAGEDOWN]) {
+			if(currRoom > 0) {
+				currRoom--;
+			}
+			keyStatesBuf[SDLK_PAGEDOWN] = true;
+		}
+	} else {
+		keyStatesBuf[SDLK_PAGEDOWN] = false;
 	}
 }
 
 void loop() {
 	for(int x=0; x<map[currRoom].w; x++) {
 		for(int y=map[currRoom].h-1; y>=0; y--) {
-			apply_surface(x*BLOCK_SIZE, y*BLOCK_SIZE, s_mapTile, s_screen,
-				&clipTiles[map[currRoom].data[x+(y*map[currRoom].w)]], true);
+			if(map[currRoom].data[x+(y*map[currRoom].w)] < 100) {
+				apply_surface(x*BLOCK_SIZE, y*BLOCK_SIZE, s_mapTile, s_screen,
+					&clipTiles[map[currRoom].data[x+(y*map[currRoom].w)]], true);
+			} else {
+				apply_surface(x*BLOCK_SIZE, y*BLOCK_SIZE, s_mapTile, s_screen,
+					&clipTiles[map[currRoom].data[x+(y*map[currRoom].w)]-100], true);
+				apply_surface(x*BLOCK_SIZE, y*BLOCK_SIZE, s_door,
+					s_screen, 0, true);
+			}
+				
 		}
 	}
 

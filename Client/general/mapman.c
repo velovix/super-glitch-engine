@@ -35,3 +35,23 @@ void pk_clearColMap(map_t* map) {
 		map->cData[i] = false;
 	}
 }
+
+void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map) {
+	free(map->doorData);
+	map->doorData = (door_t*)malloc(doorCnt*sizeof(door_t));
+
+	for(int i=0; i<doorCnt; i++) {
+		map->doorData[i] = doorData[i];
+	}
+	map->doorCnt = doorCnt;
+}
+
+char pk_isOnDoor(int x, int y, map_t* map) {
+	for(int i=0; i<map->doorCnt; i++) {
+		if(map->doorData[i].x == x && map->doorData[i].y == y) {
+			return map->doorData[i].dest;
+		}
+	}
+
+	return -1;
+}

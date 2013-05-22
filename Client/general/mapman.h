@@ -19,17 +19,26 @@
 #include "../constants.h"
 
 typedef struct {
-	int width, height;
-	char data[32768];
-	bool cData[32768];
-} map_t;
+	char dest;
+	int x,y;
+} door_t;
 
 typedef struct {
 	bool left, right, up, down;
 } col_t;
 
+typedef struct {
+	int width, height;
+	char data[32768];
+	bool cData[32768];
+	int doorCnt;
+	door_t* doorData;
+} map_t;
+
 col_t pk_findCols(map_t map, int x, int y);
 void pk_buildColMapM(map_t* map);
 void pk_clearColMap(map_t* map);
+void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map);
+char pk_isOnDoor(int x, int y, map_t* map);
 
 #endif

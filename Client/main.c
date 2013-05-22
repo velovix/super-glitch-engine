@@ -87,24 +87,50 @@ void loadMap(int val) {
 
 	printf("Loading %i Rooms...\n", header.count);
 
+	int doorCnt = 0;
 	roomHeader_f rHeader[header.count];
+	door_t tmpDoors[100];
 	for(int i=0; i<=val; i++) {
 		fread(&rHeader[i].value, sizeof(char), 1, fMap);
 		fread(&rHeader[i].w, sizeof(int), 1, fMap);
 		fread(&rHeader[i].h, sizeof(int), 1, fMap);
 
 		if(i==val) {
-			printf("   Found map %i! W: %i H: %i\n", (int)rHeader[i].value, rHeader[i].w, rHeader[i].h);
+			printf("   Found room %i! W: %i H: %i\n", i, rHeader[i].w, rHeader[i].h);
 			printf("   Map Size: %i\n", rHeader[i].w*rHeader[i].h);
 			ses.map.width = rHeader[i].w;
 			ses.map.height = rHeader[i].h;
 			for(int j=0; j<rHeader[i].w*rHeader[i].h; j++) {
 				fread(&ses.map.data[j], sizeof(char), 1, fMap);
+				if(ses.map.data[j] >= 100) {
+					ses.map.data[j]-=100;
+					tmpDoors[doorCnt].x = j-((j/ses.map.width)*ses.map.width);
+					tmpDoors[doorCnt].y = j/ses.map.width;
+					doorCnt++;
+				}
 			}
 		} else {
-			fseek(fMap, rHeader[i].w*rHeader[i].h, SEEK_CUR);
+			int doorCnt = 0;
+			for(int j=0; j<rHeader[i].w*rHeader[i].h; j++) {
+				char tmpBlock;
+				fread(&tmpBlock, sizeof(char), 1, fMap);
+				if(tmpBlock >= 100) {
+					doorCnt++;
+				}
+			}
+			fseek(fMap, doorCnt*sizeof(char), SEEK_CUR);
 		}
 	}
+
+	door_t doorData[doorCnt];
+	for(int i=0; i<doorCnt; i++) {
+		fread(&doorData[i].dest, sizeof(char), 1, fMap);
+		doorData[i].x = tmpDoors[i].x;
+		doorData[i].y = tmpDoors[i].y;
+		printf("%i\n", doorData[i].dest);
+	}
+	pk_setDoorData(doorCnt, &doorData[0], &ses.map);
+	printf("   Map Door Count: %i\n", doorCnt);
 
 	fclose(fMap);
 }
@@ -638,6 +664,11 @@ void physics()
 	pk_supdateNpcs(&ses);
 
 	pk_updateChar(&ses.p1.mover);
+
+	char door = pk_isOnDoor(ses.p1.mover.x/BLOCK_SIZE, ses.p1.mover.y/BLOCK_SIZE, &ses.map);
+	if(door != -1) {
+		loadMap(door);
+	}
 }
 
 void gameLoop()

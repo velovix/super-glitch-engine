@@ -6,7 +6,7 @@ typedef struct {
 } mapHeader_f;
 
 typedef struct {
-	int value;
+	char value;
 	int w, h;
 } roomHeader_f;
 
@@ -22,6 +22,8 @@ typedef struct {
 typedef struct {
 	int w, h;
 	char data[32400];
+	int doorCnt;
+	char doorData[20];
 } mapData_t;
 
 #endif
