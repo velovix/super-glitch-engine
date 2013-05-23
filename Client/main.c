@@ -119,15 +119,18 @@ void loadMap(int val) {
 				}
 			}
 			fseek(fMap, doorCnt*sizeof(char), SEEK_CUR);
+			fseek(fMap, doorCnt*sizeof(int)*2, SEEK_CUR);
 		}
 	}
 
 	door_t doorData[doorCnt];
 	for(int i=0; i<doorCnt; i++) {
 		fread(&doorData[i].dest, sizeof(char), 1, fMap);
+		fread(&doorData[i].destX, sizeof(int), 1, fMap);
+		fread(&doorData[i].destY, sizeof(int), 1, fMap);
 		doorData[i].x = tmpDoors[i].x;
 		doorData[i].y = tmpDoors[i].y;
-		printf("%i\n", doorData[i].dest);
+		printf("%i, %i, %i\n", (int)doorData[i].dest, doorData[i].destX, doorData[i].destY);
 	}
 	pk_setDoorData(doorCnt, &doorData[0], &ses.map);
 	printf("   Map Door Count: %i\n", doorCnt);
@@ -665,9 +668,11 @@ void physics()
 
 	pk_updateChar(&ses.p1.mover);
 
-	char door = pk_isOnDoor(ses.p1.mover.x/BLOCK_SIZE, ses.p1.mover.y/BLOCK_SIZE, &ses.map);
-	if(door != -1) {
-		loadMap(door);
+	door_t door = pk_isOnDoor(ses.p1.mover.x/BLOCK_SIZE, ses.p1.mover.y/BLOCK_SIZE, &ses.map);
+	if(door.dest != -1) {
+		loadMap(door.dest);
+		ses.p1.mover.x = ses.p1.mover.nextX = door.destX*BLOCK_SIZE;
+		ses.p1.mover.y = ses.p1.mover.nextY = door.destY*BLOCK_SIZE;
 	}
 }
 

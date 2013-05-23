@@ -17,6 +17,7 @@ SDL_Event event;
 SDL_Rect clipTiles[20];
 
 int curX, curY;
+int lastCurX, lastCurY;
 char curVal;
 int camX, camY;
 int width, height;
@@ -119,7 +120,9 @@ void saveMap() {
 		}
 
 		for(int j=0; j<map[i].doorCnt; j++) {
-			fwrite(&map[i].doorData[j], sizeof(char), 1, file);
+			fwrite(&map[i].doorData[j].dest, sizeof(char), 1, file);
+			fwrite(&map[i].doorData[j].x, sizeof(int), 1, file);
+			fwrite(&map[i].doorData[j].y, sizeof(int), 1, file);
 		}
 	}
 
@@ -145,7 +148,6 @@ void loadMap() {
 		fread(&roomHeader[i].value, sizeof(char), 1, file);
 		fread(&roomHeader[i].w, sizeof(int), 1, file);
 		fread(&roomHeader[i].h, sizeof(int), 1, file);
-		printf("   Room %i: %i, %i\n", i, roomHeader[i].w, roomHeader[i].h);
 		for(int j=0; j<roomHeader[i].w*roomHeader[i].h; j++) {
 			fread(&map[i].data[j], sizeof(char), 1, file);
 			if(map[i].data[j] >= 100) {
@@ -157,7 +159,9 @@ void loadMap() {
 		map[i].h = roomHeader[i].h;
 
 		for(int j=0; j<map[i].doorCnt; j++) {
-			fread(&map[i].doorData[j], sizeof(char), 1, file);
+			fread(&map[i].doorData[j].dest, sizeof(char), 1, file);
+			fread(&map[i].doorData[j].x, sizeof(int), 1, file);
+			fread(&map[i].doorData[j].y, sizeof(int), 1, file);
 		}
 	}
 
@@ -247,19 +251,24 @@ void checkKeys(Uint8 *keyStates) {
 	if(keyStates[SDLK_p]) {
 		if(!keyStatesBuf[SDLK_p]) {
 			if(chooseRoom) {
-				map[origRoom].doorData[map[currRoom].doorCnt] = (char)currRoom;
-				printf("You chose room: %i\n", (int)map[origRoom].doorData[map[currRoom].doorCnt]);
+				map[origRoom].doorData[map[currRoom].doorCnt].dest = (char)currRoom;
+				map[origRoom].doorData[map[currRoom].doorCnt].x = curX;
+				map[origRoom].doorData[map[currRoom].doorCnt].y = curY;
+				printf("You chose room: %i\n", (int)map[origRoom]. \
+					doorData[map[currRoom].doorCnt].dest);
 				map[origRoom].doorCnt++;
 				chooseRoom = false;
 			
 				currRoom = origRoom;
-				if(map[currRoom].data[curX+(curY*map[currRoom].w)] < 100) {
-					map[currRoom].data[curX+(curY*map[currRoom].w)]+=100;
+				if(map[currRoom].data[lastCurX+(lastCurY*map[currRoom].w)] < 100) {
+					map[currRoom].data[lastCurX+(lastCurY*map[currRoom].w)]+=100;
 				}
 			} else {
 				printf("Go to the desired room and press P again\n");
 				chooseRoom = true;
 				origRoom = currRoom;
+				lastCurX = curX;
+				lastCurY = curY;
 			}
 			keyStatesBuf[SDLK_p] = true;
 		}

@@ -46,12 +46,14 @@ void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map) {
 	map->doorCnt = doorCnt;
 }
 
-char pk_isOnDoor(int x, int y, map_t* map) {
+door_t pk_isOnDoor(int x, int y, map_t* map) {
 	for(int i=0; i<map->doorCnt; i++) {
 		if(map->doorData[i].x == x && map->doorData[i].y == y) {
-			return map->doorData[i].dest;
+			return map->doorData[i];
 		}
 	}
 
-	return -1;
+	door_t out;
+	out.dest = -1;
+	return out;
 }
