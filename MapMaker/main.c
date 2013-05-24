@@ -14,7 +14,7 @@ SDL_Surface* s_door = NULL;
 
 SDL_Event event;
 
-SDL_Rect clipTiles[20];
+SDL_Rect clipTiles[50];
 
 int curX, curY;
 int lastCurX, lastCurY;
@@ -24,7 +24,7 @@ int width, height;
 int currRoom;
 int origRoom = 0;
 bool chooseRoom = false;
-mapData_t map[20];
+mapData_t map[30];
 
 bool keyStatesBuf[256];
 
@@ -94,6 +94,16 @@ void fillRoom(char tile) {
 	}
 }
 
+int hasDoor(int x, int y, int r) {
+	for(int i=0; i<map[r].doorCnt; i++) {
+		if(x == map[r].doorData[i].x && y == map[r].doorData[i].y) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 void saveMap() {
 	FILE* file;
 	file = fopen("map.pke", "w");
@@ -117,12 +127,18 @@ void saveMap() {
 		fwrite(&roomHeader[i].h, sizeof(int), 1, file);
 		for(int j=0; j<map[i].w*map[i].h; j++) {
 			fwrite(&map[i].data[j], sizeof(char), 1, file);
+			if(map[i].data[j] > 100) {
+				printf("[ERROR] Old block!\n");
+			}
 		}
 
+		fwrite(&map[i].doorCnt, sizeof(int), 1, file);
 		for(int j=0; j<map[i].doorCnt; j++) {
 			fwrite(&map[i].doorData[j].dest, sizeof(char), 1, file);
 			fwrite(&map[i].doorData[j].x, sizeof(int), 1, file);
 			fwrite(&map[i].doorData[j].y, sizeof(int), 1, file);
+			fwrite(&map[i].doorData[j].destX, sizeof(int), 1, file);
+			fwrite(&map[i].doorData[j].destY, sizeof(int), 1, file);
 		}
 	}
 
@@ -150,18 +166,18 @@ void loadMap() {
 		fread(&roomHeader[i].h, sizeof(int), 1, file);
 		for(int j=0; j<roomHeader[i].w*roomHeader[i].h; j++) {
 			fread(&map[i].data[j], sizeof(char), 1, file);
-			if(map[i].data[j] >= 100) {
-				map[i].doorCnt++;
-			}
 		}
 
 		map[i].w = roomHeader[i].w;
 		map[i].h = roomHeader[i].h;
 
+		fread(&map[i].doorCnt, sizeof(int), 1, file);
 		for(int j=0; j<map[i].doorCnt; j++) {
 			fread(&map[i].doorData[j].dest, sizeof(char), 1, file);
 			fread(&map[i].doorData[j].x, sizeof(int), 1, file);
 			fread(&map[i].doorData[j].y, sizeof(int), 1, file);
+			fread(&map[i].doorData[j].destX, sizeof(int), 1, file);
+			fread(&map[i].doorData[j].destY, sizeof(int), 1, file);
 		}
 	}
 
@@ -207,7 +223,7 @@ void checkKeys(Uint8 *keyStates) {
 
 	if(keyStates[SDLK_x]) {
 		if(!keyStatesBuf[SDLK_x]) {
-			if(curVal < GRASS_OVER) {
+			if(curVal < CLIFF_MIDDLE+15) {
 				curVal++;
 			} else {
 				curVal = GRASS;
@@ -251,18 +267,26 @@ void checkKeys(Uint8 *keyStates) {
 	if(keyStates[SDLK_p]) {
 		if(!keyStatesBuf[SDLK_p]) {
 			if(chooseRoom) {
-				map[origRoom].doorData[map[currRoom].doorCnt].dest = (char)currRoom;
-				map[origRoom].doorData[map[currRoom].doorCnt].x = curX;
-				map[origRoom].doorData[map[currRoom].doorCnt].y = curY;
+				int orDoor = hasDoor(lastCurX, lastCurY, origRoom);
+				if(orDoor == -1) {
+					map[origRoom].doorData[map[currRoom].doorCnt].dest = (char)currRoom;
+					map[origRoom].doorData[map[currRoom].doorCnt].x = lastCurX;
+					map[origRoom].doorData[map[currRoom].doorCnt].y = lastCurY;
+					map[origRoom].doorData[map[currRoom].doorCnt].destX = curX;
+					map[origRoom].doorData[map[currRoom].doorCnt].destY = curY;
+					map[origRoom].doorCnt++;
+				} else {
+					map[origRoom].doorData[map[orDoor].doorCnt].dest = (char)currRoom;
+					map[origRoom].doorData[map[orDoor].doorCnt].x = lastCurX;
+					map[origRoom].doorData[map[orDoor].doorCnt].y = lastCurY;					
+					map[origRoom].doorData[map[orDoor].doorCnt].destX = curX;
+					map[origRoom].doorData[map[orDoor].doorCnt].destY = curY;
+				}
 				printf("You chose room: %i\n", (int)map[origRoom]. \
 					doorData[map[currRoom].doorCnt].dest);
-				map[origRoom].doorCnt++;
 				chooseRoom = false;
-			
+
 				currRoom = origRoom;
-				if(map[currRoom].data[lastCurX+(lastCurY*map[currRoom].w)] < 100) {
-					map[currRoom].data[lastCurX+(lastCurY*map[currRoom].w)]+=100;
-				}
 			} else {
 				printf("Go to the desired room and press P again\n");
 				chooseRoom = true;
@@ -336,17 +360,14 @@ void checkKeys(Uint8 *keyStates) {
 void loop() {
 	for(int x=0; x<map[currRoom].w; x++) {
 		for(int y=map[currRoom].h-1; y>=0; y--) {
-			if(map[currRoom].data[x+(y*map[currRoom].w)] < 100) {
-				apply_surface(x*BLOCK_SIZE, y*BLOCK_SIZE, s_mapTile, s_screen,
-					&clipTiles[map[currRoom].data[x+(y*map[currRoom].w)]], true);
-			} else {
-				apply_surface(x*BLOCK_SIZE, y*BLOCK_SIZE, s_mapTile, s_screen,
-					&clipTiles[map[currRoom].data[x+(y*map[currRoom].w)]-100], true);
-				apply_surface(x*BLOCK_SIZE, y*BLOCK_SIZE, s_door,
-					s_screen, 0, true);
-			}
-				
+			apply_surface(x*BLOCK_SIZE, y*BLOCK_SIZE, s_mapTile, s_screen,
+				&clipTiles[map[currRoom].data[x+(y*map[currRoom].w)]], true);
 		}
+	}
+
+	for(int i=0; i<map[currRoom].doorCnt; i++) {
+		apply_surface(map[currRoom].doorData[i].x*BLOCK_SIZE,
+			map[currRoom].doorData[i].y*BLOCK_SIZE, s_door, s_screen, 0, true);
 	}
 
 	apply_surface(curX*BLOCK_SIZE, ((map[currRoom].h)-(map[currRoom].h-curY))
@@ -363,7 +384,7 @@ int main() {
 	currRoom = 0;
 	map[currRoom].w = map[currRoom].h = 16;
 
-	for(int i=0; i<20; i++) {
+	for(int i=0; i<50; i++) {
 		clipTiles[i].w = clipTiles[i].h = BLOCK_SIZE;
 		clipTiles[i].x = 0;
 		clipTiles[i].y = i*BLOCK_SIZE;

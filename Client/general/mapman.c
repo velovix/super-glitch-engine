@@ -22,7 +22,9 @@ col_t pk_findCols(map_t map, int x, int y) {
 
 void pk_buildColMapM(map_t* map) {
 	for(int i=0; i<map->width*map->height; i++) {
-		if(map->data[i] != CLEAR && map->data[i] != DARK_DIRT && map->data[i] != GRASS) {
+		if(map->data[i] != CLEAR && map->data[i] != DARK_DIRT && map->data[i] != GRASS
+		   && map->data[i] != HOUSE_DOOR && map->data[i] != HOUSE_FLOOR
+		   && map->data[i] != HOUSE_MAT) {
 			map->cData[i] = true;
 		} else {
 			map->cData[i] = false;
@@ -41,6 +43,11 @@ void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map) {
 	map->doorData = (door_t*)malloc(doorCnt*sizeof(door_t));
 
 	for(int i=0; i<doorCnt; i++) {
+		if(map->data[doorData[i].x+(doorData[i].y*map->width)] == HOUSE_DOOR) {
+			doorData[i].type = DT_WALKINTO;
+		} else {
+			doorData[i].type = DT_COLLIDE;
+		}
 		map->doorData[i] = doorData[i];
 	}
 	map->doorCnt = doorCnt;

@@ -45,7 +45,7 @@ SDL_Surface* s_fPkmn = NULL;
 SDL_Surface* s_bPkmn = NULL;
 
 // SDL Clippers
-SDL_Rect clipTiles[20];
+SDL_Rect clipTiles[50];
 SDL_Rect clipNPCs[70];
 SDL_Rect clipChars[88];
 SDL_Rect clipPkmn[8];
@@ -89,7 +89,6 @@ void loadMap(int val) {
 
 	int doorCnt = 0;
 	roomHeader_f rHeader[header.count];
-	door_t tmpDoors[100];
 	for(int i=0; i<=val; i++) {
 		fread(&rHeader[i].value, sizeof(char), 1, fMap);
 		fread(&rHeader[i].w, sizeof(int), 1, fMap);
@@ -102,35 +101,22 @@ void loadMap(int val) {
 			ses.map.height = rHeader[i].h;
 			for(int j=0; j<rHeader[i].w*rHeader[i].h; j++) {
 				fread(&ses.map.data[j], sizeof(char), 1, fMap);
-				if(ses.map.data[j] >= 100) {
-					ses.map.data[j]-=100;
-					tmpDoors[doorCnt].x = j-((j/ses.map.width)*ses.map.width);
-					tmpDoors[doorCnt].y = j/ses.map.width;
-					doorCnt++;
-				}
 			}
 		} else {
-			int doorCnt = 0;
-			for(int j=0; j<rHeader[i].w*rHeader[i].h; j++) {
-				char tmpBlock;
-				fread(&tmpBlock, sizeof(char), 1, fMap);
-				if(tmpBlock >= 100) {
-					doorCnt++;
-				}
-			}
-			fseek(fMap, doorCnt*sizeof(char), SEEK_CUR);
-			fseek(fMap, doorCnt*sizeof(int)*2, SEEK_CUR);
+			fseek(fMap, rHeader[i].w*rHeader[i].h*sizeof(char), SEEK_CUR);
+			fread(&doorCnt, sizeof(int), 1, fMap);
+			fseek(fMap, (sizeof(char)+(sizeof(int)*4))*doorCnt, SEEK_CUR);
 		}
 	}
 
+	fread(&doorCnt, sizeof(int), 1, fMap);
 	door_t doorData[doorCnt];
 	for(int i=0; i<doorCnt; i++) {
 		fread(&doorData[i].dest, sizeof(char), 1, fMap);
+		fread(&doorData[i].x, sizeof(int), 1, fMap);
+		fread(&doorData[i].y, sizeof(int), 1, fMap);
 		fread(&doorData[i].destX, sizeof(int), 1, fMap);
 		fread(&doorData[i].destY, sizeof(int), 1, fMap);
-		doorData[i].x = tmpDoors[i].x;
-		doorData[i].y = tmpDoors[i].y;
-		printf("%i, %i, %i\n", (int)doorData[i].dest, doorData[i].destX, doorData[i].destY);
 	}
 	pk_setDoorData(doorCnt, &doorData[0], &ses.map);
 	printf("   Map Door Count: %i\n", doorCnt);
@@ -211,7 +197,7 @@ void setNpcs()
 	ses.npcs[0] = pk_initNpc(BLOCK_SIZE*8, BLOCK_SIZE*8, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, true);
 	ses.npcs[1] = pk_initNpc(BLOCK_SIZE*3, BLOCK_SIZE*7, 0, 0, 1, C_SCI, LEFT, AI_TURN, true);
 	ses.npcs[3] = pk_initNpc(BLOCK_SIZE*3, BLOCK_SIZE*4, 0, 0, 1, C_FATMAN, LEFT, AI_NOTHING, true);
-	ses.npcs[4] = pk_initNpc(BLOCK_SIZE*6, BLOCK_SIZE*5, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, true);
+	ses.npcs[4] = pk_initNpc(BLOCK_SIZE*9, BLOCK_SIZE*5, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, true);
 	ses.npcs[5] = pk_initNpc(BLOCK_SIZE*7, BLOCK_SIZE*7, 0, 0, 1, C_SIGN, DOWN, AI_NOTHING, true);
 	ses.npcs[7] = pk_initNpc(BLOCK_SIZE*4, BLOCK_SIZE*13, 0, 0, 4, C_FATMAN, RIGHT, AI_NOTHING, false);
 
@@ -256,7 +242,7 @@ void setWindows()
 
 void setClips()
 {
-	for(int i=0; i<20; i++) {
+	for(int i=0; i<50; i++) {
 		clipTiles[i].x = 0;
 		clipTiles[i].y = BLOCK_SIZE*i;
 		clipTiles[i].w = clipTiles[i].h = BLOCK_SIZE;
@@ -503,9 +489,22 @@ void checkKeys(Uint8 *keyStates)
 	if(keyStates[SDLK_p]) {
 		if(keyStatesBuf[SDLK_p] == false) {
 			Mix_PlayMusic(music, -1);
+			keyStatesBuf[SDLK_p] = true;
 		}
 	} else {
 		keyStatesBuf[SDLK_p] = false;
+	}
+
+	if(keyStates[SDLK_r]) {
+		if(keyStatesBuf[SDLK_r] == false) {
+			int room = 0;
+			printf("Room? ");
+			scanf("%i", &room);
+			loadMap(room);
+			keyStatesBuf[SDLK_r] = true;
+		}
+	} else {
+		keyStatesBuf[SDLK_r] = false;
 	}
 }
 
@@ -668,11 +667,36 @@ void physics()
 
 	pk_updateChar(&ses.p1.mover);
 
+	if(ses.p1.mover.x == ses.p1.mover.nextX && ses.p1.mover.y == ses.p1.mover.nextY && ses.p1.mover.animCycle > 0) {
+		door_t door;
+		switch(ses.p1.mover.dir) {
+		case LEFT:
+			door = pk_isOnDoor((ses.p1.mover.x-1)/BLOCK_SIZE, (ses.p1.mover.y+0)/BLOCK_SIZE, &ses.map);
+			break;
+		case RIGHT:
+			door = pk_isOnDoor((ses.p1.mover.x+1)/BLOCK_SIZE, (ses.p1.mover.y+0)/BLOCK_SIZE, &ses.map);
+			break;
+		case UP:
+			door = pk_isOnDoor((ses.p1.mover.x+0)/BLOCK_SIZE, (ses.p1.mover.y-1)/BLOCK_SIZE, &ses.map);
+			break;
+		case DOWN:
+			door = pk_isOnDoor((ses.p1.mover.x+0)/BLOCK_SIZE, (ses.p1.mover.y+1)/BLOCK_SIZE, &ses.map);
+			break;
+		}
+		if(door.dest != -1) {
+			loadMap(door.dest);
+			ses.p1.mover.x = ses.p1.mover.nextX = door.destX*BLOCK_SIZE;
+			ses.p1.mover.y = ses.p1.mover.nextY = door.destY*BLOCK_SIZE;
+		}
+	}
+
 	door_t door = pk_isOnDoor(ses.p1.mover.x/BLOCK_SIZE, ses.p1.mover.y/BLOCK_SIZE, &ses.map);
-	if(door.dest != -1) {
-		loadMap(door.dest);
-		ses.p1.mover.x = ses.p1.mover.nextX = door.destX*BLOCK_SIZE;
-		ses.p1.mover.y = ses.p1.mover.nextY = door.destY*BLOCK_SIZE;
+	if(door.dest != -1 && door.type == DT_WALKINTO) {
+		if(ses.p1.mover.x == ses.p1.mover.nextX && ses.p1.mover.y == ses.p1.mover.nextY) {
+			loadMap(door.dest);
+			ses.p1.mover.x = ses.p1.mover.nextX = door.destX*BLOCK_SIZE;
+			ses.p1.mover.y = ses.p1.mover.nextY = door.destY*BLOCK_SIZE;
+		}
 	}
 }
 

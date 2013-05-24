@@ -22,6 +22,7 @@ typedef struct {
 typedef struct {
 	char dest;
 	int x, y;
+	int destX, destY;
 } door_t;
 
 typedef struct {

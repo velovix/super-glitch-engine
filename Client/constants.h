@@ -107,6 +107,10 @@
 #define CLEAR			MOFF+12
 #define GRASS_OVER		MOFF+13
 #define WORD_BUBBLE		MOFF+14
+#define HOUSE_DOOR		MOFF+18
+#define HOUSE_FLOOR		MOFF+30
+#define HOUSE_MAT		MOFF+36
+#define BLACK			MOFF+42
 
 // Player Sprites
 #define PSOFF			0
@@ -167,6 +171,10 @@
 // Window Types
 #define WT_PLAINTXT		1
 #define WT_OPTIONS		2
+
+// Door Types
+#define DT_WALKINTO		1
+#define DT_COLLIDE		2
 
 // Moves
 #define PK_NOMOVE		0

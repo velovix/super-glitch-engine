@@ -16,6 +16,19 @@
 #define CLEAR			12
 #define GRASS_OVER		13
 #define WORD_BUBBLE		14
+#define HOUSE_LROOF		15
+#define HOUSE_MROOF		16
+#define HOUSE_RTOFLOORL	17
+#define HOUSE_DOOR		18
+#define HOUSE_RWIND		19
+#define HOUSE_LWIND		20
+#define HOUSE_DWIND		21
+#define HOUSE_RTOFLOORR	22
+#define HOUSE_RROOF		23
+#define LIGHT_DIRT		24
+#define CLIFF_ENTRY		25
+#define CLIFF_LCORNER	26
+#define CLIFF_MIDDLE	27
 
 #define DOOR_PAD		201
 
