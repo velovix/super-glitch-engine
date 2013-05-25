@@ -8,9 +8,20 @@ void pk_initMap(int w, int h, map_t* map) {
 }
 
 col_t pk_findCols(map_t map, int x, int y) {
-
 	col_t out;
 	out.left = true; out.right = true; out.up = true; out.down = true;
+
+	if(x+1 >= map.width) {
+		out.right = false;
+	} else if(x-1 < 0) {
+		out.left = false;
+	}
+	if(y+1 > map.height) {
+		out.down = false;
+	} else if(y-1 < 0) {
+		out.up = false;
+	}
+
 	if(map.cData[x+((y-1)*map.width)]) {
 		out.up = false;
 	}
