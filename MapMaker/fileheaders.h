@@ -26,10 +26,16 @@ typedef struct {
 } door_t;
 
 typedef struct {
+	int val;
+	int x, y;
+} mapNpc_t;
+
+typedef struct {
 	int w, h;
 	char data[32400];
-	int doorCnt;
+	int doorCnt, npcCnt;
 	door_t doorData[20];
+	mapNpc_t npcData[20];
 } mapData_t;
 
 #endif

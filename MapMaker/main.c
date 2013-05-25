@@ -11,6 +11,7 @@ SDL_Surface* s_screen = NULL;
 SDL_Surface* s_mapTile = NULL;
 SDL_Surface* s_cursor = NULL;
 SDL_Surface* s_door = NULL;
+SDL_Surface* s_npc = NULL;
 
 SDL_Event event;
 
@@ -84,6 +85,10 @@ void load() {
 	if(s_door == NULL) {
 		printf("[ERROR] Could not find resources/door.png!\n");
 	}
+	s_npc = load_image("resources/npc.png");
+	if(s_npc == NULL) {
+		printf("[ERROR] Could not find resources/npc.png!\n");
+	}
 }
 
 void fillRoom(char tile) {
@@ -127,9 +132,6 @@ void saveMap() {
 		fwrite(&roomHeader[i].h, sizeof(int), 1, file);
 		for(int j=0; j<map[i].w*map[i].h; j++) {
 			fwrite(&map[i].data[j], sizeof(char), 1, file);
-			if(map[i].data[j] > 100) {
-				printf("[ERROR] Old block!\n");
-			}
 		}
 
 		fwrite(&map[i].doorCnt, sizeof(int), 1, file);
@@ -139,6 +141,13 @@ void saveMap() {
 			fwrite(&map[i].doorData[j].y, sizeof(int), 1, file);
 			fwrite(&map[i].doorData[j].destX, sizeof(int), 1, file);
 			fwrite(&map[i].doorData[j].destY, sizeof(int), 1, file);
+		}
+
+		fwrite(&map[i].npcCnt, sizeof(int), 1, file);
+		for(int j=0; j<map[i].npcCnt; j++) {
+			fwrite(&map[i].npcData[j].val, sizeof(int), 1, file);
+			fwrite(&map[i].npcData[j].x, sizeof(int), 1, file);
+			fwrite(&map[i].npcData[j].y, sizeof(int), 1, file);
 		}
 	}
 
@@ -178,6 +187,13 @@ void loadMap() {
 			fread(&map[i].doorData[j].y, sizeof(int), 1, file);
 			fread(&map[i].doorData[j].destX, sizeof(int), 1, file);
 			fread(&map[i].doorData[j].destY, sizeof(int), 1, file);
+		}
+
+		fread(&map[i].npcCnt, sizeof(int), 1, file);
+		for(int j=0; j<map[i].npcCnt; j++) {
+			fread(&map[i].npcData[j].val, sizeof(int), 1, file);
+			fread(&map[i].npcData[j].x, sizeof(int), 1, file);
+			fread(&map[i].npcData[j].y, sizeof(int), 1, file);
 		}
 	}
 
@@ -356,6 +372,19 @@ void checkKeys(Uint8 *keyStates) {
 	} else {
 		keyStatesBuf[SDLK_PAGEDOWN] = false;
 	}
+
+	if(keyStates[SDLK_n]) {
+		if(!keyStatesBuf[SDLK_n]) {
+			printf("Enter the NPC value: ");
+			scanf("%i", &map[currRoom].npcData[map[currRoom].npcCnt].val);
+			map[currRoom].npcData[map[currRoom].npcCnt].x = curX;
+			map[currRoom].npcData[map[currRoom].npcCnt].y = curY;
+			map[currRoom].npcCnt++;
+			keyStatesBuf[SDLK_n] = true;
+		}
+	} else {
+		keyStatesBuf[SDLK_n] = false;
+	}
 }
 
 void loop() {
@@ -369,6 +398,11 @@ void loop() {
 	for(int i=0; i<map[currRoom].doorCnt; i++) {
 		apply_surface(map[currRoom].doorData[i].x*BLOCK_SIZE,
 			map[currRoom].doorData[i].y*BLOCK_SIZE, s_door, s_screen, 0, true);
+	}
+
+	for(int i=0; i<map[currRoom].npcCnt; i++) {
+		apply_surface(map[currRoom].npcData[i].x*BLOCK_SIZE,
+			map[currRoom].npcData[i].y*BLOCK_SIZE, s_npc, s_screen, 0, true);
 	}
 
 	apply_surface(curX*BLOCK_SIZE, ((map[currRoom].h)-(map[currRoom].h-curY))
