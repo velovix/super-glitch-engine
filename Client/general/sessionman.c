@@ -255,3 +255,16 @@ void pk_supdateNpcs(sessionMan_t* ses) {
 		}
 	}
 }
+
+void pk_spruneNpcs(sessionMan_t* ses) {
+	for(int i=0; i<MAX_NPCS; i++) {
+		bool isUsed = false;
+		for(int j=0; j<ses->map.npcCnt; j++) {
+			if(ses->map.npcData[j] == i) {
+				isUsed = true;
+			}
+		}
+
+		ses->npcs[i].active = isUsed;
+	}
+}

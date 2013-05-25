@@ -107,6 +107,9 @@ void loadMap(int val) {
 			fseek(fMap, rHeader[i].w*rHeader[i].h*sizeof(char), SEEK_CUR);
 			fread(&doorCnt, sizeof(int), 1, fMap);
 			fseek(fMap, (sizeof(char)+(sizeof(int)*4))*doorCnt, SEEK_CUR);
+			int npcCnt;
+			fread(&npcCnt, sizeof(int), 1, fMap);
+			fseek(fMap, (sizeof(int)*3)*npcCnt, SEEK_CUR);
 		}
 	}
 
@@ -122,7 +125,18 @@ void loadMap(int val) {
 	pk_setDoorData(doorCnt, &doorData[0], &ses.map);
 	printf("   Map Door Count: %i\n", doorCnt);
 
+	fread(&ses.map.npcCnt, sizeof(int), 1, fMap);
+	free(ses.map.npcData);
+	ses.map.npcData = (int*)malloc(ses.map.npcCnt*sizeof(int));
+	for(int i=0; i<ses.map.npcCnt; i++) {
+		fread(&ses.map.npcData[i], sizeof(int), 1, fMap);
+		fseek(fMap, sizeof(int)*2, SEEK_CUR);
+	}
+	printf("   Map NPC Count: %i\n", ses.map.npcCnt);
+
 	fclose(fMap);
+
+	pk_spruneNpcs(&ses);
 }
 
 void setTypes() {

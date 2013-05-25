@@ -33,8 +33,9 @@ typedef struct {
 	int width, height;
 	char *data;
 	bool *cData;
-	int doorCnt;
+	int doorCnt, npcCnt;
 	door_t* doorData;
+	int* npcData;
 } map_t;
 
 void pk_initMap(int w, int h, map_t* map);

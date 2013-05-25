@@ -50,5 +50,6 @@ void pk_sstepBattle(sessionMan_t* ses, int step, monster_t aMon, monster_t dMon,
 void pk_ssetMoveWind(monster_t mon, sessionMan_t* ses);
 void pk_supdateWindows(sessionMan_t*);
 void pk_supdateNpcs(sessionMan_t*);
+void pk_spruneNpcs(sessionMan_t*);
 
 #endif
