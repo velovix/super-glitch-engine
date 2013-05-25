@@ -1,5 +1,12 @@
 #include "mapman.h"
 
+void pk_initMap(int w, int h, map_t* map) {
+	free(map->data);
+	free(map->cData);
+	map->data = (char*)malloc(w*h*sizeof(char));
+	map->cData = (bool*)malloc(w*h*sizeof(bool));
+}
+
 col_t pk_findCols(map_t map, int x, int y) {
 
 	col_t out;
@@ -22,7 +29,8 @@ col_t pk_findCols(map_t map, int x, int y) {
 
 bool pk_isSolid(int val) {
 	if(val != CLEAR && val != DARK_DIRT && val != GRASS
-		   && val != HOUSE_DOOR && val != HOUSE_FLOOR && val != HOUSE_MAT) {
+		&& val != HOUSE_DOOR && val != HOUSE_FLOOR && val != HOUSE_MAT
+		&& val != SLIGHT_DIRT) {
 		return true;
 	} else {
 		return false;

@@ -31,12 +31,13 @@ typedef struct {
 
 typedef struct {
 	int width, height;
-	char data[32768];
-	bool cData[32768];
+	char *data;
+	bool *cData;
 	int doorCnt;
 	door_t* doorData;
 } map_t;
 
+void pk_initMap(int w, int h, map_t* map);
 col_t pk_findCols(map_t map, int x, int y);
 void pk_buildColMapM(map_t* map);
 void pk_clearColMap(map_t* map);

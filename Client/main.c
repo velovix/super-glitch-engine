@@ -99,6 +99,7 @@ void loadMap(int val) {
 			printf("   Map Size: %i\n", rHeader[i].w*rHeader[i].h);
 			ses.map.width = rHeader[i].w;
 			ses.map.height = rHeader[i].h;
+			pk_initMap(ses.map.width, ses.map.height, &ses.map);
 			for(int j=0; j<rHeader[i].w*rHeader[i].h; j++) {
 				fread(&ses.map.data[j], sizeof(char), 1, fMap);
 			}
