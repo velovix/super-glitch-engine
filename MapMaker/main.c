@@ -330,15 +330,19 @@ void checkKeys(Uint8 *keyStates) {
 	if(keyStates[SDLK_c]) {
 		if(!keyStatesBuf[SDLK_c]) {
 			map[currRoom].doorCnt = 0;
-			for(int i=0; i<	map[currRoom].w*map[currRoom].h; i++) {
-				if(map[currRoom].data[i] >= 100) {
-					map[currRoom].data[i]-=100;
-				}
-			}
 			keyStatesBuf[SDLK_c] = true;
 		}
 	} else {
 		keyStatesBuf[SDLK_c] = false;
+	}
+
+	if(keyStates[SDLK_v]) {
+		if(!keyStatesBuf[SDLK_v]) {
+			map[currRoom].npcCnt = 0;
+			keyStatesBuf[SDLK_v] = true;
+		}
+	} else {
+		keyStatesBuf[SDLK_v] = false;
 	}
 
 	if(keyStates[SDLK_l]) {
