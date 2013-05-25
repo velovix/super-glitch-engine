@@ -75,6 +75,16 @@ void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map) {
 	map->doorCnt = doorCnt;
 }
 
+void pk_setNpcData(int npcCnt, mapNpc_t *npcData, map_t* map) {
+	free(map->npcData);
+	map->npcData = (mapNpc_t*)malloc(npcCnt*sizeof(mapNpc_t));
+
+	for(int i=0; i<npcCnt; i++) {
+		map->npcData[i] = npcData[i];
+	}
+	map->npcCnt = npcCnt;
+}
+
 door_t pk_isOnDoor(int x, int y, map_t* map) {
 	for(int i=0; i<map->doorCnt; i++) {
 		if(map->doorData[i].x == x && map->doorData[i].y == y) {

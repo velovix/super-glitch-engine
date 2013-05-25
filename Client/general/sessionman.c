@@ -260,8 +260,14 @@ void pk_spruneNpcs(sessionMan_t* ses) {
 	for(int i=0; i<MAX_NPCS; i++) {
 		bool isUsed = false;
 		for(int j=0; j<ses->map.npcCnt; j++) {
-			if(ses->map.npcData[j] == i) {
+			if(ses->map.npcData[j].val == i) {
 				isUsed = true;
+				ses->npcs[i].mover.x = ses->npcs[i].mover.nextX = ses->map.npcData[j].x*BLOCK_SIZE;
+				ses->npcs[i].mover.y = ses->npcs[i].mover.nextY = ses->map.npcData[j].y*BLOCK_SIZE;
+				ses->npcs[i].destX[0] = ses->map.npcData[j].x*BLOCK_SIZE;
+				ses->npcs[i].destY[0] = ses->map.npcData[j].y*BLOCK_SIZE;
+				ses->npcs[i].destX[1]+=ses->npcs[i].mover.x;
+				ses->npcs[i].destY[1]+=ses->npcs[i].mover.y;
 			}
 		}
 

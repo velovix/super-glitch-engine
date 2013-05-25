@@ -70,7 +70,6 @@ typedef struct {
 } npcFileHeader_f;
 
 typedef struct {
-	int x, y;
 	int destX, destY;
 	int aiType;
 	int sprite;

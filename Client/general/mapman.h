@@ -26,6 +26,11 @@ typedef struct {
 } door_t;
 
 typedef struct {
+	int val;
+	int x, y;
+} mapNpc_t;
+
+typedef struct {
 	bool left, right, up, down;
 } col_t;
 
@@ -35,7 +40,7 @@ typedef struct {
 	bool *cData;
 	int doorCnt, npcCnt;
 	door_t* doorData;
-	int* npcData;
+	mapNpc_t* npcData;
 } map_t;
 
 void pk_initMap(int w, int h, map_t* map);
@@ -44,6 +49,7 @@ void pk_buildColMapM(map_t* map);
 void pk_clearColMap(map_t* map);
 bool pk_isSolid(int val);
 void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map);
+void pk_setNpcData(int npcCnt, mapNpc_t *npcData, map_t* map);
 door_t pk_isOnDoor(int x, int y, map_t* map);
 
 #endif

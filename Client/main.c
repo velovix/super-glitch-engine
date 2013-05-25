@@ -125,13 +125,15 @@ void loadMap(int val) {
 	pk_setDoorData(doorCnt, &doorData[0], &ses.map);
 	printf("   Map Door Count: %i\n", doorCnt);
 
-	fread(&ses.map.npcCnt, sizeof(int), 1, fMap);
-	free(ses.map.npcData);
-	ses.map.npcData = (int*)malloc(ses.map.npcCnt*sizeof(int));
-	for(int i=0; i<ses.map.npcCnt; i++) {
-		fread(&ses.map.npcData[i], sizeof(int), 1, fMap);
-		fseek(fMap, sizeof(int)*2, SEEK_CUR);
+	int npcCnt;
+	fread(&npcCnt, sizeof(int), 1, fMap);
+	mapNpc_t npcData[npcCnt];
+	for(int i=0; i<npcCnt; i++) {
+		fread(&npcData[i].val, sizeof(int), 1, fMap);
+		fread(&npcData[i].x, sizeof(int), 1, fMap);
+		fread(&npcData[i].y, sizeof(int), 1, fMap);
 	}
+	pk_setNpcData(npcCnt, &npcData[0], &ses.map);
 	printf("   Map NPC Count: %i\n", ses.map.npcCnt);
 
 	fclose(fMap);
@@ -220,9 +222,6 @@ void loadNpcs() {
 
 	npc_f npc[header.count];
 	for(int i=0; i<header.count; i++) {
-		fread(&npc[i].x, sizeof(int), 1, fNpcs);
-		fread(&npc[i].y, sizeof(int), 1, fNpcs);
-
 		fread(&npc[i].aiType, sizeof(int), 1, fNpcs);
 
 		fread(&npc[i].destX, sizeof(int), 1, fNpcs);
@@ -252,7 +251,7 @@ void loadNpcs() {
 			}
 		}
 
-		ses.npcs[i] = pk_initNpc(BLOCK_SIZE*npc[i].x, BLOCK_SIZE*npc[i].y,
+		ses.npcs[i] = pk_initNpc(BLOCK_SIZE*0, BLOCK_SIZE*0,
 			BLOCK_SIZE*npc[i].destX, BLOCK_SIZE*npc[i].destY, npc[i].reach,
 			npc[i].sprite, LEFT, npc[i].aiType, !npc[i].fightable);
 
