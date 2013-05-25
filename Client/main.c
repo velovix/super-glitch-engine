@@ -192,52 +192,95 @@ void setMonsters()
 	printf("   %i monsters found.\n", header.count);
 }
 
-void setNpcs()
+void loadNpcs() {
+	FILE * fNpcs;
+	fNpcs = fopen("resources/data/npc.pke", "r");
+	if(fNpcs == NULL) {
+		printf("[ERROR] Missing npc.pke in resources/data folder!\n");
+	}
+
+	printf("Loading NPCs...\n");
+	npcFileHeader_f header;
+	fread(&header.count, sizeof(int), 1, fNpcs);
+	printf("   Found %i Npcs\n", header.count);
+
+	npc_f npc[header.count];
+	for(int i=0; i<header.count; i++) {
+		fread(&npc[i].x, sizeof(int), 1, fNpcs);
+		fread(&npc[i].y, sizeof(int), 1, fNpcs);
+
+		fread(&npc[i].aiType, sizeof(int), 1, fNpcs);
+
+		fread(&npc[i].destX, sizeof(int), 1, fNpcs);
+		fread(&npc[i].destY, sizeof(int), 1, fNpcs);
+
+		fread(&npc[i].sprite, sizeof(int), 1, fNpcs);
+		fread(&npc[i].reach, sizeof(int), 1, fNpcs);
+
+		fread(&npc[i].fightable, sizeof(bool), 1, fNpcs);
+		for(int j=0; j<6; j++) {
+			fread(&npc[i].monsters[j], sizeof(int), 1, fNpcs);
+		}
+
+		fread(&npc[i].msg1, sizeof(char), 128, fNpcs);
+		fread(&npc[i].msg2, sizeof(char), 128, fNpcs);
+		fread(&npc[i].msg3, sizeof(char), 128, fNpcs);
+
+		for(int j=0; j<128; j++) {
+			if(npc[i].msg1[j] == '_') {
+				npc[i].msg1[j] = ' ';
+			}
+			if(npc[i].msg2[j] == '_') {
+				npc[i].msg2[j] = ' ';
+			}
+			if(npc[i].msg3[j] == '_') {
+				npc[i].msg3[j] = ' ';
+			}
+		}
+
+		ses.npcs[i] = pk_initNpc(BLOCK_SIZE*npc[i].x, BLOCK_SIZE*npc[i].y,
+			BLOCK_SIZE*npc[i].destX, BLOCK_SIZE*npc[i].destY, npc[i].reach,
+			npc[i].sprite, LEFT, npc[i].aiType, !npc[i].fightable);
+
+		for(int j=0; j<6; j++) {
+			pk_setNpcMonster(pk_initMonster(25, 50, &ses.bMons[npc[i].monsters[j]], false, 
+				ses.bMons[npc[i].monsters[j]].bs), &ses.npcs[i]);
+			for(int k=0; k<4; k++) {
+				pk_setMove(PK_TACKLE, ses.moves[PK_TACKLE].bpp, ses.moves[PK_TACKLE].bpp, k, &ses.npcs[i].monsters[j]);
+			}
+		}
+
+		pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[i].dialog);
+
+		pk_setMessage(1, &npc[i].msg1[0], &ses.npcs[i]);
+		pk_setMessage(2, &npc[i].msg1[0], &ses.npcs[i]);
+		pk_setMessage(3, &npc[i].msg1[0], &ses.npcs[i]);
+
+		pk_switchMessage(1, &ses.npcs[i]);
+	}
+
+	fclose(fNpcs);
+	printf("Read NPC info.\n");
+}
+
+void setPlayer()
 {
 	ses.p1 = pk_pinit(6*BLOCK_SIZE,11*BLOCK_SIZE, C_PLAYER);
-	ses.npcs[0] = pk_initNpc(BLOCK_SIZE*8, BLOCK_SIZE*8, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, true);
-	ses.npcs[1] = pk_initNpc(BLOCK_SIZE*3, BLOCK_SIZE*7, 0, 0, 1, C_SCI, LEFT, AI_TURN, true);
-	ses.npcs[3] = pk_initNpc(BLOCK_SIZE*3, BLOCK_SIZE*4, 0, 0, 1, C_FATMAN, LEFT, AI_NOTHING, true);
-	ses.npcs[4] = pk_initNpc(BLOCK_SIZE*9, BLOCK_SIZE*5, 0, 0, 1, C_GIRL, LEFT, AI_WANDER, true);
-	ses.npcs[5] = pk_initNpc(BLOCK_SIZE*7, BLOCK_SIZE*7, 0, 0, 1, C_SIGN, DOWN, AI_NOTHING, true);
-	ses.npcs[7] = pk_initNpc(BLOCK_SIZE*4, BLOCK_SIZE*13, 0, 0, 4, C_FATMAN, RIGHT, AI_NOTHING, false);
 
 	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[PK_CHARIZARD], false, 
 		ses.bMons[PK_CHARIZARD].bs), &ses.p1);
-	pk_setNpcMonster(pk_initMonster(25, 50, &ses.bMons[PK_BLASTOISE], false, 
-		ses.bMons[PK_BLASTOISE].bs), &ses.npcs[1]);
 
 	for(int i=0; i<4; i++) {
 		if(i == 3) {
 			pk_setMove(PK_EXPLOSION, ses.moves[PK_EXPLOSION].bpp, ses.moves[PK_EXPLOSION].bpp, i, &ses.p1.monsters[0]);
-			pk_setMove(PK_EXPLOSION, ses.moves[PK_EXPLOSION].bpp, ses.moves[PK_EXPLOSION].bpp, i, &ses.npcs[1].monsters[0]);
 		} else {
 			pk_setMove(PK_TACKLE, ses.moves[PK_TACKLE].bpp, ses.moves[PK_TACKLE].bpp, i, &ses.p1.monsters[0]);
-			pk_setMove(PK_TACKLE, ses.moves[PK_TACKLE].bpp, ses.moves[PK_TACKLE].bpp, i, &ses.npcs[1].monsters[0]);
 		}
 	}
-
-	printf("Read NPC info.\n");
 }
 
 void setWindows()
-{	
-	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[0].dialog);
-	pk_setWindowText("{^I am a girl.^^No joke.|", true, &ses.npcs[0].dialog);
-	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[1].dialog);
-	pk_setWindowText("{^I am but a^^hapless nerd.|", true, &ses.npcs[1].dialog);
-	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[3].dialog);
-	pk_setWindowText("{There is actually^a lot more room in^text boxes than the^real game uses.|",
-		true, &ses.npcs[3].dialog);
-	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[4].dialog);
-	pk_setWindowText("{^This is an example^^of a large string.{^It does not matter^^how long it is.{^SGE can do it!|",
-		true, &ses.npcs[4].dialog);
-	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[5].dialog);
-	pk_setWindowText("{^TRAINER TIPS{^Signs are actually^^just NPCs!{^Sign NPCs are^^invisible.|",
-		true, &ses.npcs[5].dialog);
-	pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[7].dialog);
-	pk_setWindowText("{^I have Pokemon!^^Let's fight!|", true, &ses.npcs[7].dialog);
-
+{
 	pk_setWOptionFunc(6, &quitGame, &ses.w_menu);
 }
 
@@ -726,8 +769,9 @@ int main(int argc, char **argv)
 	pk_initSMan(SES_OVERWORLD, &ses);
 	setTypes();
 	setMonsters();
-	setNpcs();
 	setWindows();
+	setPlayer();
+	loadNpcs();
 	loadMap(0);
 
 	ftime(&lastTime);

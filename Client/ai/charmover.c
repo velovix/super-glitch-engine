@@ -7,6 +7,7 @@ void pk_initChar(int s_x, int s_y, charMover_t* obj) {
 	obj->nextY = s_y;
 	obj->dir = LEFT;
 	obj->step = false;
+	obj->animCycle = 0;
 }
 
 void pk_moveChar(int dir, bool move, charMover_t* obj) {

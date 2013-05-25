@@ -5,6 +5,7 @@ player_t pk_pinit(int x, int y, int sprite) {
 	out.sprite = sprite;
 	out.pause = false;
 	out.currMon = 0;
+	out.monCnt = 0;
 
 	pk_initChar(x, y, &out.mover);
 
@@ -12,6 +13,10 @@ player_t pk_pinit(int x, int y, int sprite) {
 }
 
 void pk_psetMonster(monster_t mon, player_t* player) {
+	if(player->monCnt > 5) {
+		printf("Max # of monsters reached\n");
+		return;
+	}
 	player->monsters[player->monCnt] = mon;
 	player->monCnt++;
 }

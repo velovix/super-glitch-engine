@@ -13,7 +13,7 @@ npc_t pk_initNpc(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite
 	out.reach = s_reach;
 	out.sprite = s_sprite;
 	out.aiType = s_aiType;
-	out.actClock = out.dest = out.currMon = 0;
+	out.actClock = out.dest = out.currMon = out.monCnt = 0;
 	out.fought = s_fought;
 
 	out.active = true;
@@ -111,9 +111,9 @@ void pk_updateNpc(npc_t* npc, col_t col) {
 			}
 
 			if(npc->mover.y < npc->destY[npc->dest]) {
-				pk_moveChar(UP, true, &npc->mover);
-			} else if(npc->mover.y > npc->destY[npc->dest]) {
 				pk_moveChar(DOWN, true, &npc->mover);
+			} else if(npc->mover.y > npc->destY[npc->dest]) {
+				pk_moveChar(UP, true, &npc->mover);
 			}
 		}
 
@@ -128,7 +128,57 @@ void pk_setNpcWindow(window_t s_wind, npc_t* trainer) {
 	trainer->dialog = s_wind;
 }
 
+void pk_setMessage(int val, char* msg, npc_t* trainer) {
+	int inc = 0;
+	bool stop = false;
+	while(inc < 128) {
+		switch(val) {
+		case 1:
+			trainer->msg1[inc] = msg[inc];
+			if(msg[inc] == '|') {
+				stop = true;
+			}
+			break;
+		case 2:
+			trainer->msg2[inc] = msg[inc];
+			if(msg[inc] == '|') {
+				stop = true;
+			}
+			break;
+		case 3:
+			trainer->msg3[inc] = msg[inc];
+			if(msg[inc] == '|') {
+				stop = true;
+			}
+			break;
+		}
+
+		if(stop) {
+			break;
+		}
+		inc++;
+	}
+}
+
+void pk_switchMessage(int val, npc_t* trainer) {
+	switch(val) {
+	case 1:
+		pk_setWindowText(&trainer->msg1[0], true, &trainer->dialog);
+		break;
+	case 2:
+		pk_setWindowText(&trainer->msg2[0], true, &trainer->dialog);
+		break;
+	case 3:
+		pk_setWindowText(&trainer->msg3[0], true, &trainer->dialog);
+		break;
+	}
+}
+
 void pk_setNpcMonster(monster_t mon, npc_t* trainer) {
+	if(trainer->monCnt > 5) {
+		printf("NPC: Max monster count reached\n");
+		return;
+	}
 	trainer->monsters[trainer->monCnt] = mon;
 	trainer->monCnt++;
 }
@@ -150,10 +200,10 @@ bool pk_canNpcSee(int x, int y, npc_t* npc) {
 	} else if(npc->mover.dir == RIGHT && x > npc->mover.x && y == npc->mover.y &&
 		abs(npc->mover.x-x)/BLOCK_SIZE <= npc->reach) {
 		out = true;
-	} else if(npc->mover.dir == UP && x == npc->mover.x && y > npc->mover.y &&
+	} else if(npc->mover.dir == UP && x == npc->mover.x && y < npc->mover.y &&
 		abs(npc->mover.y-y)/BLOCK_SIZE <= npc->reach) {
 		out = true;
-	} else if(npc->mover.dir == DOWN && x == npc->mover.x && y < npc->mover.y &&
+	} else if(npc->mover.dir == DOWN && x == npc->mover.x && y > npc->mover.y &&
 		abs(npc->mover.y-y)/BLOCK_SIZE <= npc->reach) {
 		out = true;
 	}

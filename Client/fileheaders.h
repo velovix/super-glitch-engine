@@ -65,4 +65,23 @@ typedef struct {
 	int x, y;
 } npcEntry_f;
 
+typedef struct {
+	int count;
+} npcFileHeader_f;
+
+typedef struct {
+	int x, y;
+	int destX, destY;
+	int aiType;
+	int sprite;
+	int reach;
+
+	bool fightable;
+	int monsters[6];
+
+	char msg1[128];
+	char msg2[128];
+	char msg3[128];
+} npc_f;
+
 #endif

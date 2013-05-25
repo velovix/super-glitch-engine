@@ -23,11 +23,14 @@ typedef struct {
 
 	int reach, sprite, aiType, actClock, dest, monCnt, currMon;
 	bool fought, active, pause, aggro;
-	int targetX, targetY;
 
 	monster_t monsters[6];
 	charMover_t mover;
 	window_t dialog;
+
+	char msg1[128];
+	char msg2[128];
+	char msg3[128];
 } npc_t;
 
 npc_t pk_initNpc(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite,
@@ -35,6 +38,8 @@ npc_t pk_initNpc(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite
 
 void pk_updateNpc(npc_t* npc, col_t col);
 void pk_setNpcWindow(window_t s_wind, npc_t* trainer);
+void pk_setMessage(int val, char* msg, npc_t* trainer);
+void pk_switchMessage(int val, npc_t* trainer);
 void pk_setNpcMonster(monster_t mon, npc_t* trainer);
 int pk_getNpcFrame(npc_t npc);
 void pk_toggleNpcPause(npc_t* npc);
