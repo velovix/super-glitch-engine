@@ -81,8 +81,20 @@ int main(int argc, char **argv) {
 		}
 		printf("Messages (Use _ for spaces)\n");
 		printf("   Msg1? ");	scanf("%s", npc[i].msg1);
-		printf("   Msg2? ");	scanf("%s", npc[i].msg1);
-		printf("   Msg3? ");	scanf("%s", npc[i].msg1);
+		for(int j=0; j<128; j++) {
+			printf("%c", npc[i].msg1[j]);
+		}
+		printf("\n");
+		printf("   Msg2? ");	scanf("%s", npc[i].msg2);
+		for(int j=0; j<128; j++) {
+			printf("%c", npc[i].msg2[j]);
+		}
+		printf("\n");
+		printf("   Msg3? ");	scanf("%s", npc[i].msg3);
+		for(int j=0; j<128; j++) {
+			printf("%c", npc[i].msg3[j]);
+		}
+		printf("\n");
 		fwrite(&npc[i].msg1, sizeof(char), 128, file);
 		fwrite(&npc[i].msg2, sizeof(char), 128, file);
 		fwrite(&npc[i].msg3, sizeof(char), 128, file);
