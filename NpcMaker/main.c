@@ -11,8 +11,11 @@ typedef struct {
 	int x, y;
 	int destX, destY;
 	int aiType;
-	bool fightable;
+	int sprite;
+	int reach;
+	int dir;
 
+	bool fightable;
 	int monsters[6];
 
 	char msg1[128];
@@ -55,6 +58,14 @@ int main(int argc, char **argv) {
 		}
 		fwrite(&npc[i].destX, sizeof(int), 1, file);
 		fwrite(&npc[i].destY, sizeof(int), 1, file);
+
+		printf("Sprite\n");
+		printf("   ? ");		scanf("%i", &npc[i].sprite);
+		fwrite(&npc[i].sprite, sizeof(int), 1, file);
+
+		printf("Reach\n");
+		printf("   ? ");		scanf("%i", &npc[i].reach);
+		fwrite(&npc[i].reach, sizeof(int), 1, file);
 
 		int fEntry = 1;
 		printf("Fightability\n");
