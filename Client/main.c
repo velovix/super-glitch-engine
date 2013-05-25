@@ -662,7 +662,7 @@ void physics()
 
 	pk_updateChar(&ses.p1.mover);
 
-	if(ses.p1.mover.x == ses.p1.mover.nextX && ses.p1.mover.y == ses.p1.mover.nextY && ses.p1.mover.animCycle > 0) {
+	if(pk_isFinishedMoving(ses.p1.mover) && ses.p1.mover.animCycle > 0) {
 		door_t door;
 		switch(ses.p1.mover.dir) {
 		case LEFT:

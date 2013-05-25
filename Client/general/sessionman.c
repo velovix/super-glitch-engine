@@ -235,9 +235,12 @@ void pk_supdateNpcs(sessionMan_t* ses) {
 		if(ses->npcs[i].active) {
 
 			pk_updateNpc(&ses->npcs[i], pk_findCols(ses->map,ses->npcs[i].mover.x/BLOCK_SIZE, ses->npcs[i].mover.y/BLOCK_SIZE));
-			if(!ses->npcs[i].fought && !ses->npcs[i].aggro && pk_canNpcSee(ses->p1.mover.x, ses->p1.mover.y, &ses->npcs[i])) {
-				ses->p1.pause = true;
-				pk_aggroNpc(ses->p1.mover.x, ses->p1.mover.y, &ses->npcs[i]);
+			if(!ses->npcs[i].fought && !ses->npcs[i].aggro && pk_canNpcSee(ses->p1.mover.nextX, ses->p1.mover.nextY, &ses->npcs[i])) {
+				if(pk_isFinishedMoving(ses->p1.mover)) {
+					pk_aggroNpc(ses->p1.mover.x, ses->p1.mover.y, &ses->npcs[i]);
+				} else {
+					ses->p1.pause = true;
+				}
 			} else if(ses->npcs[i].aggro && ses->npcs[i].mover.x == ses->npcs[i].destX[ses->npcs[i].dest]
 				&& ses->npcs[i].mover.y == ses->npcs[i].destY[ses->npcs[i].dest] && !ses->npcs[i].dialog.finished) {
 				pk_toggleWindow(&ses->npcs[i].dialog);

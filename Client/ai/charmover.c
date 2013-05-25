@@ -49,6 +49,30 @@ void pk_updateChar(charMover_t* obj) {
 	}
 }
 
+void pk_resetChar(charMover_t* obj) {
+	if(!pk_isFinishedMoving(obj[0])) {
+		switch(obj->dir) {
+		case RIGHT:
+			obj->x = obj->nextX-BLOCK_SIZE;
+			break;
+		case LEFT:
+			obj->x = obj->nextX+BLOCK_SIZE;
+			break;
+		case UP:
+			obj->y = obj->nextY+BLOCK_SIZE;
+			break;
+		case DOWN:
+			obj->y = obj->nextY-BLOCK_SIZE;
+			break;
+		}
+	}
+
+	obj->nextX = obj->x;
+	obj->nextY = obj->y;
+
+	obj->animCycle = 0;
+}
+
 int pk_getCharFrame(int spriteOffset, charMover_t obj) {
 	switch(obj.dir) {
 	case LEFT:
@@ -100,4 +124,12 @@ int pk_faceChar(charMover_t p, charMover_t t) {
 	} else if(p.y < t.y) {
 		return UP;
 	}
+}
+
+bool pk_isFinishedMoving(charMover_t obj) {
+	if(obj.x == obj.nextX && obj.y == obj.nextY) {
+		return true;
+	}
+
+	return false;
 }
