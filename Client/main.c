@@ -582,21 +582,18 @@ void graphics()
 {
 	if(ses.mode == SES_OVERWORLD) {
 		int mapX, mapY = 0;
+		int incMapY = 1;
 
-		int grassLocs[64], grassLocsX[64], grassLocsY[64];
-		int gInc = 0;
 		for(int i=0; i<ses.map.width*ses.map.height; i++) {
 			apply_surface(mapX, mapY, s_mapTile, s_screen, &clipTiles[ses.map.data[i]], true);
-			if(ses.map.data[i] == GRASS) {
-				grassLocs[gInc] = i;
-				grassLocsX[gInc] = mapX;
-				grassLocsY[gInc] = mapY;
-				gInc++;
-			}
 			mapX+=BLOCK_SIZE;
-			if((i+1) % ses.map.width == 0 && i != 0) {
+
+			if(incMapY == ses.map.width) {
+				incMapY = 1;
+				mapX = 0;
 				mapY+=BLOCK_SIZE;
-				mapX= 0;
+			} else {
+				incMapY++;
 			}
 		}
 
@@ -614,9 +611,6 @@ void graphics()
 
 		apply_surface(ses.p1.mover.x, ses.p1.mover.y-4, s_player, s_screen, &clipNPCs[pk_pgetFrame(ses.p1)], true);
 
-		for(int i=0; i<gInc; i++) {
-			apply_surface(grassLocsX[i], grassLocsY[i], s_mapTile, s_screen, &clipTiles[GRASS_OVER], true);
-		}
 	} else if(ses.mode == SES_BATTLE) {
 		drawBattle();
 
