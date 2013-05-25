@@ -8,7 +8,6 @@ typedef struct {
 } npcFileHeader_f;
 
 typedef struct {
-	int x, y;
 	int destX, destY;
 	int aiType;
 	int sprite;
@@ -37,24 +36,18 @@ int main(int argc, char **argv) {
 
 	npc_f npc[header.count];
 	for(int i=0; i<header.count; i++) {
-		printf("Starting Coordinates\n");
-		printf("   x? ");		scanf("%i", &npc[i].x);
-		printf("   y? ");		scanf("%i", &npc[i].y);
-		fwrite(&npc[i].x, sizeof(int), 1, file);
-		fwrite(&npc[i].y, sizeof(int), 1, file);
-
 		printf("AI Type\n");
 		printf("   Nothing:0 | Turn:1 | Back&Forth:3 | Wander:4\n");
 		printf("   Type? ");	scanf("%i", &npc[i].aiType);
 		fwrite(&npc[i].aiType, sizeof(int), 1, file);
 
 		if(npc[i].aiType == 3) {
-			printf("Destination\n");
+			printf("Destination (Relative)\n");
 			printf("   x? ");	scanf("%i", &npc[i].destX);
 			printf("   y? ");	scanf("%i", &npc[i].destY);
 		} else {
-			npc[i].destX = npc[i].x;
-			npc[i].destY = npc[i].y;
+			npc[i].destX = 0;
+			npc[i].destY = 0;
 		}
 		fwrite(&npc[i].destX, sizeof(int), 1, file);
 		fwrite(&npc[i].destY, sizeof(int), 1, file);
