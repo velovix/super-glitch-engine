@@ -268,27 +268,28 @@ void checkKeys(Uint8 *keyStates) {
 		if(!keyStatesBuf[SDLK_p]) {
 			if(chooseRoom) {
 				int orDoor = hasDoor(lastCurX, lastCurY, origRoom);
+				door_t* door;
 				if(orDoor == -1) {
-					map[origRoom].doorData[map[currRoom].doorCnt].dest = (char)currRoom;
-					map[origRoom].doorData[map[currRoom].doorCnt].x = lastCurX;
-					map[origRoom].doorData[map[currRoom].doorCnt].y = lastCurY;
-					map[origRoom].doorData[map[currRoom].doorCnt].destX = curX;
-					map[origRoom].doorData[map[currRoom].doorCnt].destY = curY;
+					door = &map[origRoom].doorData[map[origRoom].doorCnt];
+					printf("   Created door %i\n", map[origRoom].doorCnt);
 					map[origRoom].doorCnt++;
 				} else {
-					map[origRoom].doorData[map[orDoor].doorCnt].dest = (char)currRoom;
-					map[origRoom].doorData[map[orDoor].doorCnt].x = lastCurX;
-					map[origRoom].doorData[map[orDoor].doorCnt].y = lastCurY;					
-					map[origRoom].doorData[map[orDoor].doorCnt].destX = curX;
-					map[origRoom].doorData[map[orDoor].doorCnt].destY = curY;
+					door = &map[origRoom].doorData[map[orDoor].doorCnt];
+					printf("   Edited old door %i\n", orDoor);
 				}
-				printf("You chose room: %i\n", (int)map[origRoom]. \
+				door->dest = (char)currRoom;
+				door->x = lastCurX;
+				door->y = lastCurY;
+				door->destX = curX;
+				door->destY = curY;
+
+				printf("   You chose room: %i\n", (int)map[origRoom]. \
 					doorData[map[currRoom].doorCnt].dest);
 				chooseRoom = false;
 
 				currRoom = origRoom;
 			} else {
-				printf("Go to the desired room and press P again\n");
+				printf("Creating new door...\n");
 				chooseRoom = true;
 				origRoom = currRoom;
 				lastCurX = curX;
@@ -380,7 +381,8 @@ void loop() {
 }
 
 int main() {
-	curX = curY = camX = camY = 0;
+	curX = curY = 1;
+	camX = camY = 0;
 	currRoom = 0;
 	map[currRoom].w = map[currRoom].h = 16;
 

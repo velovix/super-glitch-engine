@@ -671,16 +671,16 @@ void physics()
 		door_t door;
 		switch(ses.p1.mover.dir) {
 		case LEFT:
-			door = pk_isOnDoor((ses.p1.mover.x-1)/BLOCK_SIZE, (ses.p1.mover.y+0)/BLOCK_SIZE, &ses.map);
+			door = pk_isOnDoor((ses.p1.mover.x)/BLOCK_SIZE-1, (ses.p1.mover.y)/BLOCK_SIZE, &ses.map);
 			break;
 		case RIGHT:
-			door = pk_isOnDoor((ses.p1.mover.x+1)/BLOCK_SIZE, (ses.p1.mover.y+0)/BLOCK_SIZE, &ses.map);
+			door = pk_isOnDoor((ses.p1.mover.x)/BLOCK_SIZE+1, (ses.p1.mover.y)/BLOCK_SIZE, &ses.map);
 			break;
 		case UP:
-			door = pk_isOnDoor((ses.p1.mover.x+0)/BLOCK_SIZE, (ses.p1.mover.y-1)/BLOCK_SIZE, &ses.map);
+			door = pk_isOnDoor((ses.p1.mover.x)/BLOCK_SIZE, (ses.p1.mover.y)/BLOCK_SIZE-1, &ses.map);
 			break;
 		case DOWN:
-			door = pk_isOnDoor((ses.p1.mover.x+0)/BLOCK_SIZE, (ses.p1.mover.y+1)/BLOCK_SIZE, &ses.map);
+			door = pk_isOnDoor((ses.p1.mover.x)/BLOCK_SIZE, (ses.p1.mover.y)/BLOCK_SIZE+1, &ses.map);
 			break;
 		}
 		if(door.dest != -1) {

@@ -40,6 +40,7 @@ typedef struct {
 col_t pk_findCols(map_t map, int x, int y);
 void pk_buildColMapM(map_t* map);
 void pk_clearColMap(map_t* map);
+bool pk_isSolid(int val);
 void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map);
 door_t pk_isOnDoor(int x, int y, map_t* map);
 

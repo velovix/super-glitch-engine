@@ -20,15 +20,18 @@ col_t pk_findCols(map_t map, int x, int y) {
 	return out;
 }
 
+bool pk_isSolid(int val) {
+	if(val != CLEAR && val != DARK_DIRT && val != GRASS
+		   && val != HOUSE_DOOR && val != HOUSE_FLOOR && val != HOUSE_MAT) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 void pk_buildColMapM(map_t* map) {
 	for(int i=0; i<map->width*map->height; i++) {
-		if(map->data[i] != CLEAR && map->data[i] != DARK_DIRT && map->data[i] != GRASS
-		   && map->data[i] != HOUSE_DOOR && map->data[i] != HOUSE_FLOOR
-		   && map->data[i] != HOUSE_MAT) {
-			map->cData[i] = true;
-		} else {
-			map->cData[i] = false;
-		}
+		map->cData[i] = pk_isSolid(map->data[i]);
 	}
 }
 
@@ -43,7 +46,7 @@ void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map) {
 	map->doorData = (door_t*)malloc(doorCnt*sizeof(door_t));
 
 	for(int i=0; i<doorCnt; i++) {
-		if(map->data[doorData[i].x+(doorData[i].y*map->width)] == HOUSE_DOOR) {
+		if(!pk_isSolid(map->data[doorData[i].x+(doorData[i].y*map->width)])) {
 			doorData[i].type = DT_WALKINTO;
 		} else {
 			doorData[i].type = DT_COLLIDE;
