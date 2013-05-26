@@ -33,7 +33,7 @@ typedef struct {
 	char msg3[128];
 } npc_t;
 
-npc_t pk_initNpc(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite,
+npc_t pk_initNpc(int s_x1, int s_y1, int s_x2, int s_y2, int s_reach, int s_sprite,
 	int s_dir, int s_aiType, bool s_fought);
 
 void pk_updateNpc(npc_t* npc, col_t col);

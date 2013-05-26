@@ -1,12 +1,12 @@
 #include "npc.h"
 
-npc_t pk_initNpc(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite,
+npc_t pk_initNpc(int s_x1, int s_y1, int s_x2, int s_y2, int s_reach, int s_sprite,
 	int s_dir, int s_aiType, bool s_fought) {
 
 	npc_t out;
 
-	out.destX[0] = s_x;
-	out.destY[0] = s_y;
+	out.destX[0] = s_x1;
+	out.destY[0] = s_y1;
 	out.destX[1] = s_x2;
 	out.destY[1] = s_y2;
 
@@ -20,7 +20,7 @@ npc_t pk_initNpc(int s_x, int s_y, int s_x2, int s_y2, int s_reach, int s_sprite
 	out.pause = false;
 	out.aggro = false;
 
-	pk_initChar(s_x, s_y, &out.mover);
+	pk_initChar(s_x1, s_y1, &out.mover);
 	out.mover.dir = s_dir;
 
 	return out;
@@ -49,7 +49,7 @@ void pk_updateNpc(npc_t* npc, col_t col) {
 		}
 		break;
 	case AI_BANDF:
-		if(npc->mover.x == npc->mover.nextX && npc->mover.y == npc->mover.nextY && !npc->pause) {
+		if(pk_isFinishedMoving(npc->mover) && !npc->pause) {
 			if(npc->mover.x < npc->destX[npc->dest]) {
 				pk_moveChar(RIGHT, true, &npc->mover);
 			} else if(npc->mover.x > npc->destX[npc->dest]) {
@@ -75,7 +75,7 @@ void pk_updateNpc(npc_t* npc, col_t col) {
 
 		break;
 	case AI_WANDER:
-		if(npc->mover.x == npc->mover.nextX && npc->mover.y == npc->mover.nextY && !npc->pause) {
+		if(pk_isFinishedMoving(npc->mover) && !npc->pause) {
 
 			int randDir = rand() % 150 + 1;
 
@@ -103,7 +103,7 @@ void pk_updateNpc(npc_t* npc, col_t col) {
 			break;
 		}
 
-		if(npc->mover.x == npc->mover.nextX && npc->mover.y == npc->mover.nextY && !npc->pause) {
+		if(pk_isFinishedMoving(npc->mover) && !npc->pause) {
 			if(npc->mover.x < npc->destX[npc->dest]) {
 				pk_moveChar(RIGHT, true, &npc->mover);
 			} else if(npc->mover.x > npc->destX[npc->dest]) {

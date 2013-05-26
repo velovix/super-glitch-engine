@@ -264,6 +264,9 @@ void pk_spruneNpcs(sessionMan_t* ses) {
 				isUsed = true;
 				ses->npcs[i].mover.x = ses->npcs[i].mover.nextX = ses->map.npcData[j].x*BLOCK_SIZE;
 				ses->npcs[i].mover.y = ses->npcs[i].mover.nextY = ses->map.npcData[j].y*BLOCK_SIZE;
+
+				ses->npcs[i].destX[1]-=ses->npcs[i].destX[0];
+				ses->npcs[i].destY[1]-=ses->npcs[i].destY[0];
 				ses->npcs[i].destX[0] = ses->map.npcData[j].x*BLOCK_SIZE;
 				ses->npcs[i].destY[0] = ses->map.npcData[j].y*BLOCK_SIZE;
 				ses->npcs[i].destX[1]+=ses->npcs[i].mover.x;
