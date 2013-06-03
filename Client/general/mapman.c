@@ -93,6 +93,6 @@ door_t pk_isOnDoor(int x, int y, map_t* map) {
 	}
 
 	door_t out;
-	out.dest = -1;
+	out.dest = 255;
 	return out;
 }

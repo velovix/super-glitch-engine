@@ -746,7 +746,7 @@ void physics()
 			door = pk_isOnDoor((ses.p1.mover.x)/BLOCK_SIZE, (ses.p1.mover.y)/BLOCK_SIZE+1, &ses.map);
 			break;
 		}
-		if(door.dest != -1) {
+		if(door.dest != 255) {
 			loadMap(door.dest);
 			ses.p1.mover.x = ses.p1.mover.nextX = door.destX*BLOCK_SIZE;
 			ses.p1.mover.y = ses.p1.mover.nextY = door.destY*BLOCK_SIZE;
@@ -754,7 +754,7 @@ void physics()
 	}
 
 	door_t door = pk_isOnDoor(ses.p1.mover.x/BLOCK_SIZE, ses.p1.mover.y/BLOCK_SIZE, &ses.map);
-	if(door.dest != -1 && door.type == DT_WALKINTO) {
+	if(door.dest != 255 && door.type == DT_WALKINTO) {
 		if(pk_isFinishedMoving(ses.p1.mover)) {
 			loadMap(door.dest);
 			ses.p1.mover.x = ses.p1.mover.nextX = door.destX*BLOCK_SIZE;

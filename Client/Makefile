@@ -1,7 +1,7 @@
 OBJ = main.o mapman.o npc.o sessionman.o charmover.o window.o monsters.o stats.o player.o
 AFLAGS = -lSDL -lSDL_image -lSDL_mixer
 POFLAGS = -c
-OFLAGS = -std=gnu99
+OFLAGS = -std=gnu99 -funsigned-char
 COMP = gcc
 
 all: $(OBJ)
