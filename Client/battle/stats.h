@@ -13,6 +13,7 @@
 
 #include "../constants.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef struct {
 	int hp, att, def, spAtt, spDef, speed;

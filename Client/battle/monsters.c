@@ -26,6 +26,7 @@ monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bo
 	out.id = s_id;
 	out.shiny = s_shiny;
 	out.stats = s_stats;
+	out.type1 = out.type2 = 0;
 	for(int i=0; i<4; i++) {
 		out.moves[i].value = 0;
 		out.moves[i].cpp = out.moves[i].bpp = 0;

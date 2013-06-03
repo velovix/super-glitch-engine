@@ -70,6 +70,9 @@ int pk_calcTyping(type_t mType1, type_t mType2, type_t attType) {
 		return RES_NOTVERY;
 	case -2:
 		return RES_HARDLY;
+	default:
+		printf("[WARNING] Invalid effect value. Returning default!\n");
+		return RES_NORMAL;
 	}
 }
 
