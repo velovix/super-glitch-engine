@@ -655,18 +655,15 @@ void graphics()
 {
 	if(ses.mode == SES_OVERWORLD) {
 		int mapX, mapY = 0;
-		int incMapY = 1;
+		mapX = mapY = 0;
 
 		for(int i=0; i<ses.map.width*ses.map.height; i++) {
 			apply_surface(mapX, mapY, s_mapTile, s_screen, &clipTiles[ses.map.data[i]], true);
 			mapX+=BLOCK_SIZE;
 
-			if(incMapY == ses.map.width) {
-				incMapY = 1;
+			if(mapX != 0 && (mapX/BLOCK_SIZE) % ses.map.width == 0) {
 				mapX = 0;
-				mapY+=BLOCK_SIZE;
-			} else {
-				incMapY++;
+				mapY +=BLOCK_SIZE;
 			}
 		}
 
