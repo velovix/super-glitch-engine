@@ -433,7 +433,7 @@ void checkKeys(Uint8 *keyStates)
 		}
 
 		if(keyStates[SDLK_z]) {
-			if(keyStatesBuf[SDLK_z] == false && ses.p1.mover.x == ses.p1.mover.nextX && ses.p1.mover.y == ses.p1.mover.nextY) {
+			if(keyStatesBuf[SDLK_z] == false && pk_isFinishedMoving(ses.p1.mover)) {
 				switch(ses.p1.mover.dir) {
 				npc_t *tNPC;
 				case LEFT:
@@ -528,7 +528,7 @@ void checkKeys(Uint8 *keyStates)
 	}
 
 	if(keyStates[SDLK_m]) {
-		if(keyStatesBuf[SDLK_m] == false && ses.p1.mover.x == ses.p1.mover.nextX && ses.p1.mover.y == ses.p1.mover.nextY) {
+		if(keyStatesBuf[SDLK_m] == false && pk_isFinishedMoving(ses.p1.mover)) {
 			pk_toggleWindow(&ses.w_menu);
 			ses.currWindow = &ses.w_menu;
 			keyStatesBuf[SDLK_m] = true;
@@ -743,7 +743,7 @@ void physics()
 
 	door_t door = pk_isOnDoor(ses.p1.mover.x/BLOCK_SIZE, ses.p1.mover.y/BLOCK_SIZE, &ses.map);
 	if(door.dest != -1 && door.type == DT_WALKINTO) {
-		if(ses.p1.mover.x == ses.p1.mover.nextX && ses.p1.mover.y == ses.p1.mover.nextY) {
+		if(pk_isFinishedMoving(ses.p1.mover)) {
 			loadMap(door.dest);
 			ses.p1.mover.x = ses.p1.mover.nextX = door.destX*BLOCK_SIZE;
 			ses.p1.mover.y = ses.p1.mover.nextY = door.destY*BLOCK_SIZE;

@@ -13,7 +13,7 @@ void pk_initChar(int s_x, int s_y, charMover_t* obj) {
 void pk_moveChar(int dir, bool move, charMover_t* obj) {
 	int x = obj->x;
 	int y = obj->y;
-	if(obj->x == obj->nextX && obj->y == obj->nextY && obj->animCycle == 0) {
+	if(pk_isFinishedMoving(obj[0]) && obj->animCycle == 0) {
 		if(dir == LEFT && move) {
 			obj->nextX = obj->x - CHAR_SPEED;
 			obj->nextY = obj->y;
