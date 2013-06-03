@@ -7,7 +7,7 @@ void pk_initWindow(int s_x, int s_y, int s_w, int s_h, bool s_closeable, bool di
 	window->h = s_h;
 	window->dispChar = 0;
 	window->dispDelay = 3;
-	window->optCnt = 0;
+	window->optCnt = window->optW = window->optH = 0;
 	window->active = window->finished = false;
 	window->closeable = s_closeable;
 	window->selection = WSEL_NONE;
@@ -85,12 +85,21 @@ void pk_setWindowText(char* s_text, bool s_txtScroll, window_t* window) {
 
 	window->txtScroll = s_txtScroll;
 	window->optCnt = 0;
+	window->optW = window->optH = 0;
 
 	int inc = 0;
+	bool settingWidth = true;
 	while(pk_getCharValue(s_text[inc]) != CE_ENDSTR) {
 		window->text[inc] = s_text[inc];
+		if(pk_getCharValue(s_text[inc]) == CE_NEWLINE && window->optCnt != 0) {
+			settingWidth = false;
+			window->optH++;
+		}
 		if(pk_getCharValue(s_text[inc]) == CE_OPTION) {
 			window->optCnt++;
+			if(settingWidth) {
+				window->optW++;
+			}
 		}
 		if(pk_getCharValue(s_text[inc]) == CE_FULLSCROLL) {
 			window->scrollCnt++;
@@ -167,17 +176,27 @@ void pk_toggleWindow(window_t* window) {
 
 void pk_moveSelArrow(int dir, window_t* window) {
 	if(dir == UP) {
-		if(window->selOpt > 0) {
-			window->selOpt--;
-		} else {
-			window->selOpt = window->optCnt-1;
+		if(window->optH > 1) {
+			window->selOpt -= window->optW;
 		}
 	} else if(dir == DOWN) {
-		if(window->selOpt < window->optCnt-1) {
-			window->selOpt++;
-		} else {
-			window->selOpt = 0;
+		if(window->optH > 1) {
+			window->selOpt += window->optW;
 		}
+	} else if(dir == RIGHT) {
+		if(window->optW > 1) {
+			window->selOpt += window->optW-1;
+		}
+	} else if(dir == LEFT) {
+		if(window->optW > 1) {
+			window->selOpt -= window->optW-1;
+		}
+	}
+
+	if(window->selOpt < 0) {
+		window->selOpt = window->optCnt + window->selOpt;
+	} else if(window->selOpt >= window->optCnt) {
+		window->selOpt = window->selOpt - window->optCnt;
 	}
 }
 

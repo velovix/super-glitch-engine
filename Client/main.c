@@ -493,6 +493,22 @@ void checkKeys(Uint8 *keyStates)
 		} else {
 			keyStatesBuf[SDLK_UP] = false;
 		}
+		if(keyStates[SDLK_LEFT]) {
+			if(keyStatesBuf[SDLK_LEFT] == false) {
+				pk_moveSelArrow(LEFT, ses.currWindow);
+				keyStatesBuf[SDLK_LEFT] = true;
+			}
+		} else {
+			keyStatesBuf[SDLK_LEFT] = false;
+		}
+		if(keyStates[SDLK_RIGHT]) {
+			if(keyStatesBuf[SDLK_RIGHT] == false) {
+				pk_moveSelArrow(RIGHT, ses.currWindow);
+				keyStatesBuf[SDLK_RIGHT] = true;
+			}
+		} else {
+			keyStatesBuf[SDLK_RIGHT] = false;
+		}
 
 		if(keyStates[SDLK_x]) {
 			if(keyStatesBuf[SDLK_x] == false) {

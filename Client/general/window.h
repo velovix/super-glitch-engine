@@ -23,7 +23,8 @@ typedef struct {
 
 typedef struct {
 	int x, y, w, h;
-	int selOpt, optCnt, strLength, dispChar, dispDelay, startLag, selection;
+	int selOpt, optCnt, optW, optH;
+	int strLength, dispChar, dispDelay, startLag, selection;
 	int start, stop, scrollNumb, scrollCnt;
 	bool active, txtScroll, finished, closeable;
 	char text[128];
