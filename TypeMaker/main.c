@@ -255,16 +255,16 @@ void b_newtype_clicked(GtkWidget *obj, gpointer user_data)
 	updateTypes();
 }
 
-void b_load_clicked(GtkWidget *obj, gpointer user_data)
-{
-	report(currType);
-}
-
 void b_save_clicked(GtkWidget *obj, gpointer user_data)
 {
-	printf("Saving...");
+	printf("Start\n");
 	FILE * file;
-	file = fopen("types.pke", "w");
+	file = fopen("types.pke", "wb");
+
+	if(file == NULL) {
+		printf("[ERROR] Creating types.pke file!\n");
+		return;
+	}
 
 	typeHeader_f header;
 	header.version = 2;
@@ -275,22 +275,27 @@ void b_save_clicked(GtkWidget *obj, gpointer user_data)
 
 	typeEntry_f typeHeader[typeCnt];
 	for(int i=0; i<typeCnt; i++) {
-		char *name = (char*)gtk_entry_get_text(GTK_ENTRY(e_typename));
 		bool fill = false;
 		for(int j=0; j<8; j++) {
-			if(name[j] == ' ') {
+			if(typeList[i][j] == ' ') {
 				fill = true;
 			}
 			if(fill) {
 				typeHeader[i].name[j] = ' ';
 			} else {
-				typeHeader[i].name[j] = name[j];
+				typeHeader[i].name[j] = typeList[i][j];
 			}
+
+			fwrite(&typeHeader[i].name[j], sizeof(char), 1, file);
 		}
+		printf("Saving %s...\n", typeHeader[i].name);
 		typeHeader[i].resCnt = types[i].info.resCnt;
 		typeHeader[i].weakCnt = types[i].info.weakCnt;
 		fwrite(&typeHeader[i].resCnt, sizeof(int), 1, file);
 		fwrite(&typeHeader[i].weakCnt, sizeof(int), 1, file);
+
+		printf("   Resistances : %i\n", typeHeader[i].resCnt);
+		printf("   Weaknesses  : %i\n", typeHeader[i].weakCnt);
 
 		for(int j=0; j<typeHeader[i].resCnt; j++) {
 			fwrite(&types[i].res[j].type, sizeof(int), 1, file);
