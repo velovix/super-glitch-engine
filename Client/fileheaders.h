@@ -22,7 +22,13 @@ typedef struct {
 
 // --- Types
 
+#define TYPEFILE_VERSION		2
+
+#define INV_YES			1
+#define INV_NO			0
+
 typedef struct {
+	int version;
 	int count;
 } typeHeader_f;
 
@@ -30,20 +36,16 @@ typedef struct {
 	char name[8];
 	int resCnt;
 	int weakCnt;
-	int invCnt;
 } typeEntry_f;
 
 typedef struct {
 	int type;
+	char inv;
 } resEntry_f;
 
 typedef struct {
 	int type;
 } weakEntry_f;
-
-typedef struct {
-	int type;
-} invEntry_f;
 
 // --- Maps
 

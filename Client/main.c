@@ -143,9 +143,14 @@ void loadMap(int val) {
 void setTypes() {
 	FILE * fTypes;
 	typeHeader_f header;
-	fTypes = fopen("resources/data/type.pke", "r");
+	fTypes = fopen("resources/data/types.pke", "r");
 	if(fTypes == NULL) {
-		printf("[ERROR] Missing type.pke in resources/data folder!\n");
+		printf("[ERROR] Missing types.pke in resources/data folder!\n");
+	}
+	fread(&header.version, sizeof(int), 1, fTypes);
+	if(header.version != TYPEFILE_VERSION) {
+		printf("[ERROR] types.pke file is V%i, but V%i is expected!\n",
+			header.version, TYPEFILE_VERSION);
 	}
 	fread(&header.count, sizeof(int), 1, fTypes);
 	typeEntry_f entry[header.count];
@@ -153,29 +158,31 @@ void setTypes() {
 		fread(&entry[i].name, sizeof(char[8]), 1, fTypes);
 		fread(&entry[i].resCnt, sizeof(int), 1, fTypes);
 		fread(&entry[i].weakCnt, sizeof(int), 1, fTypes);
-		fread(&entry[i].invCnt, sizeof(int), 1, fTypes);
 
 		int rEntry[entry[i].resCnt];
 		int wEntry[entry[i].weakCnt];
-		int iEntry[entry[i].invCnt];
+		bool iEntry[entry[i].resCnt];
 
 		for(int j=0; j<entry[i].resCnt; j++) {
 			fread(&rEntry[j], sizeof(int), 1, fTypes);
+			char isInv;
+			fread(&isInv, sizeof(char), 1, fTypes);
+			if(isInv == INV_YES) {
+				iEntry[j] = true;
+			} else {
+				iEntry[j] = false;
+			}
 		}
 
 		for(int j=0; j<entry[i].weakCnt; j++) {
 			fread(&wEntry[j], sizeof(int), 1, fTypes);
 		}
 
-		for(int j=0; j<entry[i].invCnt; j++) {
-			fread(&iEntry[j], sizeof(int), 1, fTypes);
-		}
-
 		ses.types[i] = pk_initType(entry[i].name, i);
 
 		pk_setTypeRes(&ses.types[i], entry[i].resCnt, &rEntry[0]);
 		pk_setTypeWeak(&ses.types[i], entry[i].weakCnt, &wEntry[0]);
-		pk_setTypeInv(&ses.types[i], entry[i].invCnt, &iEntry[0]);
+		pk_setTypeInv(&ses.types[i], entry[i].resCnt, &iEntry[0]);
 	}
 
 	printf("Read type info.\n");

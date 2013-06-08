@@ -14,6 +14,7 @@
 #include "../constants.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 typedef struct {
 	int hp, att, def, spAtt, spDef, speed;
@@ -22,10 +23,10 @@ typedef struct {
 
 typedef struct {
 	char name[8];
-	int value, resCnt, weakCnt, invCnt;
+	int value, resCnt, weakCnt;
 	int* res;
 	int* weak;
-	int* inv;
+	bool* inv;
 } type_t;
 
 // Initializers
@@ -37,6 +38,6 @@ int pk_calcTyping(type_t, type_t, type_t);
 // Type settings
 void pk_setTypeRes(type_t*, int, int*);
 void pk_setTypeWeak(type_t*, int, int*);
-void pk_setTypeInv(type_t*, int, int*);
+void pk_setTypeInv(type_t*, int, bool*);
 
 #endif

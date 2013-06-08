@@ -31,14 +31,14 @@ int pk_calcTyping(type_t mType1, type_t mType2, type_t attType) {
 		for(int i=0; i<mType1.resCnt; i++) {
 			if(mType1.res[i] == attType.value) {
 				effect--;
+				if(mType1.inv[i]) {
+					return RES_NONE;
+				}
 				break;
 			}
 			if(mType1.weak[i] == attType.value) {
 				effect++;
 				break;
-			}
-			if(mType1.inv[i] == attType.value) {
-				return RES_NONE;
 			}
 		}
 	}
@@ -47,14 +47,14 @@ int pk_calcTyping(type_t mType1, type_t mType2, type_t attType) {
 		for(int i=0; i<mType2.resCnt; i++) {
 			if(mType2.res[i] == attType.value) {
 				effect--;
+				if(mType2.inv[i]) {
+					return RES_NONE;
+				}
 				break;
 			}
 			if(mType2.weak[i] == attType.value) {
 				effect++;
 				break;
-			}
-			if(mType2.inv[i] == attType.value) {
-				return RES_NONE;
 			}
 		}
 	}
@@ -94,11 +94,9 @@ void pk_setTypeWeak(type_t* type, int cnt, int* types) {
 	type->weakCnt = cnt;
 }
 
-void pk_setTypeInv(type_t* type, int cnt, int* types) {
-	type->inv = (int*)malloc(cnt*sizeof(int));
+void pk_setTypeInv(type_t* type, int cnt, bool* types) {
+	type->inv = (bool*)malloc(cnt*sizeof(bool));
 	for(int i=0; i<cnt; i++) {
 		type->inv[i] = types[i];
 	}
-
-	type->invCnt = cnt;
 }
