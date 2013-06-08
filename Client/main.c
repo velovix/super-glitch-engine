@@ -18,6 +18,7 @@
 #include <stdbool.h>
 
 #include "fileheaders.h"
+#include "media/musicman.h"
 
 #include "sge.h"
 
@@ -33,6 +34,7 @@ int physDelay = PHYS_DELAY;
 
 // SDL Music
 Mix_Music* music = NULL;
+musicMan_t musicMan;
 
 // SDL Surfaces
 SDL_Surface* s_screen = NULL;
@@ -109,6 +111,16 @@ void loadMap(int val) {
 			for(int j=0; j<rHeader[i].w*rHeader[i].h; j++) {
 				fread(&ses.map.data[j], sizeof(char), 1, fMap);
 			}
+			if(rHeader[i].music != -1 && isDifferent(rHeader[i].music, &musicMan)) {
+				music = Mix_LoadMUS( getMusic(rHeader[i].music, &musicMan) );
+				if(music == NULL) {
+					printf("   [ERROR] Loading music!\n");
+				}
+				Mix_PlayMusic(music, -1);
+			} else if(rHeader[i].music == -1) {
+				Mix_PauseMusic();
+			}
+
 		} else {
 			fseek(fMap, rHeader[i].w*rHeader[i].h*sizeof(char), SEEK_CUR);
 			fread(&doorCnt, sizeof(int), 1, fMap);
@@ -395,10 +407,6 @@ void loadSprites()
 	if(s_bPkmn == NULL) {
 		printf("ERROR: Couldn't load back pokemon sprites!\n");
 	}
-	music = Mix_LoadMUS( "resources/music/vermillion.wav" );
-	if(music == NULL) {
-		printf("ERROR: Loading music!\n");
-	}
 }
 
 void unloadSprites()
@@ -571,15 +579,6 @@ void checkKeys(Uint8 *keyStates)
 		physDelay = 0;
 	} else {
 		physDelay = PHYS_DELAY;
-	}
-
-	if(keyStates[SDLK_p]) {
-		if(keyStatesBuf[SDLK_p] == false) {
-			Mix_PlayMusic(music, -1);
-			keyStatesBuf[SDLK_p] = true;
-		}
-	} else {
-		keyStatesBuf[SDLK_p] = false;
 	}
 
 	if(keyStates[SDLK_r]) {
@@ -806,6 +805,14 @@ int main(int argc, char **argv)
 	printf("|           PokeEngine V0.0.01           |\n");
 	printf("==========================================\n\n");
 
+	musicMan.lastMusic = -1;
+	newMusic("resources/music/pallet.wav", &musicMan);
+	newMusic("resources/music/vermillion.wav", &musicMan);
+
+	if(init() == -1) {
+		return 1;
+	}
+
 	pk_initSMan(SES_OVERWORLD, &ses);
 	setTypes();
 	setMonsters();
@@ -815,10 +822,6 @@ int main(int argc, char **argv)
 	loadMap(0);
 
 	ftime(&lastTime);
-
-	if(init() == -1) {
-		return 1;
-	}
 
 	loadSprites();
 	setClips();
