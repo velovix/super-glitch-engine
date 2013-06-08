@@ -49,12 +49,16 @@ typedef struct {
 
 // --- Maps
 
+#define MAPFILE_VERSION			2
+
 typedef struct {
+	int version;
 	int count;
 } mapHeader_f;
 
 typedef struct {
-	int value;
+	char value;
+	int music;
 	int w, h;
 } roomHeader_f;
 

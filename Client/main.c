@@ -82,6 +82,12 @@ void loadMap(int val) {
 	if(fMap == NULL) {
 		printf("[ERROR] Missing map.pke in resources/maps folder\n");
 	}
+	fread(&header.version, sizeof(int), 1, fMap);
+	if(header.version != MAPFILE_VERSION) {
+		printf("[ERROR] map.pke is V%i, but V%i is expected!\n",
+			header.version, MAPFILE_VERSION);
+		exit(1);
+	}
 	fread(&header.count, sizeof(int), 1, fMap);
 
 	printf("Loading %i Rooms...\n", header.count);
@@ -90,6 +96,7 @@ void loadMap(int val) {
 	roomHeader_f rHeader[header.count];
 	for(int i=0; i<=val; i++) {
 		fread(&rHeader[i].value, sizeof(char), 1, fMap);
+		fread(&rHeader[i].music, sizeof(int), 1, fMap);
 		fread(&rHeader[i].w, sizeof(int), 1, fMap);
 		fread(&rHeader[i].h, sizeof(int), 1, fMap);
 
@@ -151,6 +158,7 @@ void setTypes() {
 	if(header.version != TYPEFILE_VERSION) {
 		printf("[ERROR] types.pke file is V%i, but V%i is expected!\n",
 			header.version, TYPEFILE_VERSION);
+		exit(1);
 	}
 	fread(&header.count, sizeof(int), 1, fTypes);
 	typeEntry_f entry[header.count];
