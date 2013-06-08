@@ -6,6 +6,8 @@
 #define INV_YES		1
 #define INV_NO		0
 
+#define CURRVERSION		2
+
 int typeCnt = 0;
 int currType = -1;
 int typeSlot = 0;
@@ -77,6 +79,8 @@ void toggleEditable(gboolean editable)
 
 void clearTypes()
 {
+	typeCnt = 0;
+	currType = -1;
 	for(int i=0; i<20; i++) {
 		for(int j=0; j<8; j++) {
 			typeList[i][j] = ' ';
@@ -255,6 +259,54 @@ void b_newtype_clicked(GtkWidget *obj, gpointer user_data)
 	updateTypes();
 }
 
+void b_load_clicked(GtkWidget *obj, gpointer user_data)
+{
+	clearTypes();
+	printf("Loading..\n");
+	FILE * file;
+	file = fopen("types.pke", "r");
+
+	if(file == NULL) {
+		printf("[ERROR] Missing types.pke file!\n");
+		return;
+	}
+
+	typeHeader_f header;
+	fread(&header.version, sizeof(int), 1, file);
+	if(header.version != CURRVERSION) {
+		printf("[ERROR] types.pke is V%i, but V%i is expected!\n",
+			header.version, CURRVERSION);
+		return;
+	}
+	fread(&header.count, sizeof(int), 1, file);
+	
+	for(int i=0; i<header.count; i++) {
+		char tmpChar[8];
+		fread(&tmpChar[0], sizeof(char[8]), 1, file);
+		fread(&types[i].info.resCnt, sizeof(int), 1, file);
+		fread(&types[i].info.weakCnt, sizeof(int), 1, file);
+		newType(tmpChar);
+
+		printf("%s\n", typeList[i]);
+
+		printf("   Resistances : %i\n", types[i].info.resCnt);
+		printf("   Weaknesses  : %i\n", types[i].info.weakCnt);
+
+		for(int j=0; j<types[i].info.resCnt; j++) {
+			fread(&types[i].res[j].type, sizeof(int), 1, file);
+			fread(&types[i].res[j].inv, sizeof(char), 1, file);
+		}
+		for(int j=0; j<types[i].info.weakCnt; j++) {
+			fread(&types[i].weak[j].type, sizeof(int), 1, file);
+		}
+	}
+
+	fclose(file);
+
+	updateTypes();
+	printf("done!\n");
+}
+
 void b_save_clicked(GtkWidget *obj, gpointer user_data)
 {
 	printf("Start\n");
@@ -267,7 +319,7 @@ void b_save_clicked(GtkWidget *obj, gpointer user_data)
 	}
 
 	typeHeader_f header;
-	header.version = 2;
+	header.version = CURRVERSION;
 	header.count = typeCnt;
 
 	fwrite(&header.version, sizeof(int), 1, file);
