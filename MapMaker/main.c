@@ -119,15 +119,19 @@ void saveMap() {
 	printf("Saving map...\n");
 
 	mapHeader_f mapHeader;
+	mapHeader.version = CURRVERSION;
 	mapHeader.count = MAX_ROOMS;
+	fwrite(&mapHeader.version, sizeof(mapHeader.version), 1, file);
 	fwrite(&mapHeader.count, sizeof(mapHeader.count), 1, file);
 	printf("   Wrote %i rooms\n", mapHeader.count);
 
 	roomHeader_f roomHeader[MAX_ROOMS];
 	for(int i=0; i<MAX_ROOMS; i++) {
 		roomHeader[i].value = i;
+		roomHeader[i].music = map[i].music;
 		roomHeader[i].w = map[i].w; roomHeader[i].h = map[i].h;
 		fwrite(&roomHeader[i].value, sizeof(char), 1, file);
+		fwrite(&roomHeader[i].music, sizeof(int), 1, file);
 		fwrite(&roomHeader[i].w, sizeof(int), 1, file);
 		fwrite(&roomHeader[i].h, sizeof(int), 1, file);
 		for(int j=0; j<map[i].w*map[i].h; j++) {
@@ -164,6 +168,10 @@ void loadMap() {
 	printf("Loading map...\n");
 
 	mapHeader_f header;
+	fread(&header.version, sizeof(header.version), 1, file);
+	if(header.version != CURRVERSION) {
+		printf("[ERROR] File is too old/new!\n");
+	}
 	fread(&header.count, sizeof(header.count), 1, file);
 	printf("   Found %i rooms\n", header.count);
 
@@ -171,6 +179,7 @@ void loadMap() {
 	for(int i=0; i<header.count; i++) {
 		map[i].doorCnt = 0;
 		fread(&roomHeader[i].value, sizeof(char), 1, file);
+		fread(&roomHeader[i].music, sizeof(int), 1, file);
 		fread(&roomHeader[i].w, sizeof(int), 1, file);
 		fread(&roomHeader[i].h, sizeof(int), 1, file);
 		for(int j=0; j<roomHeader[i].w*roomHeader[i].h; j++) {
@@ -388,6 +397,16 @@ void checkKeys(Uint8 *keyStates) {
 		}
 	} else {
 		keyStatesBuf[SDLK_n] = false;
+	}
+
+	if(keyStates[SDLK_m]) {
+		if(!keyStatesBuf[SDLK_m]) {
+			printf("Enter the music value: ");
+			scanf("%i", &map[currRoom].music);
+			keyStatesBuf[SDLK_m] = true;
+		}
+	} else {
+		keyStatesBuf[SDLK_m] = false;
 	}
 }
 

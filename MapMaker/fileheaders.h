@@ -1,12 +1,16 @@
 #ifndef FILEHEADERS_H
 #define FILEHEADERS_H
 
+#define CURRVERSION		2
+
 typedef struct {
+	int version;
 	int count;
 } mapHeader_f;
 
 typedef struct {
 	char value;
+	int music;
 	int w, h;
 } roomHeader_f;
 
@@ -31,6 +35,7 @@ typedef struct {
 } mapNpc_t;
 
 typedef struct {
+	int music;
 	int w, h;
 	char data[32400];
 	int doorCnt, npcCnt;
