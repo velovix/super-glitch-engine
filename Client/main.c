@@ -294,8 +294,8 @@ void loadNpcs() {
 		pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[i].dialog);
 
 		pk_setMessage(1, &npc[i].msg1[0], &ses.npcs[i]);
-		pk_setMessage(2, &npc[i].msg1[0], &ses.npcs[i]);
-		pk_setMessage(3, &npc[i].msg1[0], &ses.npcs[i]);
+		pk_setMessage(2, &npc[i].msg2[0], &ses.npcs[i]);
+		pk_setMessage(3, &npc[i].msg3[0], &ses.npcs[i]);
 
 		pk_switchMessage(1, &ses.npcs[i]);
 	}
@@ -595,13 +595,13 @@ void checkKeys(Uint8 *keyStates)
 		keyStatesBuf[SDLK_r] = false;
 	}
 
-	if(keyStates[SDLK_r]) {
-		if(keyStatesBuf[SDLK_r] == false) {
+	if(keyStates[SDLK_p]) {
+		if(keyStatesBuf[SDLK_p] == false) {
 			mute = !mute;
-			keyStatesBuf[SDLK_r] = true;
+			keyStatesBuf[SDLK_p] = true;
 		}
 	} else {
-		keyStatesBuf[SDLK_r] = false;
+		keyStatesBuf[SDLK_p] = false;
 	}
 }
 

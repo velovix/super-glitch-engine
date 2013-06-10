@@ -5,7 +5,7 @@ void pk_initWindow(int s_x, int s_y, int s_w, int s_h, bool s_closeable, bool di
 	window->y = s_y;
 	window->w = s_w;
 	window->h = s_h;
-	window->dispChar = 0;
+	window->dispChar = window->startLag = 0;
 	window->dispDelay = 3;
 	window->optCnt = window->optW = window->optH = 0;
 	window->active = window->finished = false;
