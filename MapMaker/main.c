@@ -73,21 +73,21 @@ void apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destination, 
 }
 
 void load() {
-	s_mapTile = load_image("resources/tiles.png");
+	s_mapTile = load_image("../resources/sprites/tiles.png");
 	if(s_mapTile == NULL) {
-		printf("[ERROR] Could not find resources/tiles.png!\n");
+		printf("[ERROR] Could not find resources/sprites/tiles.png!\n");
 	}
-	s_cursor = load_image("resources/cursor.png");
+	s_cursor = load_image("../resources/sprites/cursor.png");
 	if(s_cursor == NULL) {
-		printf("[ERROR] Could not find resources/cursor.png!\n");
+		printf("[ERROR] Could not find resources/sprites/cursor.png!\n");
 	}
-	s_door = load_image("resources/door.png");
+	s_door = load_image("../resources/sprites/door.png");
 	if(s_door == NULL) {
-		printf("[ERROR] Could not find resources/door.png!\n");
+		printf("[ERROR] Could not find resources/sprites/door.png!\n");
 	}
-	s_npc = load_image("resources/npc.png");
+	s_npc = load_image("../resources/sprites/npc.png");
 	if(s_npc == NULL) {
-		printf("[ERROR] Could not find resources/npc.png!\n");
+		printf("[ERROR] Could not find resources/sprites/npc.png!\n");
 	}
 }
 
@@ -111,7 +111,7 @@ int hasDoor(int x, int y, int r) {
 
 void saveMap() {
 	FILE* file;
-	file = fopen("map.pke", "w");
+	file = fopen("../resources/maps/map.pke", "w");
 	if(file == NULL) {
 		printf("[ERROR] Could not create map.pke!\n");
 	}
@@ -160,7 +160,7 @@ void saveMap() {
 
 void loadMap() {
 	FILE * file;
-	file = fopen("map.pke", "r");
+	file = fopen("../resources/maps/map.pke", "r");
 	if(file == NULL) {
 		printf("[ERROR] Couldn't find map.pke!\n");
 	}
