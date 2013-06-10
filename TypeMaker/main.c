@@ -264,7 +264,7 @@ void b_load_clicked(GtkWidget *obj, gpointer user_data)
 	clearTypes();
 	printf("Loading..\n");
 	FILE * file;
-	file = fopen("types.pke", "r");
+	file = fopen("../resources/data/types.pke", "r");
 
 	if(file == NULL) {
 		printf("[ERROR] Missing types.pke file!\n");
@@ -311,7 +311,7 @@ void b_save_clicked(GtkWidget *obj, gpointer user_data)
 {
 	printf("Start\n");
 	FILE * file;
-	file = fopen("types.pke", "wb");
+	file = fopen("../resources/data/types.pke", "wb");
 
 	if(file == NULL) {
 		printf("[ERROR] Creating types.pke file!\n");

@@ -23,7 +23,6 @@
 #include "sge.h"
 
 bool quit = false;
-bool mute = false;
 
 // PokeEngine stuff
 sessionMan_t ses;
@@ -35,6 +34,7 @@ int physDelay = PHYS_DELAY;
 // SDL Music
 Mix_Music* music = NULL;
 musicMan_t musicMan;
+bool mute = true;
 
 // SDL Surfaces
 SDL_Surface* s_screen = NULL;
@@ -80,7 +80,7 @@ void quitGame() {
 void loadMap(int val) {
 	FILE * fMap;
 	mapHeader_f header;
-	fMap = fopen("resources/maps/map.pke", "r");
+	fMap = fopen("../resources/maps/map.pke", "r");
 	if(fMap == NULL) {
 		printf("[ERROR] Missing map.pke in resources/maps folder\n");
 	}
@@ -111,14 +111,16 @@ void loadMap(int val) {
 			for(int j=0; j<rHeader[i].w*rHeader[i].h; j++) {
 				fread(&ses.map.data[j], sizeof(char), 1, fMap);
 			}
-			if(rHeader[i].music != -1 && isDifferent(rHeader[i].music, &musicMan)) {
-				music = Mix_LoadMUS( getMusic(rHeader[i].music, &musicMan) );
-				if(music == NULL) {
-					printf("   [ERROR] Loading music!\n");
+			if(!mute) {
+				if(rHeader[i].music != -1 && isDifferent(rHeader[i].music, &musicMan)) {
+					music = Mix_LoadMUS( getMusic(rHeader[i].music, &musicMan) );
+					if(music == NULL) {
+						printf("   [ERROR] Loading music!\n");
+					}
+					Mix_PlayMusic(music, -1);
+				} else if(rHeader[i].music == -1) {
+					Mix_PauseMusic();
 				}
-				Mix_PlayMusic(music, -1);
-			} else if(rHeader[i].music == -1) {
-				Mix_PauseMusic();
 			}
 
 		} else {
@@ -162,7 +164,7 @@ void loadMap(int val) {
 void setTypes() {
 	FILE * fTypes;
 	typeHeader_f header;
-	fTypes = fopen("resources/data/types.pke", "r");
+	fTypes = fopen("../resources/data/types.pke", "r");
 	if(fTypes == NULL) {
 		printf("[ERROR] Missing types.pke in resources/data folder!\n");
 	}
@@ -218,7 +220,7 @@ void setMonsters()
 
 	FILE * fMons;
 	monHeader_f header;
-	fMons = fopen("resources/data/pk.pke", "r");
+	fMons = fopen("../resources/data/pk.pke", "r");
 	if(fMons == NULL) {
 		printf("[ERROR] Missing pk.pke in resources/data folder!\n");
 	}
@@ -236,7 +238,7 @@ void setMonsters()
 
 void loadNpcs() {
 	FILE * fNpcs;
-	fNpcs = fopen("resources/data/npc.pke", "r");
+	fNpcs = fopen("../resources/data/npc.pke", "r");
 	if(fNpcs == NULL) {
 		printf("[ERROR] Missing npc.pke in resources/data folder!\n");
 	}
@@ -386,24 +388,24 @@ void apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destination, 
 
 void loadSprites()
 {
-	s_player = load_image("resources/sprites/npcs.png");
-	s_npc = load_image("resources/sprites/npcs.png");
+	s_player = load_image("../resources/sprites/npcs.png");
+	s_npc = load_image("../resources/sprites/npcs.png");
 	if(s_player == NULL || s_npc == NULL) {
 		printf("ERROR: Couldn't load NPC sprites!\n");
 	}
-	s_mapTile = load_image("resources/sprites/tiles.png");
+	s_mapTile = load_image("../resources/sprites/tiles.png");
 	if(s_mapTile == NULL) {
 		printf("ERROR: Couldn't load tile sprites!\n");
 	}
-	s_chars = load_image("resources/sprites/characters.png");
+	s_chars = load_image("../resources/sprites/characters.png");
 	if(s_chars == NULL) {
 		printf("ERROR: Couldn't load character sprites!\n");
 	}
-	s_fPkmn = load_image("resources/sprites/FrontPkmn.png");
+	s_fPkmn = load_image("../resources/sprites/FrontPkmn.png");
 	if(s_fPkmn == NULL) {
 		printf("ERROR: Couldn't load front pokemon sprites!\n");
 	}
-	s_bPkmn = load_image("resources/sprites/BackPkmn.png");
+	s_bPkmn = load_image("../resources/sprites/BackPkmn.png");
 	if(s_bPkmn == NULL) {
 		printf("ERROR: Couldn't load back pokemon sprites!\n");
 	}
@@ -587,6 +589,15 @@ void checkKeys(Uint8 *keyStates)
 			printf("Room? ");
 			scanf("%i", &room);
 			loadMap(room);
+			keyStatesBuf[SDLK_r] = true;
+		}
+	} else {
+		keyStatesBuf[SDLK_r] = false;
+	}
+
+	if(keyStates[SDLK_r]) {
+		if(keyStatesBuf[SDLK_r] == false) {
+			mute = !mute;
 			keyStatesBuf[SDLK_r] = true;
 		}
 	} else {
@@ -806,8 +817,8 @@ int main(int argc, char **argv)
 	printf("==========================================\n\n");
 
 	musicMan.lastMusic = -1;
-	newMusic("resources/music/pallet.wav", &musicMan);
-	newMusic("resources/music/vermillion.wav", &musicMan);
+	newMusic("../resources/music/pallet.wav", &musicMan);
+	newMusic("../resources/music/vermillion.wav", &musicMan);
 
 	if(init() == -1) {
 		return 1;
