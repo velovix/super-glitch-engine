@@ -19,13 +19,16 @@ SDL_Rect clipTiles[50];
 
 int curX, curY;
 int lastCurX, lastCurY;
-char curVal;
+unsigned char curVal;
 int camX, camY;
 int width, height;
 int currRoom;
 int origRoom = 0;
 bool chooseRoom = false;
 mapData_t map[30];
+
+int tileColCnt;
+unsigned char tileCol[256];
 
 bool keyStatesBuf[256];
 
@@ -125,6 +128,26 @@ void saveMap() {
 	fwrite(&mapHeader.count, sizeof(mapHeader.count), 1, file);
 	printf("   Wrote %i rooms\n", mapHeader.count);
 
+	int fnlTileColCnt = tileColCnt;
+	for(int i=0; i<tileColCnt; i++) {
+		if(tileCol[i] == 255) {
+			fnlTileColCnt--;
+		}
+	}
+	mapHeader.tileColCnt = fnlTileColCnt;
+	fwrite(&mapHeader.tileColCnt, sizeof(mapHeader.tileColCnt), 1, file);
+	mapTileCol_f tileColObj[mapHeader.tileColCnt];
+	for(int i=0; i<tileColCnt; i++) {
+		if(tileCol[i] != 255) {
+			tileColObj[i].value = tileCol[i];
+			fwrite(&tileColObj[i].value, sizeof(tileColObj[i].value), 1 ,file);
+		} else {
+			printf("Detected unused collision value.\n");
+		}
+	}
+	printf("   Wrote %i tile collisions\n", mapHeader.tileColCnt);
+	
+
 	roomHeader_f roomHeader[MAX_ROOMS];
 	for(int i=0; i<MAX_ROOMS; i++) {
 		roomHeader[i].value = i;
@@ -170,10 +193,17 @@ void loadMap() {
 	mapHeader_f header;
 	fread(&header.version, sizeof(header.version), 1, file);
 	if(header.version != CURRVERSION) {
-		printf("[ERROR] File is too old/new!\n");
+		printf("   [ERROR] File is too old/new!\n");
 	}
 	fread(&header.count, sizeof(header.count), 1, file);
 	printf("   Found %i rooms\n", header.count);
+
+	fread(&header.tileColCnt, sizeof(header.tileColCnt), 1, file);
+	printf("   Found %i tile collisions\n", header.tileColCnt);
+	tileColCnt = header.tileColCnt;
+	for(int i=0; i<tileColCnt; i++) {
+		fread(&tileCol[i], sizeof(char), 1, file);
+	}
 
 	roomHeader_f roomHeader[header.count];
 	for(int i=0; i<header.count; i++) {
@@ -408,6 +438,30 @@ void checkKeys(Uint8 *keyStates) {
 	} else {
 		keyStatesBuf[SDLK_m] = false;
 	}
+
+	if(keyStates[SDLK_u]) {
+		if(!keyStatesBuf[SDLK_u]) {
+			bool new = true;
+			for(int i=0; i<tileColCnt; i++) {
+				if(map[currRoom].data[curX+(curY*map[currRoom].w)] == tileCol[i]) {
+					new = false;
+					tileCol[i] = 255;
+				}
+			}
+			if(new) {
+				printf("De-registered %i as collision\n", 
+					map[currRoom].data[curX+(curY*map[currRoom].w)]);
+				tileCol[tileColCnt] = map[currRoom].data[curX+(curY*map[currRoom].w)];
+				tileColCnt++;
+			} else {
+				printf("Re-registered %i as collision\n",
+					map[currRoom].data[curX+(curY*map[currRoom].w)]);
+			}
+			keyStatesBuf[SDLK_u] = true;
+		}
+	} else {
+		keyStatesBuf[SDLK_u] = false;
+	}
 }
 
 void loop() {
@@ -440,7 +494,7 @@ void loop() {
 int main() {
 	curX = curY = 1;
 	camX = camY = 0;
-	currRoom = 0;
+	currRoom = tileColCnt = 0;
 	map[currRoom].w = map[currRoom].h = 16;
 
 	for(int i=0; i<50; i++) {
