@@ -94,6 +94,15 @@ void loadMap(int val) {
 
 	printf("Loading %i Rooms...\n", header.count);
 
+	fread(&header.tileColCnt, sizeof(int), 1, fMap);
+	unsigned char tileColData[header.tileColCnt];
+	printf("   ");
+	for(int i=0; i<header.tileColCnt; i++) {
+		fread(&tileColData[i], sizeof(char), 1, fMap);
+		printf("%i, ", (int)tileColData[i]);
+	}
+	printf("\n");
+
 	int doorCnt = 0;
 	roomHeader_f rHeader[header.count];
 	for(int i=0; i<=val; i++) {
@@ -101,6 +110,12 @@ void loadMap(int val) {
 		fread(&rHeader[i].music, sizeof(int), 1, fMap);
 		fread(&rHeader[i].w, sizeof(int), 1, fMap);
 		fread(&rHeader[i].h, sizeof(int), 1, fMap);
+
+		if(rHeader[i].value < 0 || rHeader[i].value > header.count) {
+			printf("[ERROR] Map value is higher than room count!\n");
+			exit(1);
+		}
+
 
 		if(i==val) {
 			printf("   Found room %i! W: %i H: %i\n", i, rHeader[i].w, rHeader[i].h);
@@ -142,7 +157,6 @@ void loadMap(int val) {
 		fread(&doorData[i].destX, sizeof(int), 1, fMap);
 		fread(&doorData[i].destY, sizeof(int), 1, fMap);
 	}
-	pk_setDoorData(doorCnt, &doorData[0], &ses.map);
 	printf("   Map Door Count: %i\n", doorCnt);
 
 	int npcCnt;
@@ -153,10 +167,14 @@ void loadMap(int val) {
 		fread(&npcData[i].x, sizeof(int), 1, fMap);
 		fread(&npcData[i].y, sizeof(int), 1, fMap);
 	}
-	pk_setNpcData(npcCnt, &npcData[0], &ses.map);
 	printf("   Map NPC Count: %i\n", ses.map.npcCnt);
 
 	fclose(fMap);
+
+
+	pk_setNpcData(npcCnt, &npcData[0], &ses.map);
+	pk_setTileColData(header.tileColCnt, tileColData, &ses.map);
+	pk_setDoorData(doorCnt, &doorData[0], &ses.map);
 
 	pk_spruneNpcs(&ses);
 }
@@ -602,6 +620,18 @@ void checkKeys(Uint8 *keyStates)
 		}
 	} else {
 		keyStatesBuf[SDLK_p] = false;
+	}
+
+	if(keyStates[SDLK_h]) {
+		if(keyStatesBuf[SDLK_h] == false) {
+			for(int i=0; i<ses.map.tileColCnt; i++) {
+				printf("%i, ", (int)ses.map.tileColData[i]);
+			}
+			printf("\n");
+			keyStatesBuf[SDLK_h] = true;
+		}
+	} else {
+		keyStatesBuf[SDLK_h] = false;
 	}
 }
 

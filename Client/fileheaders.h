@@ -49,12 +49,17 @@ typedef struct {
 
 // --- Maps
 
-#define MAPFILE_VERSION			2
+#define MAPFILE_VERSION			3
 
 typedef struct {
 	int version;
 	int count;
+	int tileColCnt;
 } mapHeader_f;
+
+typedef struct {
+	unsigned char value;
+} mapTileCol_f;
 
 typedef struct {
 	char value;

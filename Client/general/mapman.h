@@ -38,7 +38,8 @@ typedef struct {
 	int width, height;
 	char *data;
 	bool *cData;
-	int doorCnt, npcCnt;
+	unsigned char *tileColData;
+	int doorCnt, npcCnt, tileColCnt;
 	door_t* doorData;
 	mapNpc_t* npcData;
 } map_t;
@@ -47,9 +48,10 @@ void pk_initMap(int w, int h, map_t* map);
 col_t pk_findCols(map_t map, int x, int y);
 void pk_buildColMapM(map_t* map);
 void pk_clearColMap(map_t* map);
-bool pk_isSolid(int val);
+bool pk_isSolid(int val, map_t* map);
 void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map);
 void pk_setNpcData(int npcCnt, mapNpc_t *npcData, map_t* map);
+void pk_setTileColData(int cnt, unsigned char *data, map_t* map);
 door_t pk_isOnDoor(int x, int y, map_t* map);
 
 #endif
