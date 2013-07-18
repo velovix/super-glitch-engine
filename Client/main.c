@@ -88,16 +88,13 @@ void loadMap(int val)
 	}
 	fread(&header.count, sizeof(int), 1, fMap);
 
-	printf("Loading %i Rooms...\n", header.count);
+	printf("Loading map %i...\n", val);
 
 	fread(&header.tileColCnt, sizeof(int), 1, fMap);
 	unsigned char tileColData[header.tileColCnt];
-	printf("   ");
 	for(int i=0; i<header.tileColCnt; i++) {
 		fread(&tileColData[i], sizeof(char), 1, fMap);
-		printf("%i, ", (int)tileColData[i]);
 	}
-	printf("\n");
 
 	int doorCnt = 0;
 	roomHeader_f rHeader[header.count];
@@ -114,8 +111,6 @@ void loadMap(int val)
 
 
 		if(i==val) {
-			printf("   Found room %i! W: %i H: %i\n", i, rHeader[i].w, rHeader[i].h);
-			printf("   Map Size: %i\n", rHeader[i].w*rHeader[i].h);
 			ses.map.width = rHeader[i].w;
 			ses.map.height = rHeader[i].h;
 			pk_initMap(ses.map.width, ses.map.height, &ses.map);
@@ -163,7 +158,7 @@ void loadMap(int val)
 		fread(&npcData[i].x, sizeof(int), 1, fMap);
 		fread(&npcData[i].y, sizeof(int), 1, fMap);
 	}
-	printf("   Map NPC Count: %i\n", ses.map.npcCnt);
+	printf("   Map NPC Count: %i\n", npcCnt);
 
 	fclose(fMap);
 
@@ -290,10 +285,8 @@ void loadNpcs()
 		printf("[ERROR] Missing npc.pke in resources/data folder!\n");
 	}
 
-	printf("Loading NPCs...\n");
 	npcFileHeader_f header;
 	fread(&header.count, sizeof(int), 1, fNpcs);
-	printf("   Found %i Npcs\n", header.count);
 
 	npc_f npc[header.count];
 	for(int i=0; i<header.count; i++) {
@@ -349,6 +342,7 @@ void loadNpcs()
 
 	fclose(fNpcs);
 	printf("Read NPC info.\n");
+	printf("   %i NPCs found\n", header.count);
 }
 
 void setPlayer()
