@@ -76,6 +76,8 @@ typedef struct {
 	int x, y;
 } npcEntry_f;
 
+// --- NPCs (VERY INDEV)
+
 typedef struct {
 	int count;
 } npcFileHeader_f;
@@ -93,5 +95,20 @@ typedef struct {
 	char msg2[128];
 	char msg3[128];
 } npc_f;
+
+// --- Moves
+
+#define MOVES_VERSION		1
+
+typedef struct {
+	int version;
+	int count;
+} moveHeader_f;
+
+typedef struct {
+	char name[12];
+	int type;
+	int scriptLen;
+} moveEntry_f;
 
 #endif

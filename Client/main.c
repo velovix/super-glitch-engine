@@ -72,12 +72,8 @@ int init()
 	return 0;
 }
 
-// Common Menu Functions
-void quitGame() {
-	quit = true;
-}
-
-void loadMap(int val) {
+void loadMap(int val)
+{
 	FILE * fMap;
 	mapHeader_f header;
 	fMap = fopen("../resources/maps/map.pke", "r");
@@ -179,7 +175,8 @@ void loadMap(int val) {
 	pk_spruneNpcs(&ses);
 }
 
-void setTypes() {
+void loadTypes()
+{
 	FILE * fTypes;
 	typeHeader_f header;
 	fTypes = fopen("../resources/data/types.pke", "r");
@@ -229,13 +226,44 @@ void setTypes() {
 	printf("   %i types found.\n", header.count);
 }
 
-// Object Loading Functions
-void setMonsters()
+void loadMoves()
 {
-	ses.moves[PK_NOMOVE] 	= pk_initMove( 0,  0, "NULL        ", T_NONE, &pk_m_nomove);
-	ses.moves[PK_TACKLE] 	= pk_initMove(30, 30, "TACKLE      ", T_NORMAL, &pk_m_tackle);
-	ses.moves[PK_EXPLOSION] = pk_initMove(15, 15, "EXPLOSION   ", T_NORMAL, &pk_m_explosion);
+	FILE * fMoves;
+	moveHeader_f header;
+	fMoves = fopen("../resources/data/moves.pke", "r");
+	if(fMoves == NULL) {
+		printf("[ERROR] Missing moves.pke in resources/data folder!\n");
+	}
 
+	fread(&header.version, sizeof(int), 1, fMoves);
+	if(header.version != MOVES_VERSION) {
+		printf("[ERROR] moves.pke is V%i, but V%i is expected!\n",
+			header.version, MOVES_VERSION);
+	}
+
+	fread(&header.count, sizeof(int), 1, fMoves);
+
+	moveEntry_f moves[header.count];
+	for(int i=0; i<header.count; i++) {
+		fread(&moves[i].name, sizeof(char), 12, fMoves);
+		fread(&moves[i].type, sizeof(int), 1, fMoves);
+		fread(&moves[i].scriptLen, sizeof(int), 1, fMoves);
+
+		char *script = (char*)malloc(sizeof(char)*moves[i].scriptLen);
+		fread(script, sizeof(char), moves[i].scriptLen, fMoves);
+
+		ses.moves[i] = pk_initMove(10,10,moves[i].name,moves[i].type, &pk_m_nomove);
+	}
+
+	fclose(fMoves);
+
+	printf("Read move info.\n");
+	printf("   %i moves found\n", header.count);
+}
+
+// Object Loading Functions
+void loadMonsters()
+{
 	FILE * fMons;
 	monHeader_f header;
 	fMons = fopen("../resources/data/pk.pke", "r");
@@ -254,7 +282,8 @@ void setMonsters()
 	printf("   %i monsters found.\n", header.count);
 }
 
-void loadNpcs() {
+void loadNpcs()
+{
 	FILE * fNpcs;
 	fNpcs = fopen("../resources/data/npc.pke", "r");
 	if(fNpcs == NULL) {
@@ -338,11 +367,6 @@ void setPlayer()
 	}
 }
 
-void setWindows()
-{
-	pk_setWOptionFunc(6, &quitGame, &ses.w_menu);
-}
-
 void setClips()
 {
 	for(int i=0; i<50; i++) {
@@ -368,7 +392,8 @@ void setClips()
 }
 
 // SDL Shortcut Functions
-void draw_rect(int x, int y, int w, int h, int color) {
+void draw_rect(int x, int y, int w, int h, int color)
+{
 	SDL_Rect rect = {x,y,w,h};
 	SDL_FillRect(s_screen, &rect, color);
 }
@@ -855,9 +880,9 @@ int main(int argc, char **argv)
 	}
 
 	pk_initSMan(SES_OVERWORLD, &ses);
-	setTypes();
-	setMonsters();
-	setWindows();
+	loadTypes();
+	loadMoves();
+	loadMonsters();
 	setPlayer();
 	loadNpcs();
 	loadMap(0);
