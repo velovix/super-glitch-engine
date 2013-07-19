@@ -1,18 +1,5 @@
 #include "monsters.h"
 
-move_t pk_initMove(int s_cpp, int s_bpp, char* name, int type, bool (*s_movePtr) (monster_t*, monster_t*)) {
-	move_t out;
-	out.bpp = s_bpp;
-	out.movePtr = s_movePtr;
-	out.type = type;
-
-	for(int i=0; i<12; i++) {
-		out.name[i] = name[i];
-	}
-
-	return out;
-}
-
 void pk_setMove(int moveVal, int cpp, int bpp, int moveSlot, monster_t* mon) {
 	mon->moves[moveSlot].value = moveVal;
 	mon->moves[moveSlot].cpp = cpp;
@@ -72,34 +59,4 @@ bool pk_useMove(int numb, monster_t* mon) {
 	} else {
 		return false;
 	}
-}
-
-bool pk_m_nomove(monster_t* a, monster_t* d) {
-	printf("--- Executed!\n   Hit:   NO\n   Attacker HP: %i\n   Defender HP: %i\n", a->stats.mHp, d->stats.mHp);
-	return false;
-}
-
-bool pk_m_tackle(monster_t* a, monster_t* d) {
-	int willHit = rand() % 100;
-	if(willHit >= a->stats.mAcc-0) {
-		pk_damage(40, a, d);
-		printf("TACKLE Executed!\n   Hit:  YES\n   Attacker HP: %i\n   Defender HP: %i\n", a->stats.mHp, d->stats.mHp);
-		return true;
-	}
-	
-	printf("TACKLE Executed!\n   Hit:   NO\n   Attacker HP: %i\n   Defender HP: %i\n", a->stats.mHp, d->stats.mHp);
-	return false;
-}
-
-bool pk_m_explosion(monster_t* a, monster_t* d) {
-	int willHit = rand() % 100;
-	if(willHit >= a->stats.mAcc-0) {
-		pk_damage(180, a, d);
-		a->stats.mHp = 0;
-		printf("EXPLOSION Executed!\n   Hit:  YES\n   Attacker HP: %i\n   Defender HP: %i\n", a->stats.mHp, d->stats.mHp);
-		return true;
-	}
-
-	printf("EXPLOSION Executed!\n   Hit:   NO\n   Attacker HP: %i\n   Defender HP: %i\n", a->stats.mHp, d->stats.mHp);
-	return false;
 }

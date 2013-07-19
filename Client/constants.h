@@ -177,10 +177,12 @@
 #define DT_WALKINTO		1
 #define DT_COLLIDE		2
 
-// Moves
-#define PK_NOMOVE		0
-#define PK_TACKLE		1
-#define PK_EXPLOSION	2
+// Move Events
+#define ME_DAMAGE		1
+#define ME_POISON		2
+
+#define ME_TARGET		1
+#define ME_USER			2
 
 // Pokemon
 #define PK_NIDOQUEEN	0

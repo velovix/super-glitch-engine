@@ -1,4 +1,4 @@
-OBJ = main.o mapman.o npc.o sessionman.o charmover.o window.o monsters.o stats.o player.o musicman.o
+OBJ = main.o mapman.o npc.o sessionman.o charmover.o window.o monsters.o stats.o player.o musicman.o moves.o
 LIB = -lSDL -lSDL_image -lSDL_mixer
 OFLAGS = -std=gnu99 -funsigned-char
 COMP = gcc
@@ -32,6 +32,9 @@ window.o: general/window.h general/window.c
 
 player.o: ai/player.h ai/player.c
 	$(COMP) -c ai/player.c $(OFLAGS)
+
+moves.o: battle/moves.h battle/moves.c
+	$(COMP) -c battle/moves.c $(OFLAGS)
 
 musicman.o: media/musicman.h media/musicman.c
 	$(COMP) -c media/musicman.c $(OFLAGS)

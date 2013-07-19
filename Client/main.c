@@ -247,7 +247,7 @@ void loadMoves()
 		char *script = (char*)malloc(sizeof(char)*moves[i].scriptLen);
 		fread(script, sizeof(char), moves[i].scriptLen, fMoves);
 
-		ses.moves[i] = pk_initMove(10,10,moves[i].name,moves[i].type, &pk_m_nomove);
+		ses.moves[i] = pk_initMove(10,10,moves[i].name,moves[i].type);
 	}
 
 	fclose(fMoves);
@@ -327,7 +327,7 @@ void loadNpcs()
 			pk_setNpcMonster(pk_initMonster(25, 50, &ses.bMons[npc[i].monsters[j]], false, 
 				ses.bMons[npc[i].monsters[j]].bs), &ses.npcs[i]);
 			for(int k=0; k<4; k++) {
-				pk_setMove(PK_TACKLE, ses.moves[PK_TACKLE].bpp, ses.moves[PK_TACKLE].bpp, k, &ses.npcs[i].monsters[j]);
+				pk_setMove(0, ses.moves[0].bpp, ses.moves[0].bpp, k, &ses.npcs[i].monsters[j]);
 			}
 		}
 
@@ -354,9 +354,9 @@ void setPlayer()
 
 	for(int i=0; i<4; i++) {
 		if(i == 3) {
-			pk_setMove(PK_EXPLOSION, ses.moves[PK_EXPLOSION].bpp, ses.moves[PK_EXPLOSION].bpp, i, &ses.p1.monsters[0]);
+			pk_setMove(1, ses.moves[1].bpp, ses.moves[1].bpp, i, &ses.p1.monsters[0]);
 		} else {
-			pk_setMove(PK_TACKLE, ses.moves[PK_TACKLE].bpp, ses.moves[PK_TACKLE].bpp, i, &ses.p1.monsters[0]);
+			pk_setMove(2, ses.moves[2].bpp, ses.moves[2].bpp, i, &ses.p1.monsters[0]);
 		}
 	}
 }

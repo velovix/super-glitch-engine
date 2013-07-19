@@ -15,6 +15,7 @@
 #include "../battle/monsters.h"
 #include "../ai/npc.h"
 #include "../ai/player.h"
+ #include "../battle/moves.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>

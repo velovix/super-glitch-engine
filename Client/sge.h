@@ -8,6 +8,7 @@
 #include "general/sessionman.h"
 #include "battle/monsters.h"
 #include "battle/stats.h"
+#include "battle/moves.h"
 #include "general/window.h"
 #include "ai/player.h"
 

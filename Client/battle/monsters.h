@@ -46,14 +46,7 @@ typedef struct {
 
 } monster_t;
 
-typedef struct {
-	int bpp, type, power;
-	char name [12];
-	bool (*movePtr) (monster_t*, monster_t*);
-} move_t;
-
 // Initializers
-move_t pk_initMove(int s_cpp, int s_bpp, char* name, int type, bool (*s_movePtr) (monster_t*, monster_t*));
 monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bool s_shiny, stats_t s_stats);
 baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, char* name);
 
@@ -62,10 +55,5 @@ int pk_damage(int amount, monster_t* a, monster_t* d);
 // Monster Functions
 bool pk_useMove(int numb, monster_t* mon);
 void pk_setMove(int moveVal, int cpp, int bpp, int moveSlot, monster_t* mon);
-
-// Moves Functions
-bool pk_m_nomove(monster_t* a, monster_t* d);
-bool pk_m_tackle(monster_t* a, monster_t* d);
-bool pk_m_explosion(monster_t* a, monster_t* d);
 
 #endif

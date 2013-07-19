@@ -208,9 +208,9 @@ void pk_supdateWindows(sessionMan_t* ses) {
 			if(pk_useMove(ses->w_bMoves.selection, &ses->p1.monsters[ses->p1.currMon])) {
 				pk_sstepBattle(ses, BATS_ATT, ses->p1.monsters[ses->p1.currMon]
 					, ses->attWild, ses->w_bMoves.selection);
-				ses->moves[ses->p1.monsters[ses->p1.currMon].\
+				/*ses->moves[ses->p1.monsters[ses->p1.currMon].\
 					moves[ses->w_bMoves.selection].value].\
-					movePtr(&ses->p1.monsters[ses->p1.currMon], &ses->attWild);
+					movePtr(&ses->p1.monsters[ses->p1.currMon], &ses->attWild);*/
 			}
 
 		}
