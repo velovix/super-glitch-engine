@@ -35,7 +35,7 @@ typedef struct {
 
 // Move Headers
 
-#define CURRVERSION		1
+#define CURRVERSION		2
 
 typedef struct {
 	int version;
@@ -45,6 +45,7 @@ typedef struct {
 typedef struct {
 	char name[12];
 	int type;
+	int pp;
 	int scriptLen;
 } moveEntry_f;
 

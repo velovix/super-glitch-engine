@@ -15,6 +15,7 @@ GtkWidget *cbt_type;
 GtkWidget *e_name;
 GtkWidget *tv_script;
 GtkWidget *b_update;
+GtkWidget *sb_pp;
 
 moveObj_t moves[50];
 
@@ -24,6 +25,7 @@ void toggleEditable(gboolean editable)
 	gtk_widget_set_sensitive(GTK_WIDGET(e_name), editable);
 	gtk_widget_set_sensitive(GTK_WIDGET(tv_script), editable);
 	gtk_widget_set_sensitive(GTK_WIDGET(b_update), editable);
+	gtk_widget_set_sensitive(GTK_WIDGET(sb_pp), editable);
 }
 
 void clearMoves()
@@ -158,6 +160,8 @@ void cbt_move_changed(GtkWidget *obj, gpointer user_data)
 		gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(obj)));
 	gtk_combo_box_set_active(GTK_COMBO_BOX(cbt_type), moves[currMove].info.type);
 
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(sb_pp), moves[currMove].info.pp);
+
 	if(moves[currMove].script != NULL) {
 		gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(tv_script)),
 			moves[currMove].script,	moves[currMove].info.scriptLen);
@@ -188,6 +192,12 @@ void b_update_clicked(GtkWidget *obj, gpointer user_data)
 
 	gtk_combo_box_set_active(GTK_COMBO_BOX(cbt_move), tmpCurrMove);
 
+}
+
+void sb_pp_changed(GtkWidget *obj, gpointer user_data)
+{
+	moves[currMove].info.pp =
+		gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sb_pp));
 }
 
 void b_newmove_clicked(GtkWidget *obj, gpointer user_data)
@@ -266,9 +276,11 @@ void b_save_clicked(GtkWidget *obj, gpointer user_data)
 		printf("   Saving %s...\n", moves[i].info.name);
 
 		printf("   Type: %i\n", moves[i].info.type);
+		printf("   PP: %i\n", moves[i].info.pp);
 		printf("   Script Length: %i\n", moves[i].info.scriptLen);
 
 		fwrite(&moves[i].info.type, sizeof(int), 1, file);
+		fwrite(&moves[i].info.pp, sizeof(int), 1, file);
 		fwrite(&moves[i].info.scriptLen, sizeof(int), 1, file);
 
 		fwrite(moves[i].script, sizeof(char), moves[i].info.scriptLen, file);
@@ -296,6 +308,7 @@ int main(int argc, char **argv) {
 	e_name = GTK_WIDGET(gtk_builder_get_object(builder, "e_name"));
 	tv_script = GTK_WIDGET(gtk_builder_get_object(builder, "tv_script"));
 	b_update = GTK_WIDGET(gtk_builder_get_object(builder, "b_update"));
+	sb_pp = GTK_WIDGET(gtk_builder_get_object(builder, "sb_pp"));
 	
 
 	gtk_builder_connect_signals(builder, NULL);
@@ -313,3 +326,4 @@ int main(int argc, char **argv) {
 
 	return 0;
 }
+
