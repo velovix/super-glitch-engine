@@ -249,6 +249,9 @@ void loadMoves()
 		fread(script, sizeof(char), moves[i].scriptLen, fMoves);
 
 		ses.moves[i] = pk_initMove(moves[i].pp,moves[i].pp,moves[i].name,moves[i].type);
+		if(pk_parseMoveScript(script, moves[i].scriptLen, &ses.moves[i])) {
+			printf("Something didn't happen -^( :/ )^- Call the police\n");
+		}
 	}
 
 	fclose(fMoves);
