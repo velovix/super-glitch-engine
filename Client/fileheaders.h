@@ -98,7 +98,7 @@ typedef struct {
 
 // --- Moves
 
-#define MOVES_VERSION		1
+#define MOVES_VERSION		2
 
 typedef struct {
 	int version;
@@ -108,6 +108,7 @@ typedef struct {
 typedef struct {
 	char name[12];
 	int type;
+	int pp;
 	int scriptLen;
 } moveEntry_f;
 

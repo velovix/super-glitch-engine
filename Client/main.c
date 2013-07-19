@@ -242,12 +242,13 @@ void loadMoves()
 	for(int i=0; i<header.count; i++) {
 		fread(&moves[i].name, sizeof(char), 12, fMoves);
 		fread(&moves[i].type, sizeof(int), 1, fMoves);
+		fread(&moves[i].pp, sizeof(int), 1, fMoves);
 		fread(&moves[i].scriptLen, sizeof(int), 1, fMoves);
 
 		char *script = (char*)malloc(sizeof(char)*moves[i].scriptLen);
 		fread(script, sizeof(char), moves[i].scriptLen, fMoves);
 
-		ses.moves[i] = pk_initMove(10,10,moves[i].name,moves[i].type);
+		ses.moves[i] = pk_initMove(moves[i].pp,moves[i].pp,moves[i].name,moves[i].type);
 	}
 
 	fclose(fMoves);
