@@ -130,6 +130,7 @@ void pk_sstepBattle(sessionMan_t* ses, int step, monster_t aMon, monster_t dMon,
 			break;
 		}
 		ses->currWindow = &ses->w_bDialog;
+		break;
 	}
 
 	ses->battleStep = step;
@@ -208,9 +209,12 @@ void pk_supdateWindows(sessionMan_t* ses) {
 			if(pk_useMove(ses->w_bMoves.selection, &ses->p1.monsters[ses->p1.currMon])) {
 				pk_sstepBattle(ses, BATS_ATT, ses->p1.monsters[ses->p1.currMon]
 					, ses->attWild, ses->w_bMoves.selection);
-				/*ses->moves[ses->p1.monsters[ses->p1.currMon].\
-					moves[ses->w_bMoves.selection].value].\
-					movePtr(&ses->p1.monsters[ses->p1.currMon], &ses->attWild);*/
+				move_t *currMove = &ses->moves[ses->p1.monsters[ses->p1.currMon].\
+					moves[ses->w_bMoves.selection].value];
+				for(int i=0; i<currMove->eventCnt; i++) {
+					pk_doMoveEvent(currMove->events[i], &ses->p1.monsters[ses->p1.currMon],
+						&ses->attWild);
+				}
 			}
 
 		}

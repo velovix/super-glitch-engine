@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include "../constants.h"
 #include "stats.h"
+#include "moves.h"
 
 typedef struct {
 	int cpp, bpp;
@@ -43,6 +44,7 @@ typedef struct {
 	bool shiny;
 	stats_t stats;
 	moveMask_t moves[4];
+	int condition;
 
 } monster_t;
 
@@ -50,7 +52,7 @@ typedef struct {
 monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bool s_shiny, stats_t s_stats);
 baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, char* name);
 
-int pk_damage(int amount, monster_t* a, monster_t* d);
+void pk_doMoveEvent(moveEvent_t event, monster_t* a, monster_t* d);
 
 // Monster Functions
 bool pk_useMove(int numb, monster_t* mon);

@@ -1,11 +1,5 @@
 #include "monsters.h"
 
-void pk_setMove(int moveVal, int cpp, int bpp, int moveSlot, monster_t* mon) {
-	mon->moves[moveSlot].value = moveVal;
-	mon->moves[moveSlot].cpp = cpp;
-	mon->moves[moveSlot].bpp = bpp;
-}
-
 monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bool s_shiny, stats_t s_stats) {
 	monster_t out;
 	out.stats.mHp = s_health;
@@ -38,18 +32,35 @@ baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, ch
 	return out;
 }
 
-int pk_damage(int amount, monster_t* a, monster_t* d) {
-	int damage = (amount)/5;
-	if(damage <= 0) {
-		damage = 1;
+void pk_doMoveEvent(moveEvent_t event, monster_t* a, monster_t* d) {
+	switch(event.type) {
+	case ME_DAMAGE:
+		switch(event.target) {
+		case ME_USER:
+			a->stats.hp -= event.value;
+			break;
+		case ME_TARGET:
+			d->stats.hp -= event.value;
+			break;
+		}
+		break;
+	case ME_POISON:
+		switch(event.target) {
+		case ME_USER:
+			a->condition = ME_POISON;
+			break;
+		case ME_TARGET:
+			d->condition = ME_POISON;
+			break;
+		}
+		break;
 	}
-	d->stats.mHp -= damage;
+}
 
-	if(d->stats.mHp < 0) {
-		d->stats.mHp = 0;
-	}
-
-	return damage;
+void pk_setMove(int moveVal, int cpp, int bpp, int moveSlot, monster_t* mon) {
+	mon->moves[moveSlot].value = moveVal;
+	mon->moves[moveSlot].cpp = cpp;
+	mon->moves[moveSlot].bpp = bpp;
 }
 
 bool pk_useMove(int numb, monster_t* mon) {
