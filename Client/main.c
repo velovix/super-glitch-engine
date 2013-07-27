@@ -353,8 +353,8 @@ void setPlayer()
 {
 	ses.p1 = pk_pinit(6*BLOCK_SIZE,11*BLOCK_SIZE, C_PLAYER);
 
-	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[PK_CHARIZARD], false, 
-		ses.bMons[PK_CHARIZARD].bs), &ses.p1);
+	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[1], false, 
+		ses.bMons[1].bs), &ses.p1);
 
 	for(int i=0; i<4; i++) {
 		if(i == 3) {

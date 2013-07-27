@@ -22,21 +22,7 @@
 #define DOWN			4
 
 // Types
-#define T_NORMAL		0
-#define T_FIRE			1
-#define T_WATER			2
-#define T_ROCK			3
-#define T_GROUND		4
-#define T_ELECTRIC		5
-#define T_FLYING		6
-#define T_ICE			7
-#define T_DRAGON		8
-#define T_GHOST			9
-#define T_PSYCHIC		10
-#define T_FIGHTING		11
-#define T_POISON		12
-#define T_GRASS			13
-#define T_BUG			14
+// POTENTIALLY PROBLEMATIC. DEPRECIATE SOON.
 #define T_NONE			15
 
 // Move Results
@@ -68,15 +54,6 @@
 #define BAT_WILD		1
 #define BAT_TRAINER		2
 
-// Battle Steps
-#define BATS_PRE		0
-#define BATS_WPA		1
-#define BATS_GO			2
-#define BATS_SEL		3
-#define BATS_ATT		4
-#define BATS_RESULT		5
-#define BATS_FINISH		6
-
 // Window Selections
 #define WSEL_NONE		-1
 #define WSEL_BACK		255
@@ -91,27 +68,7 @@
 #define CHAR_SPEED		BLOCK_SIZE
 
 // Map Sprites
-#define MOFF			0
-#define GRASS			MOFF
-#define ONE_POLL		MOFF+1
-#define DARK_DIRT		MOFF+2
-#define TREE			MOFF+3
-#define SIGN			MOFF+4
-#define WATER			MOFF+5
-#define R_SHORE			MOFF+6
-#define L_SHORE			MOFF+7
-#define U_SHORE			MOFF+8
-#define U_R_SHORE		MOFF+9
-#define U_L_SHORE		MOFF+10
-#define TWO_POLL		MOFF+11
-#define CLEAR			MOFF+12
-#define GRASS_OVER		MOFF+13
-#define WORD_BUBBLE		MOFF+14
-#define HOUSE_DOOR		MOFF+18
-#define SLIGHT_DIRT		MOFF+24
-#define HOUSE_FLOOR		MOFF+30
-#define HOUSE_MAT		MOFF+36
-#define BLACK			MOFF+42
+#define WORD_BUBBLE		14
 
 // Player Sprites
 #define PSOFF			0
@@ -169,10 +126,6 @@
 #define AI_WANDER		4
 #define AI_DEST			5
 
-// Window Types
-#define WT_PLAINTXT		1
-#define WT_OPTIONS		2
-
 // Door Types
 #define DT_WALKINTO		1
 #define DT_COLLIDE		2
@@ -183,10 +136,5 @@
 
 #define ME_TARGET		1
 #define ME_USER			2
-
-// Pokemon
-#define PK_NIDOQUEEN	0
-#define PK_CHARIZARD	1
-#define PK_BLASTOISE	2
 
 #endif

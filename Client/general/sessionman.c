@@ -54,7 +54,6 @@ void pk_supdateMapCols(int which, sessionMan_t* ses) {
 }
 
 void pk_sstartBattleW(monster_t mon, sessionMan_t* ses) {
-	ses->battleStep = BATS_PRE;
 	ses->battleType = BAT_WILD;
 	ses->attWild = mon;
 
@@ -76,7 +75,6 @@ void pk_sstartBattleW(monster_t mon, sessionMan_t* ses) {
 }
 
 void pk_sstartBattleT(npc_t* trainer, sessionMan_t* ses) {
-	ses->battleStep = BATS_PRE;
 	ses->battleType = BAT_TRAINER;
 	ses->attTrainer = trainer;
 
