@@ -53,5 +53,6 @@ void pk_fullWindowScroll(int scrollCnt, window_t* window);
 bool pk_isWindowFinished(window_t window);
 
 int pk_getCharValue(char c);
+char *pk_insString(char* baseText, char* insText, int insLoc, int insLen);
 
 #endif

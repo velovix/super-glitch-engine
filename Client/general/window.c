@@ -86,6 +86,8 @@ void pk_setWindowText(char* s_text, bool s_txtScroll, window_t* window) {
 	window->txtScroll = s_txtScroll;
 	window->optCnt = 0;
 	window->optW = window->optH = 0;
+	window->scrollCnt = 0;
+	window->scrollNumb = 1;
 
 	int inc = 0;
 	bool settingWidth = true;
@@ -289,4 +291,33 @@ int pk_getCharValue(char c) {
 	} else {
 		return SPACE;
 	}
+}
+
+char *pk_insString(char* baseText, char* insText, int insLoc, int insLen) {
+	char* text = (char*)malloc(128*sizeof(char));
+
+	// Tries to autodetect end of inserted string
+	if(insLen == -1) {
+		for(insLen=0; true; insLen++) {
+			if(insText[insLen] == ' ' && insText[insLen+1] == ' ') {
+				break;
+			}
+		}
+	}
+
+	int baseTextLen = 0;
+	// Copy base text into output text
+	for(int i=0; pk_getCharValue(baseText[i]) != CE_ENDSTR; i++) {
+		text[i] = baseText[i];
+		baseTextLen = i;
+	}
+
+	// Put the inserted text into the output text
+	for(int i=0; i<insLen; i++) {
+		text[insLoc+i] = insText[i];
+	}
+
+	text[baseTextLen] = '|';
+
+	return text;
 }

@@ -61,9 +61,18 @@ void pk_sstartBattleW(monster_t mon, sessionMan_t* ses) {
 	ses->mode = SES_BATTLE;
 
 	ses->currWindow = &ses->w_bDialog;
-	ses->w_bDialog.active = true;
+	if(!ses->w_bDialog.active) {
+		pk_toggleWindow(&ses->w_bDialog);
+	}
 
 	pk_ssetMoveWind(ses->p1.monsters[0], ses);
+
+	char *dialog = "{^Wild             ^^appeared!{^Go!              |";
+
+	dialog = pk_insString(dialog, mon.name, 7, 12);
+	dialog = pk_insString(dialog, ses->p1.monsters[ses->p1.currMon].name, 36, 12);
+
+	pk_setWindowText(dialog, true, &ses->w_bDialog);
 }
 
 void pk_sstartBattleT(npc_t* trainer, sessionMan_t* ses) {
@@ -79,61 +88,34 @@ void pk_sstartBattleT(npc_t* trainer, sessionMan_t* ses) {
 	pk_ssetMoveWind(ses->p1.monsters[0], ses);
 }
 
-void pk_sstepBattle(sessionMan_t* ses, int step, monster_t aMon, monster_t dMon, int move) {
-	switch(step) {
-	case BATS_PRE:
+char *pk_makeMoveBattleDialog(char *attacker, move_t move, int effectivness) {
+	char *dialog = "{^             ^^used             {^                            |";
+
+	dialog = pk_insString(dialog, attacker, 2, 12);
+	dialog = pk_insString(dialog, move.name, 22, 12);
+
+	switch(effectivness) {
+	case RES_HYPER:
+		dialog = pk_insString(dialog, "Major damage!", 36, 13);
 		break;
-	case BATS_WPA:
-		if(ses->battleType == BAT_WILD) {
-			pk_clearWindow(&ses->w_bDialog);
-			pk_setInsWindowText("{^Wild             ^^appeared!|", aMon.name, 7, 12, true, &ses->w_bDialog);
-		}
+	case RES_SUPER:
+		dialog = pk_insString(dialog, "It is super^^effective!", 36, 23);
 		break;
-	case BATS_GO:
-		pk_clearWindow(&ses->w_bDialog);
-		pk_setInsWindowText("{^Go!              |", dMon.name, 6, 12, true, &ses->w_bDialog);
+	case RES_NORMAL:
+		dialog = pk_insString(dialog, "A decent hit!", 36, 13);
 		break;
-	case BATS_SEL:
-		pk_clearWindow(&ses->w_bDialog);
-		ses->currWindow = &ses->w_bMenu;
-		pk_toggleWindow(&ses->w_bMenu);
+	case RES_NOTVERY:
+		dialog = pk_insString(dialog, "It is not very^^effective...", 36, 28);
 		break;
-	case BATS_ATT:
-		pk_setInsWindowText("{^             ^^used             |", aMon.name,
-			2, 12, true, &ses->w_bDialog);
-		pk_setInsWindowText(ses->w_bDialog.text,
-			ses->moves[aMon.moves[move].value].name,
-			22, 12, true, &ses->w_bDialog);
-		pk_toggleWindow(&ses->w_bMoves);
-		pk_toggleWindow(&ses->w_bMenu);
-		ses->currWindow = &ses->w_bDialog;
+	case RES_HARDLY:
+		dialog = pk_insString(dialog, "It did almost^^nothing...", 36, 25);
 		break;
-	case BATS_RESULT:
-		switch(pk_calcTyping(ses->types[dMon.type1], ses->types[dMon.type2], ses->types[ses->moves[move].type])) {
-		case RES_HYPER:
-			pk_setWindowText("{^Major damage!|", true, &ses->w_bDialog);
-			break;
-		case RES_SUPER:
-			pk_setWindowText("{^It is super^^effective!|", true, &ses->w_bDialog);
-			break;
-		case RES_NORMAL:
-			pk_setWindowText("{^A decent hit!|", true, &ses->w_bDialog);
-			break;
-		case RES_NOTVERY:
-			pk_setWindowText("{^It is not very^^effective...|", true, &ses->w_bDialog);
-			break;
-		case RES_HARDLY:
-			pk_setWindowText("{^It did almost^^nothing...|", true, &ses->w_bDialog);
-			break;
-		case RES_NONE:
-			pk_setWindowText("{^But it failed!|", true, &ses->w_bDialog);
-			break;
-		}
-		ses->currWindow = &ses->w_bDialog;
+	case RES_NONE:
+		dialog = pk_insString(dialog, "But it failed!", 36, 14);
 		break;
 	}
 
-	ses->battleStep = step;
+	return dialog;
 }
 
 void pk_ssetMoveWind(monster_t mon, sessionMan_t* ses) {
@@ -173,6 +155,69 @@ void pk_ssetMoveInfoWind(move_t move, sessionMan_t* ses) {
 	pk_setWindowText(miTxt, false, &ses->w_bMoveInfo);
 }
 
+void pk_ssetAppropriateWindows(sessionMan_t *ses) {
+	if(ses->mode == SES_BATTLE) {
+		// Turn off battle menu when battle dialog is going, and vice versa
+		if(ses->w_bDialog.finished && !ses->w_bMenu.active) {
+			pk_toggleWindow(&ses->w_bMenu);
+			ses->currWindow = &ses->w_bMenu;
+		} else if(!ses->w_bDialog.finished && ses->w_bMenu.active) {
+			pk_toggleWindow(&ses->w_bMenu);
+			ses->currWindow = &ses->w_bDialog;
+		}
+
+		// Turn off move windows when the battle menu is off
+		if(!ses->w_bMenu.active && ses->w_bMoves.active) {
+			pk_toggleWindow(&ses->w_bMoves);
+		}
+
+		// Turn move info window on when move list is on, and vice versa
+		if(ses->w_bMoves.active && !ses->w_bMoveInfo.active) {
+			pk_toggleWindow(&ses->w_bMoveInfo);
+		} else if(!ses->w_bMoves.active && ses->w_bMoveInfo.active) {
+			pk_toggleWindow(&ses->w_bMoveInfo);
+		}
+
+		/* Turn on appropriate windows when something is selected on the battle
+		   menu */
+		if(ses->w_bMenu.active && ses->w_bMenu.selection != WSEL_NONE) {
+			if(ses->w_bMenu.selection == 0) {
+				if(!ses->w_bMoves.active) {
+					pk_toggleWindow(&ses->w_bMoves);
+				}
+				ses->currWindow = &ses->w_bMoves;
+			}
+
+			ses->w_bMenu.selection = WSEL_NONE;
+		}
+
+		// Use moves when selected or go back to battle menu
+		if(ses->w_bMoves.selection != WSEL_NONE) {
+			if(ses->w_bMoves.selection == WSEL_BACK) {
+				ses->currWindow = &ses->w_bMenu;
+			} else if(ses->w_bMoves.active) {
+				if(pk_useMove(ses->w_bMoves.selection, &ses->p1.monsters[ses->p1.currMon])) {
+					monster_t currMon = ses->p1.monsters[ses->p1.currMon];
+					move_t currMove = ses->moves[ses->p1.monsters[ses->p1.currMon].\
+						moves[ses->w_bMoves.selection].value];
+					pk_clearWindow(&ses->w_bDialog);
+					char *dialog = pk_makeMoveBattleDialog(currMon.name, currMove, RES_SUPER);
+					pk_setWindowText(dialog, true, &ses->w_bDialog);
+					for(int i=0; i<currMove.eventCnt; i++) {
+						pk_doMoveEvent(currMove.events[i], &ses->p1.monsters[ses->p1.currMon],
+							&ses->attWild);
+					}
+				} else {
+					pk_clearWindow(&ses->w_bDialog);
+					pk_setWindowText("{^No PP for this move!|", true, &ses->w_bDialog);
+				}
+			}
+
+			ses->w_bMoves.selection = WSEL_NONE;
+		}
+	}
+}
+
 void pk_supdateWindows(sessionMan_t* ses) {
 
 	pk_ssetMoveInfoWind(ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].value], ses);
@@ -187,46 +232,7 @@ void pk_supdateWindows(sessionMan_t* ses) {
 		pk_updateWindow(&ses->npcs[i].dialog);
 	}
 
-	if(ses->w_bMoves.active && !ses->w_bMoveInfo.active) {
-		pk_toggleWindow(&ses->w_bMoveInfo);
-	} else if(!ses->w_bMoves.active && ses->w_bMoveInfo.active) {
-		pk_toggleWindow(&ses->w_bMoveInfo);
-	}
-
-	if(ses->mode == SES_BATTLE && ses->w_bMenu.active && ses->w_bMenu.selection != WSEL_NONE) {
-		if(ses->w_bMenu.selection == 0) {
-			if(!ses->w_bMoves.active)
-				pk_toggleWindow(&ses->w_bMoves);
-			ses->currWindow = &ses->w_bMoves;
-		}
-
-		ses->w_bMenu.selection = WSEL_NONE;
-	}
-	if(ses->mode == SES_BATTLE && ses->w_bMoves.selection != WSEL_NONE) {
-		if(ses->w_bMoves.selection == WSEL_BACK) {
-			ses->currWindow = &ses->w_bMenu;
-		} else if(ses->w_bMoves.active) {
-			if(pk_useMove(ses->w_bMoves.selection, &ses->p1.monsters[ses->p1.currMon])) {
-				pk_sstepBattle(ses, BATS_ATT, ses->p1.monsters[ses->p1.currMon]
-					, ses->attWild, ses->w_bMoves.selection);
-				move_t *currMove = &ses->moves[ses->p1.monsters[ses->p1.currMon].\
-					moves[ses->w_bMoves.selection].value];
-				for(int i=0; i<currMove->eventCnt; i++) {
-					pk_doMoveEvent(currMove->events[i], &ses->p1.monsters[ses->p1.currMon],
-						&ses->attWild);
-				}
-			}
-
-		}
-
-		ses->w_bMoves.selection = WSEL_NONE;
-	}
-	if(ses->mode == SES_BATTLE && ses->w_bDialog.finished) {
-		if(ses->battleStep == BATS_ATT) {
-			pk_sstepBattle(ses, BATS_RESULT, ses->p1.monsters[ses->p1.currMon],
-				ses->attWild, ses->w_bMoves.selection);
-		}
-	}
+	pk_ssetAppropriateWindows(ses);
 }
 
 void pk_supdateNpcs(sessionMan_t* ses) {
@@ -236,25 +242,25 @@ void pk_supdateNpcs(sessionMan_t* ses) {
 
 	for(int i=0; i<MAX_NPCS; i++) {
 
-		if(ses->npcs[i].active) {
+		if(!ses->npcs[i].active) {
+			continue;
+		}
 
-			pk_updateNpc(&ses->npcs[i], pk_findCols(ses->map,ses->npcs[i].mover.x/BLOCK_SIZE, ses->npcs[i].mover.y/BLOCK_SIZE));
-			if(!ses->npcs[i].fought && !ses->npcs[i].aggro && pk_canNpcSee(ses->p1.mover.nextX, ses->p1.mover.nextY, &ses->npcs[i])) {
-				ses->p1.pause = true;
-				if(pk_isFinishedMoving(ses->p1.mover)) {
-					pk_aggroNpc(ses->p1.mover.x, ses->p1.mover.y, &ses->npcs[i]);
-				}
-			} else if(ses->npcs[i].aggro && ses->npcs[i].mover.x == ses->npcs[i].destX[ses->npcs[i].dest]
-				&& ses->npcs[i].mover.y == ses->npcs[i].destY[ses->npcs[i].dest] && !ses->npcs[i].dialog.finished) {
-				pk_toggleWindow(&ses->npcs[i].dialog);
-				ses->currWindow = &ses->npcs[i].dialog;
-				ses->p1.mover.dir = pk_faceChar(ses->p1.mover, ses->npcs[i].mover);
-			} else if(ses->npcs[i].aggro && ses->npcs[i].dialog.finished) {
-				ses->p1.pause = false;
-				ses->npcs[i].aggro = false;
-				pk_sstartBattleW(ses->npcs[i].monsters[0], ses);
-				pk_sstepBattle(ses, BATS_WPA, ses->npcs[i].monsters[0], ses->attWild, 0);
+		pk_updateNpc(&ses->npcs[i], pk_findCols(ses->map,ses->npcs[i].mover.x/BLOCK_SIZE, ses->npcs[i].mover.y/BLOCK_SIZE));
+		if(!ses->npcs[i].fought && !ses->npcs[i].aggro && pk_canNpcSee(ses->p1.mover.nextX, ses->p1.mover.nextY, &ses->npcs[i])) {
+			ses->p1.pause = true;
+			if(pk_isFinishedMoving(ses->p1.mover)) {
+				pk_aggroNpc(ses->p1.mover.x, ses->p1.mover.y, &ses->npcs[i]);
 			}
+		} else if(ses->npcs[i].aggro && ses->npcs[i].mover.x == ses->npcs[i].destX[ses->npcs[i].dest]
+			&& ses->npcs[i].mover.y == ses->npcs[i].destY[ses->npcs[i].dest] && !ses->npcs[i].dialog.finished) {
+			pk_toggleWindow(&ses->npcs[i].dialog);
+			ses->currWindow = &ses->npcs[i].dialog;
+			ses->p1.mover.dir = pk_faceChar(ses->p1.mover, ses->npcs[i].mover);
+		} else if(ses->npcs[i].aggro && ses->npcs[i].dialog.finished) {
+			ses->p1.pause = false;
+			ses->npcs[i].aggro = false;
+			pk_sstartBattleW(ses->npcs[i].monsters[0], ses);
 		}
 	}
 }
@@ -263,18 +269,19 @@ void pk_spruneNpcs(sessionMan_t* ses) {
 	for(int i=0; i<MAX_NPCS; i++) {
 		bool isUsed = false;
 		for(int j=0; j<ses->map.npcCnt; j++) {
-			if(ses->map.npcData[j].val == i) {
-				isUsed = true;
-				ses->npcs[i].mover.x = ses->npcs[i].mover.nextX = ses->map.npcData[j].x*BLOCK_SIZE;
-				ses->npcs[i].mover.y = ses->npcs[i].mover.nextY = ses->map.npcData[j].y*BLOCK_SIZE;
-
-				ses->npcs[i].destX[1]-=ses->npcs[i].destX[0];
-				ses->npcs[i].destY[1]-=ses->npcs[i].destY[0];
-				ses->npcs[i].destX[0] = ses->map.npcData[j].x*BLOCK_SIZE;
-				ses->npcs[i].destY[0] = ses->map.npcData[j].y*BLOCK_SIZE;
-				ses->npcs[i].destX[1]+=ses->npcs[i].mover.x;
-				ses->npcs[i].destY[1]+=ses->npcs[i].mover.y;
+			if(ses->map.npcData[j].val != i) {
+				continue;
 			}
+		
+			isUsed = true;
+			ses->npcs[i].mover.x = ses->npcs[i].mover.nextX = ses->map.npcData[j].x*BLOCK_SIZE;
+			ses->npcs[i].mover.y = ses->npcs[i].mover.nextY = ses->map.npcData[j].y*BLOCK_SIZE;
+			ses->npcs[i].destX[1]-=ses->npcs[i].destX[0];
+			ses->npcs[i].destY[1]-=ses->npcs[i].destY[0];
+			ses->npcs[i].destX[0] = ses->map.npcData[j].x*BLOCK_SIZE;
+			ses->npcs[i].destY[0] = ses->map.npcData[j].y*BLOCK_SIZE;
+			ses->npcs[i].destX[1]+=ses->npcs[i].mover.x;
+			ses->npcs[i].destY[1]+=ses->npcs[i].mover.y;
 		}
 
 		ses->npcs[i].active = isUsed;

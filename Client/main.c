@@ -597,7 +597,6 @@ void checkKeys(Uint8 *keyStates)
 	if(keyStates[SDLK_b]) {
 		if(keyStatesBuf[SDLK_b] == false && ses.mode == SES_OVERWORLD) {
 			pk_sstartBattleW(ses.npcs[1].monsters[ses.npcs[1].currMon], &ses);
-			pk_sstepBattle(&ses, BATS_WPA, ses.npcs[1].monsters[ses.npcs[1].currMon], ses.attWild, 0);
 			keyStatesBuf[SDLK_b] = true;
 		} else if(keyStatesBuf[SDLK_b] == false && ses.mode == SES_BATTLE) {
 			pk_switchMode(SES_OVERWORLD, &ses);
@@ -790,14 +789,6 @@ void physics()
 	} else {
 		ses.windOpen = false;
 		ses.currWindow = NULL;
-	}
-
-	if(ses.battleStep == BATS_WPA && ses.w_bDialog.finished) {
-		pk_sstepBattle(&ses, BATS_GO, ses.attWild, ses.p1.monsters[ses.p1.currMon], 0);
-	}
-
-	if(ses.battleStep == BATS_GO && ses.w_bDialog.finished) {
-		pk_sstepBattle(&ses, BATS_SEL, ses.p1.monsters[ses.p1.currMon], ses.attWild, 0);
 	}
 
 	pk_supdateMapCols(ALL, &ses);
