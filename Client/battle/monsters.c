@@ -37,10 +37,16 @@ void pk_doMoveEvent(moveEvent_t event, monster_t* a, monster_t* d) {
 	case ME_DAMAGE:
 		switch(event.target) {
 		case ME_USER:
-			a->stats.hp -= event.value;
+			a->stats.mHp -= event.value/5;
+			if(a->stats.mHp < 0) {
+				a->stats.mHp = 0;
+			}
 			break;
 		case ME_TARGET:
-			d->stats.hp -= event.value;
+			d->stats.mHp -= event.value/5;
+			if(d->stats.mHp < 0) {
+				d->stats.mHp = 0;
+			}
 			break;
 		}
 		break;
