@@ -232,11 +232,13 @@ void b_load_clicked(GtkWidget *obj, gpointer user_data)
 		fread(&tmpChar[0], sizeof(char[12]), 1, file);
 		newMove(tmpChar);
 		fread(&moves[i].info.type, sizeof(int), 1, file);
+		fread(&moves[i].info.pp, sizeof(int), 1, file);
 		fread(&moves[i].info.scriptLen, sizeof(int), 1, file);
 
 		printf("   %s\n", moveList[i]);
 
 		printf("   Type          : %i\n", moves[i].info.type);
+		printf("   PP            : %i\n", moves[i].info.pp);
 		printf("   Script Length : %i\n", moves[i].info.scriptLen);
 
 		moves[i].script = (char*)malloc(sizeof(char)*moves[i].info.scriptLen);
