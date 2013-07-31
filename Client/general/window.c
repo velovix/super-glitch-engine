@@ -156,10 +156,6 @@ char* pk_getWindowText(window_t window) {
 	return out;
 }
 
-void pk_setWOptionFunc(int s_opt, void (*func)(), window_t* window) {
-	window->funcPtrs[s_opt].func = func;
-}
-
 void pk_toggleWindow(window_t* window) {
 	if(window->startLag <= 0) {
 		window->active = !window->active;
@@ -204,9 +200,6 @@ void pk_moveSelArrow(int dir, window_t* window) {
 
 void pk_selectWindow(window_t* window) {
 	if(window->dispChar >= window->strLength && window->optCnt > 0) {
-		if(window->funcPtrs[window->selOpt].func != NULL) {
-			window->funcPtrs[window->selOpt].func();
-		}
 		window->selection = window->selOpt;
 		
 	} else if(window->dispChar >= window->strLength && window->optCnt == 0) {
