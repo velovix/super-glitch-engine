@@ -51,15 +51,15 @@ void pk_updateNpc(npc_t* npc, col_t col) {
 	case AI_BANDF:
 		if(pk_isFinishedMoving(npc->mover) && !npc->pause) {
 			if(npc->mover.x < npc->destX[npc->dest]) {
-				pk_moveChar(RIGHT, true, &npc->mover);
+				pk_moveChar(RIGHT, col.right, &npc->mover);
 			} else if(npc->mover.x > npc->destX[npc->dest]) {
-				pk_moveChar(LEFT, true, &npc->mover);
+				pk_moveChar(LEFT, col.left, &npc->mover);
 			}
 
 			if(npc->mover.y < npc->destY[npc->dest]) {
-				pk_moveChar(UP, true, &npc->mover);
+				pk_moveChar(UP, col.up, &npc->mover);
 			} else if(npc->mover.y > npc->destY[npc->dest]) {
-				pk_moveChar(DOWN, true, &npc->mover);
+				pk_moveChar(DOWN, col.down, &npc->mover);
 			}
 		}
 

@@ -15,6 +15,7 @@
 typedef struct {
 	int x, y;
 	int nextX, nextY;
+	int lastX, lastY;
 	int animCycle, dir;
 	bool step;
 } charMover_t;

@@ -3,6 +3,8 @@
 void pk_initChar(int s_x, int s_y, charMover_t* obj) {
 	obj->x = s_x;
 	obj->y = s_y;
+	obj->lastX = s_x;
+	obj->lastY = s_y;
 	obj->nextX = s_x;
 	obj->nextY = s_y;
 	obj->dir = LEFT;
@@ -11,9 +13,7 @@ void pk_initChar(int s_x, int s_y, charMover_t* obj) {
 }
 
 void pk_moveChar(int dir, bool move, charMover_t* obj) {
-	int x = obj->x;
-	int y = obj->y;
-	if(pk_isFinishedMoving(obj[0]) && obj->animCycle == 0) {
+	if(pk_isFinishedMoving(*obj) && obj->animCycle == 0) {
 		if(dir == LEFT && move) {
 			obj->nextX = obj->x - CHAR_SPEED;
 			obj->nextY = obj->y;
@@ -35,6 +35,7 @@ void pk_moveChar(int dir, bool move, charMover_t* obj) {
 }
 
 void pk_updateChar(charMover_t* obj) {
+	// Move the player in whatever neccisary direction
 	if(obj->x > obj->nextX) {
 		obj->x--;
 	} else if(obj->x < obj->nextX) {
@@ -45,8 +46,15 @@ void pk_updateChar(charMover_t* obj) {
 		obj->y++;
 	}
 
+	// Roll through the player walking animation
 	if(obj->animCycle > 0) {
 		obj->animCycle --;
+	}
+
+	// Update the lastX and lastY coords for every finished move cycle
+	if(pk_isFinishedMoving(*obj)) {
+		obj->lastX = obj->x;
+		obj->lastY = obj->y;
 	}
 }
 
@@ -112,6 +120,7 @@ int pk_getCharFrame(int spriteOffset, charMover_t obj) {
 }
 
 void pk_buildColMapC(charMover_t obj, map_t* map) {
+	map->cData[obj.lastX/BLOCK_SIZE+( (obj.lastY/BLOCK_SIZE)*map->width )] = true;
 	map->cData[obj.nextX/BLOCK_SIZE+( (obj.nextY/BLOCK_SIZE)*map->width )] = true;
 }
 
