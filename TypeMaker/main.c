@@ -199,6 +199,9 @@ void cbt_type_changed(GtkWidget *obj, gpointer user_data)
 	gtk_entry_set_text(GTK_ENTRY(e_typename), gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(obj)));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(sb_weaknesses), (gdouble)types[currType].info.weakCnt);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(sb_resistances), (gdouble)types[currType].info.resCnt);
+
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cbt_weaknesses), types[currType].weak[(int)gtk_range_get_value(GTK_RANGE(s_weaknesses))-1].type);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cbt_resistances), types[currType].res[(int)gtk_range_get_value(GTK_RANGE(s_resistances))-1].type);
 }
 
 void cbt_weaknesses_changed(GtkWidget *obj, gpointer user_data)
