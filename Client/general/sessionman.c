@@ -55,7 +55,7 @@ void pk_supdateMapCols(int which, sessionMan_t* ses) {
 
 void pk_sstartBattleW(monster_t mon, sessionMan_t* ses) {
 	ses->battleType = BAT_WILD;
-	ses->attWild = mon;
+	ses->attMon = mon;
 
 	ses->mode = SES_BATTLE;
 
@@ -77,6 +77,7 @@ void pk_sstartBattleW(monster_t mon, sessionMan_t* ses) {
 void pk_sstartBattleT(npc_t* trainer, sessionMan_t* ses) {
 	ses->battleType = BAT_TRAINER;
 	ses->attTrainer = trainer;
+	ses->attMon = trainer->monsters[0];
 
 	ses->mode = SES_BATTLE;
 
@@ -203,7 +204,7 @@ void pk_ssetAppropriateWindows(sessionMan_t *ses) {
 					pk_setWindowText(dialog, true, &ses->w_bDialog);
 					for(int i=0; i<currMove.eventCnt; i++) {
 						pk_doMoveEvent(currMove.events[i], &ses->p1.monsters[ses->p1.currMon],
-							&ses->attWild);
+							&ses->attMon);
 					}
 				} else {
 					pk_clearWindow(&ses->w_bDialog);

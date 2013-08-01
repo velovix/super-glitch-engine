@@ -24,7 +24,7 @@ typedef struct {
 	int mode, currMap, battleStep, battleType;
 	bool windOpen;
 
-	monster_t attWild;
+	monster_t attMon;
 	npc_t* attTrainer;
 
 	player_t p1;

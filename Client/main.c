@@ -673,7 +673,7 @@ void drawWindow(window_t wind)
 
 void drawBattle() {
 	for(int i=0; i<12; i++) {
-		apply_surface(8+(i*8), 8*0, s_chars, s_screen, &clipChars[pk_getCharValue(ses.attWild.name[i])], false);
+		apply_surface(8+(i*8), 8*0, s_chars, s_screen, &clipChars[pk_getCharValue(ses.attMon.name[i])], false);
 	}
 
 	apply_surface(8*4, 8*1, s_chars, s_screen, &clipChars[LEVEL], false);
@@ -719,7 +719,7 @@ void drawBattle() {
 	draw_rect(8*12+3, 8*9+3, 46*((double)ses.p1.monsters[ses.p1.currMon].stats.mHp / 
 		(double)ses.p1.monsters[ses.p1.currMon].stats.hp), 2, 254);
 
-	draw_rect(8*4+3, 8*2+3, 46*((double)ses.attWild.stats.mHp/(double)ses.attWild.stats.hp), 2, 254);
+	draw_rect(8*4+3, 8*2+3, 46*((double)ses.attMon.stats.mHp/(double)ses.attMon.stats.hp), 2, 254);
 
 	apply_surface(0, SCREEN_HEIGHT-(PKMN_SIZE)-(6*CHAR_SIZE), s_bPkmn, s_screen,
 		&clipPkmn[ses.p1.monsters[ses.p1.currMon].id->backSpr], false);
