@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdbool.h>
-#include <string.h>
+#include <math.h>
 #include "../constants.h"
 
 typedef struct {
@@ -46,5 +46,6 @@ bool pk_isWindowFinished(window_t window);
 
 int pk_getCharValue(char c);
 char *pk_insString(char* baseText, char* insText, int insLoc, int insLen);
+char *pk_intToStr(int numb, int maxStrSize);
 
 #endif

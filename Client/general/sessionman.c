@@ -139,19 +139,24 @@ void pk_ssetMoveWind(monster_t mon, sessionMan_t* ses) {
 }
 
 void pk_ssetMoveInfoWind(move_t move, sessionMan_t* ses) {
-	char* miTxt = ses->w_bMoveInfo.text;
+	pk_setInsWindowText(ses->w_bMoveInfo.text, ses->types[move.type].name,
+		8, 8, false, &ses->w_bMoveInfo);
 
-	for(int i=0; i<8; i++) {
-		miTxt[i+8] = ses->types[move.type].name[i];
-	}
+	char *pp1;
+	char *pp2;
+	//sprintf(pp1, "%d", ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].cpp);
+	//sprintf(pp2, "%d", ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].bpp);
 
-	char pp1[2];		char pp2[2];
-	sprintf(pp1, "%d", ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].cpp);
-	sprintf(pp2, "%d", ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].bpp);
-	miTxt[21] = pp1[0];	miTxt[22] = pp1[1];
-	miTxt[24] = pp2[0];	miTxt[25] = pp2[1];
+	pp1 = pk_intToStr(ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].cpp, 2);
+	pp2 = pk_intToStr(ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].bpp, 2);
 
-	pk_setWindowText(miTxt, false, &ses->w_bMoveInfo);
+	printf("%c%c, %c%c\n", pp1[0], pp1[1], pp2[0], pp2[1]);
+
+	pk_setInsWindowText(ses->w_bMoveInfo.text, pp1,
+		21, 2, false, &ses->w_bMoveInfo);
+
+	pk_setInsWindowText(ses->w_bMoveInfo.text, pp2,
+		24, 2, false, &ses->w_bMoveInfo);
 }
 
 void pk_ssetAppropriateWindows(sessionMan_t *ses) {
@@ -219,7 +224,9 @@ void pk_ssetAppropriateWindows(sessionMan_t *ses) {
 
 void pk_supdateWindows(sessionMan_t* ses) {
 
-	pk_ssetMoveInfoWind(ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].value], ses);
+	if(ses->mode == SES_BATTLE) {
+		pk_ssetMoveInfoWind(ses->moves[ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].value], ses);
+	}
 
 	pk_updateWindow(&ses->w_menu);
 	pk_updateWindow(&ses->w_bDialog);

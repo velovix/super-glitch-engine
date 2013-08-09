@@ -310,7 +310,51 @@ char *pk_insString(char* baseText, char* insText, int insLoc, int insLen) {
 		text[insLoc+i] = insText[i];
 	}
 
+	// End with the terminating character
 	text[baseTextLen] = '|';
 
 	return text;
+}
+
+char *pk_intToStr(int numb, int maxStrSize) {
+	// Create the output pointer
+	char *out = (char*)malloc(maxStrSize*sizeof(char));
+
+	// Return X's if the number is too big to fit in the string
+	if(numb >= (int)pow(10, maxStrSize)) {
+
+		for(int i=0; i<maxStrSize; i++) {
+			out[i] = 'X';
+		}
+		return out;
+	}
+
+	// Resize expectations if numb is smaller than string can possibly hold
+	for(int i=maxStrSize-1; i>=0; i--) {
+		// If i = 0, the value is 0, but we still want to display it
+		if(numb < (int)pow(10, i) && i != 0) {
+			maxStrSize--;
+		} else {
+			break;
+		}
+	}
+
+	// Start converting
+	for(int i=0; i<maxStrSize; i++) {
+		/* Find the extra, using our knowledge of the last number if applicable
+		   If there isn't a previous number to work with, there shouldn't be
+		   extra */
+		int extra = 0;
+		if(i!=0) {
+			extra = (int)pow(10, i)*(int)(out[i-1]-48);
+		}
+		// Find the remainder
+		int remain = numb % (int)pow(10, maxStrSize-i-1);
+		// Isolate the single digit from the number
+		int sepNumb = (numb-remain-extra)/pow(10, maxStrSize-i-1);
+
+		out[i] = (char)(sepNumb+48);
+	}
+
+	return out;
 }
