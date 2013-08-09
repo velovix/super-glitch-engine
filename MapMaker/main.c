@@ -491,7 +491,7 @@ void loop() {
 	checkKeys(keystates);
 }
 
-int main() {
+int main(int argc, char** argv) {
 	curX = curY = 1;
 	camX = camY = 0;
 	currRoom = tileColCnt = 0;
