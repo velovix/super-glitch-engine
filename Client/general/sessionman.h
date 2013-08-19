@@ -42,6 +42,7 @@ typedef struct {
 } sessionMan_t;
 
 void pk_initSMan(int, sessionMan_t*);
+void pk_freeSMan(sessionMan_t*);
 void pk_switchMode(int, sessionMan_t*);
 void pk_snewMap(char*, sessionMan_t*);
 void pk_supdateMapCols(int, sessionMan_t*);

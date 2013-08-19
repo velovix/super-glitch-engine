@@ -21,6 +21,10 @@ void pk_initSMan(int s_mode, sessionMan_t* ses) {
 	pk_setWindowText("{TYPE/^ FIGHTING^    QQ/QQ|", false, &ses->w_bMoveInfo);
 }
 
+void pk_freeSMan(sessionMan_t* obj) {
+	pk_freeMap(&obj->map);
+}
+
 void pk_switchMode(int s_mode, sessionMan_t* session) {
 	session->mode = s_mode;
 

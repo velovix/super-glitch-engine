@@ -839,6 +839,7 @@ int main(int argc, char **argv)
 		while(SDL_PollEvent(&event)) {
 			if(event.type == SDL_QUIT) {
 				quit = true;
+				pk_freeSMan(&ses);
 				unloadSprites();
 				exit(0);
 			}
