@@ -1,10 +1,10 @@
 OBJ = main.o mapman.o npc.o sessionman.o charmover.o window.o monsters.o stats.o player.o musicman.o moves.o
-LIB = -lSDL -lSDL_image -lSDL_mixer
+LIB = -lSDL -lSDL_image -lSDL_mixer -lm
 OFLAGS = -std=gnu99 -funsigned-char
 COMP = gcc
 
 all: $(OBJ)
-	$(COMP) -o out/sge $(OBJ) $(LIB)
+	$(COMP) -o sge $(OBJ) $(LIB)
 
 main.o: main.c
 	$(COMP) -c main.c $(OFLAGS)

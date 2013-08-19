@@ -10,7 +10,6 @@ cd ../MapMaker
 make
 echo --- Compiling Client
 cd ../Client
-mkdir out
 make
 echo
 echo Done!
