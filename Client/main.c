@@ -10,7 +10,6 @@
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
-#include <SDL/SDL_mixer.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +17,6 @@
 #include <stdbool.h>
 
 #include "fileheaders.h"
-#include "media/musicman.h"
 
 #include "sge.h"
 
@@ -30,11 +28,6 @@ sessionMan_t ses;
 // Framerate stuff
 struct timeb lastTime, lastTimeS;
 int physDelay = PHYS_DELAY;
-
-// SDL Music
-Mix_Music* music = NULL;
-musicMan_t musicMan;
-bool mute = true;
 
 // SDL Surfaces
 SDL_Surface* s_screen = NULL;
@@ -63,11 +56,6 @@ int init()
 
 	s_screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_SWSURFACE);
 	SDL_WM_SetCaption("Super Glitch Engine", NULL);
-
-    if( Mix_OpenAudio( 22050, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 )
-    {
-        return -1;
-    }
 
 	return 0;
 }
@@ -114,17 +102,6 @@ void loadMap(int val)
 			pk_initMap(ses.map.width, ses.map.height, &ses.map);
 			for(int j=0; j<rHeader[i].w*rHeader[i].h; j++) {
 				fread(&ses.map.data[j], sizeof(char), 1, fMap);
-			}
-			if(!mute) {
-				if(rHeader[i].music != -1 && isDifferent(rHeader[i].music, &musicMan)) {
-					music = Mix_LoadMUS( getMusic(rHeader[i].music, &musicMan) );
-					if(music == NULL) {
-						printf("[ERROR] Loading music!\n");
-					}
-					Mix_PlayMusic(music, -1);
-				} else if(rHeader[i].music == -1) {
-					Mix_PauseMusic();
-				}
 			}
 
 		} else {
@@ -446,7 +423,6 @@ void unloadSprites()
 	SDL_FreeSurface(s_fPkmn);
 	SDL_FreeSurface(s_bPkmn);
 
-	Mix_CloseAudio();
 	SDL_Quit();
 }
 
@@ -618,15 +594,6 @@ void checkKeys(Uint8 *keyStates)
 		}
 	} else {
 		keyStatesBuf[SDLK_r] = false;
-	}
-
-	if(keyStates[SDLK_p]) {
-		if(keyStatesBuf[SDLK_p] == false) {
-			mute = !mute;
-			keyStatesBuf[SDLK_p] = true;
-		}
-	} else {
-		keyStatesBuf[SDLK_p] = false;
 	}
 
 	if(keyStates[SDLK_h]) {
@@ -842,10 +809,6 @@ void gameLoop()
 int main(int argc, char **argv)
 {
 	printf("Super Glitch Engine: V0.6.0 Alpha\n");
-
-	musicMan.lastMusic = -1;
-	newMusic("../resources/music/pallet.wav", &musicMan);
-	newMusic("../resources/music/vermillion.wav", &musicMan);
 
 	if(init() == -1) {
 		return 1;
