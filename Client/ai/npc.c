@@ -176,7 +176,7 @@ void pk_switchMessage(int val, npc_t* trainer) {
 
 void pk_setNpcMonster(monster_t mon, npc_t* trainer) {
 	if(trainer->monCnt > 5) {
-		printf("NPC: Max monster count reached\n");
+		printf("[ERROR] Max monster count reached on NPC!\n");
 		return;
 	}
 	trainer->monsters[trainer->monCnt] = mon;

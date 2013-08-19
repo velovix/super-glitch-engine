@@ -1,7 +1,6 @@
 #include "sessionman.h"
 
 void pk_initSMan(int s_mode, sessionMan_t* ses) {
-	printf("Started SGE session.\n");
 	ses->mode = s_mode;
 	ses->windOpen = false;
 
@@ -144,13 +143,9 @@ void pk_ssetMoveInfoWind(move_t move, sessionMan_t* ses) {
 
 	char *pp1;
 	char *pp2;
-	//sprintf(pp1, "%d", ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].cpp);
-	//sprintf(pp2, "%d", ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].bpp);
 
 	pp1 = pk_intToStr(ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].cpp, 2);
 	pp2 = pk_intToStr(ses->p1.monsters[0].moves[ses->w_bMoves.selOpt].bpp, 2);
-
-	printf("%c%c, %c%c\n", pp1[0], pp1[1], pp2[0], pp2[1]);
 
 	pk_setInsWindowText(ses->w_bMoveInfo.text, pp1,
 		21, 2, false, &ses->w_bMoveInfo);

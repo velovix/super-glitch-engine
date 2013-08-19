@@ -14,7 +14,7 @@ player_t pk_pinit(int x, int y, int sprite) {
 
 void pk_psetMonster(monster_t mon, player_t* player) {
 	if(player->monCnt > 5) {
-		printf("Max # of monsters reached\n");
+		printf("[ERROR] Max monster count reached on player!\n");
 		return;
 	}
 	player->monsters[player->monCnt] = mon;

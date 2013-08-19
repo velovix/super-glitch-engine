@@ -115,7 +115,6 @@ int pk_getCharFrame(int spriteOffset, charMover_t obj) {
 		break;
 	}
 
-	printf("ERROR: No suitable sprite found!\n");
 	return 1;
 }
 

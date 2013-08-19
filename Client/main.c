@@ -88,8 +88,6 @@ void loadMap(int val)
 	}
 	fread(&header.count, sizeof(int), 1, fMap);
 
-	printf("Loading map %i...\n", val);
-
 	fread(&header.tileColCnt, sizeof(int), 1, fMap);
 	unsigned char tileColData[header.tileColCnt];
 	for(int i=0; i<header.tileColCnt; i++) {
@@ -121,7 +119,7 @@ void loadMap(int val)
 				if(rHeader[i].music != -1 && isDifferent(rHeader[i].music, &musicMan)) {
 					music = Mix_LoadMUS( getMusic(rHeader[i].music, &musicMan) );
 					if(music == NULL) {
-						printf("   [ERROR] Loading music!\n");
+						printf("[ERROR] Loading music!\n");
 					}
 					Mix_PlayMusic(music, -1);
 				} else if(rHeader[i].music == -1) {
@@ -148,7 +146,6 @@ void loadMap(int val)
 		fread(&doorData[i].destX, sizeof(int), 1, fMap);
 		fread(&doorData[i].destY, sizeof(int), 1, fMap);
 	}
-	printf("   Map Door Count: %i\n", doorCnt);
 
 	int npcCnt;
 	fread(&npcCnt, sizeof(int), 1, fMap);
@@ -158,7 +155,6 @@ void loadMap(int val)
 		fread(&npcData[i].x, sizeof(int), 1, fMap);
 		fread(&npcData[i].y, sizeof(int), 1, fMap);
 	}
-	printf("   Map NPC Count: %i\n", npcCnt);
 
 	fclose(fMap);
 
@@ -216,9 +212,6 @@ void loadTypes()
 		pk_setTypeWeak(&ses.types[i], entry[i].weakCnt, &wEntry[0]);
 		pk_setTypeInv(&ses.types[i], entry[i].resCnt, &iEntry[0]);
 	}
-
-	printf("Read type info.\n");
-	printf("   %i types found.\n", header.count);
 }
 
 void loadMoves()
@@ -255,9 +248,6 @@ void loadMoves()
 	}
 
 	fclose(fMoves);
-
-	printf("Read move info.\n");
-	printf("   %i moves found\n", header.count);
 }
 
 // Object Loading Functions
@@ -276,9 +266,6 @@ void loadMonsters()
 		ses.bMons[mons[i].value] = pk_initBaseMonster(pk_initStats(30, mons[i].att, mons[i].def, mons[i].spAtt, mons[i].spDef,
 			mons[i].speed), pk_initStats(0,0,0,0,0,0), mons[i].value, mons[i].name);
 	}
-
-	printf("Read monster info.\n");
-	printf("   %i monsters found.\n", header.count);
 }
 
 void loadNpcs()
@@ -345,8 +332,6 @@ void loadNpcs()
 	}
 
 	fclose(fNpcs);
-	printf("Read NPC info.\n");
-	printf("   %i NPCs found\n", header.count);
 }
 
 void setPlayer()
@@ -432,23 +417,23 @@ void loadSprites()
 	s_player = load_image("../resources/sprites/npcs.png");
 	s_npc = load_image("../resources/sprites/npcs.png");
 	if(s_player == NULL || s_npc == NULL) {
-		printf("ERROR: Couldn't load NPC sprites!\n");
+		printf("[ERROR] Couldn't load NPC sprites!\n");
 	}
 	s_mapTile = load_image("../resources/sprites/tiles.png");
 	if(s_mapTile == NULL) {
-		printf("ERROR: Couldn't load tile sprites!\n");
+		printf("[ERROR] Couldn't load tile sprites!\n");
 	}
 	s_chars = load_image("../resources/sprites/characters.png");
 	if(s_chars == NULL) {
-		printf("ERROR: Couldn't load character sprites!\n");
+		printf("[ERROR] Couldn't load character sprites!\n");
 	}
 	s_fPkmn = load_image("../resources/sprites/FrontPkmn.png");
 	if(s_fPkmn == NULL) {
-		printf("ERROR: Couldn't load front pokemon sprites!\n");
+		printf("[ERROR] Couldn't load front pokemon sprites!\n");
 	}
 	s_bPkmn = load_image("../resources/sprites/BackPkmn.png");
 	if(s_bPkmn == NULL) {
-		printf("ERROR: Couldn't load back pokemon sprites!\n");
+		printf("[ERROR] Couldn't load back pokemon sprites!\n");
 	}
 }
 
@@ -856,9 +841,7 @@ void gameLoop()
 
 int main(int argc, char **argv)
 {
-	printf("==========================================\n");
-	printf("|           PokeEngine V0.0.01           |\n");
-	printf("==========================================\n\n");
+	printf("Super Glitch Engine: V0.6.0 Alpha\n");
 
 	musicMan.lastMusic = -1;
 	newMusic("../resources/music/pallet.wav", &musicMan);
