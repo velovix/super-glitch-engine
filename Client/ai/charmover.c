@@ -13,7 +13,7 @@ void pk_initChar(int s_x, int s_y, charMover_t* obj) {
 }
 
 void pk_moveChar(int dir, bool move, charMover_t* obj) {
-	if(pk_isFinishedMoving(*obj) && obj->animCycle == 0) {
+	if(pk_isFinishedMoving(*obj)) {
 		if(dir == LEFT && move) {
 			obj->nextX = obj->x - CHAR_SPEED;
 			obj->nextY = obj->y;
@@ -29,8 +29,12 @@ void pk_moveChar(int dir, bool move, charMover_t* obj) {
 		}
 
 		obj->step = !obj->step;
-		obj->animCycle = CHAR_SPEED;
 		obj->dir = dir;
+
+		// Keeps the animation cycle from constantly restarting when colliding
+		if(obj->animCycle == 0) {
+			obj->animCycle = CHAR_SPEED;
+		}
 	}
 }
 
