@@ -1,12 +1,37 @@
 #include "mapman.h"
 
 void pk_initMap(int w, int h, map_t* map) {
+	map->width = w;
+	map->height = h;
+
 	map->data = 0;
 	map->cData = 0;
 	map->tileColData = 0;
 
 	map->data = (char*)malloc(w*h*sizeof(char));
 	map->cData = (bool*)malloc(w*h*sizeof(bool));
+	map->mapAlloced = true;
+
+	map->doorAlloced = map->npcAlloced = map->tileColAlloced = false;
+}
+
+void pk_freeMap(map_t *map) {
+	if(map->mapAlloced) {
+		free(map->data);
+		free(map->cData);
+	}
+
+	if(map->doorAlloced) {
+		free(map->doorData);
+	}
+
+	if(map->npcAlloced) {
+		free(map->npcData);
+	}
+
+	if(map->tileColAlloced) {
+		free(map->tileColData);
+	}
 }
 
 col_t pk_findCols(map_t map, int x, int y) {
@@ -64,7 +89,14 @@ void pk_clearColMap(map_t* map) {
 }
 
 void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map) {
+	// Frees door data if memory is already allocated
+	if(map->doorAlloced) {
+		free(map->doorData);
+	}
+
+	// Allocate desired data
 	map->doorData = (door_t*)malloc(doorCnt*sizeof(door_t));
+	map->doorAlloced = true;
 
 	for(int i=0; i<doorCnt; i++) {
 		if(!pk_isSolid(map->data[doorData[i].x+(doorData[i].y*map->width)], map)) {
@@ -78,7 +110,14 @@ void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map) {
 }
 
 void pk_setNpcData(int npcCnt, mapNpc_t *npcData, map_t* map) {
+	// Frees NPC data if memory is already allocated
+	if(map->npcAlloced) {
+		free(map->npcData);
+	}
+
+	// Allocate desired data
 	map->npcData = (mapNpc_t*)malloc(npcCnt*sizeof(mapNpc_t));
+	map->npcAlloced = true;
 
 	for(int i=0; i<npcCnt; i++) {
 		map->npcData[i] = npcData[i];
@@ -87,7 +126,14 @@ void pk_setNpcData(int npcCnt, mapNpc_t *npcData, map_t* map) {
 }
 
 void pk_setTileColData(int cnt, unsigned char *data, map_t* map) {
+	// Frees Tile Collision data if memory is already allocated
+	if(map->tileColAlloced) {
+		free(map->tileColData);
+	}
+
+	// Allocate desired data
 	map->tileColData = (char*)malloc(cnt*sizeof(char));
+	map->tileColAlloced = true;
 
 	for(int i=0; i<cnt; i++) {
 		map->tileColData[i] = data[i];

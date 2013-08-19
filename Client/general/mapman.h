@@ -38,13 +38,19 @@ typedef struct {
 	int width, height;
 	char *data;
 	bool *cData;
+
+	// Advanced map data
 	unsigned char *tileColData;
-	int doorCnt, npcCnt, tileColCnt;
 	door_t* doorData;
 	mapNpc_t* npcData;
+	int doorCnt, npcCnt, tileColCnt;
+
+	// Keeps track of whether or not this map object has had data allocated
+	bool doorAlloced, npcAlloced, tileColAlloced, mapAlloced;
 } map_t;
 
 void pk_initMap(int w, int h, map_t* map);
+void pk_freeMap(map_t *map);
 col_t pk_findCols(map_t map, int x, int y);
 void pk_buildColMapM(map_t* map);
 void pk_clearColMap(map_t* map);

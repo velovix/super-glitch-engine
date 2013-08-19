@@ -97,9 +97,8 @@ void loadMap(int val)
 
 
 		if(i==val) {
-			ses.map.width = rHeader[i].w;
-			ses.map.height = rHeader[i].h;
-			pk_initMap(ses.map.width, ses.map.height, &ses.map);
+			pk_freeMap(&ses.map);
+			pk_initMap(rHeader[i].w, rHeader[i].h, &ses.map);
 			for(int j=0; j<rHeader[i].w*rHeader[i].h; j++) {
 				fread(&ses.map.data[j], sizeof(char), 1, fMap);
 			}
@@ -222,6 +221,7 @@ void loadMoves()
 		if(!pk_parseMoveScript(script, moves[i].scriptLen, &ses.moves[i])) {
 			printf("[ERROR] Parsing move %i!\n", i);
 		}
+		free(script);
 	}
 
 	fclose(fMoves);
