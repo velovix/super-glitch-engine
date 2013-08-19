@@ -188,6 +188,8 @@ void loadTypes()
 		pk_setTypeWeak(&ses.types[i], entry[i].weakCnt, &wEntry[0]);
 		pk_setTypeInv(&ses.types[i], entry[i].resCnt, &iEntry[0]);
 	}
+
+	fclose(fTypes);
 }
 
 void loadMoves()
@@ -243,6 +245,8 @@ void loadMonsters()
 		ses.bMons[mons[i].value] = pk_initBaseMonster(pk_initStats(30, mons[i].att, mons[i].def, mons[i].spAtt, mons[i].spDef,
 			mons[i].speed), pk_initStats(0,0,0,0,0,0), mons[i].value, mons[i].name);
 	}
+
+	fclose(fMons);
 }
 
 void loadNpcs()
