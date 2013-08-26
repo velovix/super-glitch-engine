@@ -123,8 +123,8 @@ int pk_getCharFrame(int spriteOffset, charMover_t obj) {
 }
 
 void pk_buildColMapC(charMover_t obj, map_t* map) {
-	map->cData[obj.lastX/BLOCK_SIZE+( (obj.lastY/BLOCK_SIZE)*map->width )] = true;
-	map->cData[obj.nextX/BLOCK_SIZE+( (obj.nextY/BLOCK_SIZE)*map->width )] = true;
+	map->cData[obj.lastX/BLOCK_SIZE+( (obj.lastY/BLOCK_SIZE)*map->width )] = 1;
+	map->cData[obj.nextX/BLOCK_SIZE+( (obj.nextY/BLOCK_SIZE)*map->width )] = 1;
 }
 
 int pk_faceChar(charMover_t p, charMover_t t) {

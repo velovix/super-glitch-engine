@@ -37,7 +37,7 @@ typedef struct {
 typedef struct {
 	int width, height;
 	char *data;
-	bool *cData;
+	char *cData;
 
 	// Advanced map data
 	unsigned char *tileColData;

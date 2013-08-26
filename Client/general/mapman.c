@@ -4,12 +4,8 @@ void pk_initMap(int w, int h, map_t* map) {
 	map->width = w;
 	map->height = h;
 
-	map->data = 0;
-	map->cData = 0;
-	map->tileColData = 0;
-
 	map->data = (char*)malloc(w*h*sizeof(char));
-	map->cData = (bool*)malloc(w*h*sizeof(bool));
+	map->cData = (char*)malloc(w*h*sizeof(char));
 	map->mapAlloced = true;
 
 	map->doorAlloced = map->npcAlloced = map->tileColAlloced = false;
@@ -49,16 +45,16 @@ col_t pk_findCols(map_t map, int x, int y) {
 		out.up = false;
 	}
 
-	if(map.cData[x+((y-1)*map.width)]) {
+	if(map.cData[x+((y-1)*map.width)] == 1) {
 		out.up = false;
 	}
-	if(map.cData[x+((y+1)*map.width)]) {
+	if(map.cData[x+((y+1)*map.width)] == 1) {
 		out.down = false;
 	}
-	if(map.cData[x+1+(y*map.width)]) {
+	if(map.cData[x+1+(y*map.width)] == 1) {
 		out.right = false;
 	}
-	if(map.cData[x-1+(y*map.width)]) {
+	if(map.cData[x-1+(y*map.width)] == 1) {
 		out.left = false;
 	}
 
@@ -69,11 +65,11 @@ bool pk_isSolid(int val, map_t* map) {
 
 	for(int i=0; i<map->tileColCnt; i++) {
 		if(val == map->tileColData[i]) {
-			return false;
+			return 0;
 		}
 	}
 	
-	return true;
+	return 1;
 }
 
 void pk_buildColMapM(map_t* map) {
@@ -84,7 +80,7 @@ void pk_buildColMapM(map_t* map) {
 
 void pk_clearColMap(map_t* map) {
 	for(int i=0; i<map->width*map->height; i++) {
-		map->cData[i] = false;
+		map->cData[i] = 0;
 	}
 }
 

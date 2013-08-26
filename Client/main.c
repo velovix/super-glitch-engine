@@ -68,6 +68,7 @@ void loadMap(int val)
 	if(fMap == NULL) {
 		printf("[ERROR] Missing map.pke in resources/maps folder\n");
 	}
+
 	fread(&header.version, sizeof(int), 1, fMap);
 	if(header.version != MAPFILE_VERSION) {
 		printf("[ERROR] map.pke is V%i, but V%i is expected!\n",
@@ -135,9 +136,9 @@ void loadMap(int val)
 	fclose(fMap);
 
 
-	pk_setNpcData(npcCnt, &npcData[0], &ses.map);
+	pk_setNpcData(npcCnt, npcData, &ses.map);
 	pk_setTileColData(header.tileColCnt, tileColData, &ses.map);
-	pk_setDoorData(doorCnt, &doorData[0], &ses.map);
+	pk_setDoorData(doorCnt, doorData, &ses.map);
 
 	pk_spruneNpcs(&ses);
 }
@@ -773,8 +774,8 @@ void physics()
 		}
 		if(door.dest != 255) {
 			loadMap(door.dest);
-			ses.p1.mover.x = ses.p1.mover.nextX = door.destX*BLOCK_SIZE;
-			ses.p1.mover.y = ses.p1.mover.nextY = door.destY*BLOCK_SIZE;
+			ses.p1.mover.x = ses.p1.mover.nextX = ses.p1.mover.lastX = door.destX*BLOCK_SIZE;
+			ses.p1.mover.y = ses.p1.mover.nextY = ses.p1.mover.lastY = door.destY*BLOCK_SIZE;
 		}
 	}
 
@@ -782,8 +783,8 @@ void physics()
 	if(door.dest != 255 && door.type == DT_WALKINTO) {
 		if(pk_isFinishedMoving(ses.p1.mover)) {
 			loadMap(door.dest);
-			ses.p1.mover.x = ses.p1.mover.nextX = door.destX*BLOCK_SIZE;
-			ses.p1.mover.y = ses.p1.mover.nextY = door.destY*BLOCK_SIZE;
+			ses.p1.mover.x = ses.p1.mover.nextX = ses.p1.mover.lastX = door.destX*BLOCK_SIZE;
+			ses.p1.mover.y = ses.p1.mover.nextY = ses.p1.mover.lastY = door.destY*BLOCK_SIZE;
 		}
 	}
 }
