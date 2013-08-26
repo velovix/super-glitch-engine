@@ -385,7 +385,7 @@ void apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destination, 
 
 	if(scrolls) {
 		offset.x = x - (ses.p1.mover.x-(SCREEN_WIDTH/2))-BLOCK_SIZE;
-		offset.y = y - (ses.p1.mover.y-(SCREEN_HEIGHT/2));
+		offset.y = y - (ses.p1.mover.y-(SCREEN_HEIGHT/2))-BLOCK_SIZE/2;
 	} else {
 		offset.x = x;
 		offset.y = y;
