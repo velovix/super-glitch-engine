@@ -11,10 +11,12 @@
 #ifndef STATS_H
 #define STATS_H
 
-#include "../constants.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+
+#include "../constants.h"
+#include "../../common/typeFile.h"
 
 typedef struct {
 	int hp, att, def, spAtt, spDef, speed;
@@ -32,6 +34,7 @@ typedef struct {
 // Initializers
 stats_t pk_initStats(int hp, int att, int def, int spAtt, int spDef, int speed);
 type_t pk_initType(char*, int);
+type_t pk_initTypeFile(typeFileObj_t obj);
 
 int pk_calcTyping(type_t, type_t, type_t);
 
@@ -39,5 +42,7 @@ int pk_calcTyping(type_t, type_t, type_t);
 void pk_setTypeRes(type_t*, int, int*);
 void pk_setTypeWeak(type_t*, int, int*);
 void pk_setTypeInv(type_t*, int, bool*);
+
+void pk_freeType(type_t*);
 
 #endif

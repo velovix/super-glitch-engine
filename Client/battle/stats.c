@@ -24,6 +24,36 @@ type_t pk_initType(char* name, int value) {
 	return out;
 }
 
+type_t pk_initTypeFile(typeFileObj_t obj) {
+	type_t out;
+
+	// Transform header
+	for(int i=0; i<8; i++) {
+		out.name[i] = obj.header.name[i];
+	}
+	out.value = obj.val;
+	out.resCnt = obj.header.resCnt;
+	out.weakCnt = obj.header.weakCnt;
+
+	// Transform resistances, weaknesses, and invincibilities
+	out.res = (int*)malloc(out.resCnt*sizeof(int));
+	out.weak = (int*)malloc(out.weakCnt*sizeof(int));
+	out.inv = (bool*)malloc(out.resCnt*sizeof(bool));
+	for(int i=0; i<out.resCnt; i++) {
+		out.res[i] = obj.res[i].type;
+		if(obj.res[i].inv == 1) {
+			out.inv[i] = true;
+		} else {
+			out.inv[i] = false;
+		}
+	}
+	for(int i=0; i<out.weakCnt; i++) {
+		out.weak[i] = obj.weak[i].type;
+	}
+
+	return out;
+}
+
 int pk_calcTyping(type_t mType1, type_t mType2, type_t attType) {
 	int effect = 0;
 
@@ -99,4 +129,10 @@ void pk_setTypeInv(type_t* type, int cnt, bool* types) {
 	for(int i=0; i<cnt; i++) {
 		type->inv[i] = types[i];
 	}
+}
+
+void pk_freeType(type_t* obj) {
+	free(obj->res);
+	free(obj->weak);
+	free(obj->inv);
 }

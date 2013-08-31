@@ -8,33 +8,6 @@
 #ifndef FILEHEADERS_H
 #define FILEHEADERS_H
 
-// --- Types
-#define TYPEFILE_VERSION		2
-
-#define INV_YES					1
-#define INV_NO					0
-
-typedef struct {
-	int version;
-	int count;
-} typeHeader_f;
-
-typedef struct {
-	char name[8];
-	int resCnt;
-	int weakCnt;
-} typeEntry_f;
-
-typedef struct {
-	int type;
-	char inv;
-} resEntry_f;
-
-typedef struct {
-	int type;
-} weakEntry_f;
-
-
 // --- Moves
 #define MOVES_VERSION			2
 

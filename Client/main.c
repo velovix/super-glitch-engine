@@ -18,6 +18,7 @@
 
 #include "fileheaders.h"
 #include "../common/mapFile.h"
+#include "../common/typeFile.h"
 
 #include "sge.h"
 
@@ -82,54 +83,19 @@ void loadMap(char *filename, int val)
 	pk_freeMapFile(&mapFile, val);
 }
 
-void loadTypes()
+void loadTypes(char *filename)
 {
-	FILE * fTypes;
-	typeHeader_f header;
-	fTypes = fopen("../resources/data/types.pke", "r");
-	if(fTypes == NULL) {
-		printf("[ERROR] Missing types.pke in resources/data folder!\n");
-	}
-	fread(&header.version, sizeof(int), 1, fTypes);
-	if(header.version != TYPEFILE_VERSION) {
-		printf("[ERROR] types.pke file is V%i, but V%i is expected!\n",
-			header.version, TYPEFILE_VERSION);
-		exit(1);
-	}
-	fread(&header.count, sizeof(int), 1, fTypes);
-	typeEntry_f entry[header.count];
-	for(int i=0; i<header.count; i++) {
-		fread(&entry[i].name, sizeof(char[8]), 1, fTypes);
-		fread(&entry[i].resCnt, sizeof(int), 1, fTypes);
-		fread(&entry[i].weakCnt, sizeof(int), 1, fTypes);
+	typeFile_t typeFile;
 
-		int rEntry[entry[i].resCnt];
-		int wEntry[entry[i].weakCnt];
-		bool iEntry[entry[i].resCnt];
-
-		for(int j=0; j<entry[i].resCnt; j++) {
-			fread(&rEntry[j], sizeof(int), 1, fTypes);
-			char isInv;
-			fread(&isInv, sizeof(char), 1, fTypes);
-			if(isInv == INV_YES) {
-				iEntry[j] = true;
-			} else {
-				iEntry[j] = false;
-			}
-		}
-
-		for(int j=0; j<entry[i].weakCnt; j++) {
-			fread(&wEntry[j], sizeof(int), 1, fTypes);
-		}
-
-		ses.types[i] = pk_initType(entry[i].name, i);
-
-		pk_setTypeRes(&ses.types[i], entry[i].resCnt, &rEntry[0]);
-		pk_setTypeWeak(&ses.types[i], entry[i].weakCnt, &wEntry[0]);
-		pk_setTypeInv(&ses.types[i], entry[i].resCnt, &iEntry[0]);
+	if(pk_openTypeFile(&typeFile, filename) != 0) {
+		printf("[ERROR] Loading type file!\n");
 	}
 
-	fclose(fTypes);
+	for(int i=0; i<typeFile.header.count; i++) {
+		ses.types[i] = pk_initTypeFile(typeFile.types[i]);
+	}
+
+	pk_freeTypeFile(&typeFile);
 }
 
 void loadMoves()
@@ -759,7 +725,7 @@ int main(int argc, char **argv)
 	}
 
 	pk_initSMan(SES_OVERWORLD, &ses);
-	loadTypes();
+	loadTypes("../resources/data/types.pke");
 	loadMoves();
 	loadMonsters();
 	setPlayer();
