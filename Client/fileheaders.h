@@ -8,24 +8,6 @@
 #ifndef FILEHEADERS_H
 #define FILEHEADERS_H
 
-// --- Moves
-#define MOVES_VERSION			2
-
-typedef struct {
-	int version;
-	int count;
-} moveHeader_f;
-
-typedef struct {
-	char name[12];
-	int type;
-	int pp;
-	int scriptLen;
-} moveEntry_f;
-
-#endif
-
-
 // --- Monsters (VERY INDEV)
 typedef struct {
 	int count;
@@ -56,3 +38,5 @@ typedef struct {
 	char msg2[128];
 	char msg3[128];
 } npc_f;
+
+#endif

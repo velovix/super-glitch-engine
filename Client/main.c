@@ -19,6 +19,7 @@
 #include "fileheaders.h"
 #include "../common/mapFile.h"
 #include "../common/typeFile.h"
+#include "../common/moveFile.h"
 
 #include "sge.h"
 
@@ -94,45 +95,27 @@ void loadTypes(char *filename)
 	for(int i=0; i<typeFile.header.count; i++) {
 		ses.types[i] = pk_initTypeFile(typeFile.types[i]);
 	}
-
-	pk_freeTypeFile(&typeFile);
 }
 
-void loadMoves()
+void loadMoves(char *filename)
 {
-	FILE * fMoves;
-	moveHeader_f header;
-	fMoves = fopen("../resources/data/moves.pke", "r");
-	if(fMoves == NULL) {
-		printf("[ERROR] Missing moves.pke in resources/data folder!\n");
+	moveFile_t moveFile;
+
+	if(pk_openMoveFile(&moveFile, filename) != 0) {
+		printf("[ERROR] Reading move file!\n");
 	}
 
-	fread(&header.version, sizeof(int), 1, fMoves);
-	if(header.version != MOVES_VERSION) {
-		printf("[ERROR] moves.pke is V%i, but V%i is expected!\n",
-			header.version, MOVES_VERSION);
-	}
+	for(int i=0; i<moveFile.header.count; i++) {
+		ses.moves[i] = pk_initMove(moveFile.moves[i].pp, moveFile.moves[i].pp,
+			moveFile.moves[i].name, moveFile.moves[i].type);
 
-	fread(&header.count, sizeof(int), 1, fMoves);
-
-	moveEntry_f moves[header.count];
-	for(int i=0; i<header.count; i++) {
-		fread(&moves[i].name, sizeof(char), 12, fMoves);
-		fread(&moves[i].type, sizeof(int), 1, fMoves);
-		fread(&moves[i].pp, sizeof(int), 1, fMoves);
-		fread(&moves[i].scriptLen, sizeof(int), 1, fMoves);
-
-		char *script = (char*)malloc(sizeof(char)*moves[i].scriptLen);
-		fread(script, sizeof(char), moves[i].scriptLen, fMoves);
-
-		ses.moves[i] = pk_initMove(moves[i].pp,moves[i].pp,moves[i].name,moves[i].type);
-		if(!pk_parseMoveScript(script, moves[i].scriptLen, &ses.moves[i])) {
+		if(!pk_parseMoveScript(moveFile.moves[i].script, moveFile.moves[i].scriptLen,
+			&ses.moves[i])) {
 			printf("[ERROR] Parsing move %i!\n", i);
 		}
-		free(script);
 	}
 
-	fclose(fMoves);
+	pk_freeMoveFile(&moveFile);
 }
 
 // Object Loading Functions
@@ -726,7 +709,7 @@ int main(int argc, char **argv)
 
 	pk_initSMan(SES_OVERWORLD, &ses);
 	loadTypes("../resources/data/types.pke");
-	loadMoves();
+	loadMoves("../resources/data/moves.pke");
 	loadMonsters();
 	setPlayer();
 	loadNpcs();
