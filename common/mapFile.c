@@ -14,7 +14,7 @@ int pk_openMapFile(mapFile_t *obj, char *filename, int room) {
 		return PK_MF_BADVERSION;
 	}
 	fread(&obj->mapHeader.count, sizeof(int), 1, fMap);
-	if(room > obj->mapHeader.count || room < 0) {
+	if(room != -1 && (room > obj->mapHeader.count || room < 0)) {
 		return PK_MF_BADMOVEREQ;
 	}
 
@@ -25,25 +25,45 @@ int pk_openMapFile(mapFile_t *obj, char *filename, int room) {
 		fread(&obj->tileCols[i], sizeof(char), 1, fMap);
 	}
 
-	// Find desired room
-	int doorCnt = 0;
+	// Find desired room or load all rooms
 	obj->rooms = (roomFileObj_t*)malloc(obj->mapHeader.count*sizeof(roomFileObj_t));
-	for(int i=0; i<=room; i++) {
+	for(int i=0; i<obj->mapHeader.count; i++) {
 		// Load room headers
 		fread(&obj->rooms[i].header.value, sizeof(char), 1, fMap);
 		fread(&obj->rooms[i].header.music, sizeof(int), 1, fMap);
 		fread(&obj->rooms[i].header.w, sizeof(int), 1, fMap);
 		fread(&obj->rooms[i].header.h, sizeof(int), 1, fMap);
 
-		if(i==room) {
-			// Load further room data if this is the right room
+		if(i==room || room == -1) {
+			// Load the room if it's the requested one or if all rooms are to be loaded
 			obj->rooms[i].mapData = (char*)malloc(obj->rooms[i].header.w*obj->rooms[i].header.h);
 			for(int j=0; j<obj->rooms[i].header.w*obj->rooms[i].header.h; j++) {
 				fread(&obj->rooms[i].mapData[j], sizeof(char), 1, fMap);
 			}
 
+			// Load door data
+			fread(&obj->rooms[i].header.doorCnt, sizeof(int), 1, fMap);
+			obj->rooms[i].doorData = (doorEntry_t*)malloc(obj->rooms[i].header.doorCnt*sizeof(doorEntry_t));
+			for(int j=0; j<obj->rooms[i].header.doorCnt; j++) {
+				fread(&obj->rooms[i].doorData[j].dest, sizeof(char), 1, fMap);
+				fread(&obj->rooms[i].doorData[j].x, sizeof(int), 1, fMap);
+				fread(&obj->rooms[i].doorData[j].y, sizeof(int), 1, fMap);
+				fread(&obj->rooms[i].doorData[j].destX, sizeof(int), 1, fMap);
+				fread(&obj->rooms[i].doorData[j].destY, sizeof(int), 1, fMap);
+			}
+
+			// Load NPC data
+			fread(&obj->rooms[i].header.npcCnt, sizeof(int), 1, fMap);
+			obj->rooms[i].npcData = (npcEntry_t*)malloc(obj->rooms[i].header.npcCnt*sizeof(npcEntry_t));
+			for(int j=0; j<obj->rooms[i].header.npcCnt; j++) {
+				fread(&obj->rooms[i].npcData[j].value, sizeof(int), 1, fMap);
+				fread(&obj->rooms[i].npcData[j].x, sizeof(int), 1, fMap);
+				fread(&obj->rooms[i].npcData[j].y, sizeof(int), 1, fMap);
+			}
+
 		} else {
 			// If this is the wrong room, skip through it
+			int doorCnt;
 			fseek(fMap, obj->rooms[i].header.w*obj->rooms[i].header.h*sizeof(char), SEEK_CUR);
 			fread(&doorCnt, sizeof(int), 1, fMap);
 			fseek(fMap, (sizeof(char)+(sizeof(int)*4))*doorCnt, SEEK_CUR);
@@ -53,32 +73,7 @@ int pk_openMapFile(mapFile_t *obj, char *filename, int room) {
 		}
 	}
 
-	// Load door data
-	fread(&doorCnt, sizeof(int), 1, fMap);
-	obj->rooms[room].doorData = (doorEntry_t*)malloc(doorCnt*sizeof(doorEntry_t));
-	for(int i=0; i<doorCnt; i++) {
-		fread(&obj->rooms[room].doorData[i].dest, sizeof(char), 1, fMap);
-		fread(&obj->rooms[room].doorData[i].x, sizeof(int), 1, fMap);
-		fread(&obj->rooms[room].doorData[i].y, sizeof(int), 1, fMap);
-		fread(&obj->rooms[room].doorData[i].destX, sizeof(int), 1, fMap);
-		fread(&obj->rooms[room].doorData[i].destY, sizeof(int), 1, fMap);
-	}
-
-	// Load NPC data
-	int npcCnt;
-	fread(&npcCnt, sizeof(int), 1, fMap);
-	obj->rooms[room].npcData = (npcEntry_t*)malloc(npcCnt*sizeof(npcEntry_t));
-	for(int i=0; i<npcCnt; i++) {
-		fread(&obj->rooms[room].npcData[i].value, sizeof(int), 1, fMap);
-		fread(&obj->rooms[room].npcData[i].x, sizeof(int), 1, fMap);
-		fread(&obj->rooms[room].npcData[i].y, sizeof(int), 1, fMap);
-	}
-
 	fclose(fMap);
-
-	// Set extra values
-	obj->rooms[room].header.npcCnt = npcCnt;
-	obj->rooms[room].header.doorCnt = doorCnt;
 
 	return 0;
 }
@@ -96,13 +91,23 @@ int pk_saveMapFile(mapFile_t *obj, char *filename) {
 	fwrite(&obj->mapHeader.count, sizeof(int), 1, fMap);
 
 	// Save tile collision data
+	// First, weed through any junk collisions
+	int oldTileColCnt = obj->mapHeader.tileColCnt;
+	for(int i=0; i<oldTileColCnt; i++) {
+		if(obj->tileCols[i] == 255) {
+			obj->mapHeader.tileColCnt--;
+		}
+	}
 	fwrite(&obj->mapHeader.tileColCnt, sizeof(int), 1, fMap);
-	for(int i=0; i<obj->mapHeader.tileColCnt; i++) {
-		fwrite(&obj->tileCols[i], sizeof(char), 1, fMap);
+	// Save only legit collision values
+	for(int i=0; i<oldTileColCnt; i++) {
+		if(obj->tileCols[i] != 255) {
+			fwrite(&obj->tileCols[i], sizeof(char), 1, fMap);
+		}
 	}
 
 	// Save rooms
-	for(int i=0; i<=obj->mapHeader.count; i++) {
+	for(int i=0; i<obj->mapHeader.count; i++) {
 		// Save room headers
 		fwrite(&obj->rooms[i].header.value, sizeof(char), 1, fMap);
 		fwrite(&obj->rooms[i].header.music, sizeof(int), 1, fMap);
@@ -140,9 +145,17 @@ int pk_saveMapFile(mapFile_t *obj, char *filename) {
 
 void pk_freeMapFile(mapFile_t *obj, int room) {
 	// Free room-specific pointers
-	free(obj->rooms[room].mapData);
-	free(obj->rooms[room].doorData);
-	free(obj->rooms[room].npcData);
+	if(room == -1) {
+		for(int i=0; i<obj->mapHeader.count; i++) {
+			free(obj->rooms[i].mapData);
+			free(obj->rooms[i].doorData);
+			free(obj->rooms[i].npcData);
+		}
+	} else {
+		free(obj->rooms[room].mapData);
+		free(obj->rooms[room].doorData);
+		free(obj->rooms[room].npcData);
+	}
 
 	// Free general pointers
 	free(obj->tileCols);
