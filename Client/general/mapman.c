@@ -84,16 +84,24 @@ void pk_clearColMap(map_t* map) {
 	}
 }
 
-void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map) {
+void pk_setTileData(char *data, map_t* map) {
+	// This should only be called after initializing the map
+	for(int i=0; i<map->width*map->height; i++) {
+		map->data[i] = data[i];
+	}
+}
+
+void pk_setDoorData(int doorCnt, doorEntry_t* doorData, map_t* map) {
 	// Frees door data if memory is already allocated
 	if(map->doorAlloced) {
 		free(map->doorData);
 	}
 
 	// Allocate desired data
-	map->doorData = (door_t*)malloc(doorCnt*sizeof(door_t));
+	map->doorData = (doorEntry_t*)malloc(doorCnt*sizeof(doorEntry_t));
 	map->doorAlloced = true;
 
+	// Load in door data and add missing info
 	for(int i=0; i<doorCnt; i++) {
 		if(!pk_isSolid(map->data[doorData[i].x+(doorData[i].y*map->width)], map)) {
 			doorData[i].type = DT_WALKINTO;
@@ -102,17 +110,18 @@ void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map) {
 		}
 		map->doorData[i] = doorData[i];
 	}
+
 	map->doorCnt = doorCnt;
 }
 
-void pk_setNpcData(int npcCnt, mapNpc_t *npcData, map_t* map) {
+void pk_setNpcData(int npcCnt, npcEntry_t *npcData, map_t* map) {
 	// Frees NPC data if memory is already allocated
 	if(map->npcAlloced) {
 		free(map->npcData);
 	}
 
 	// Allocate desired data
-	map->npcData = (mapNpc_t*)malloc(npcCnt*sizeof(mapNpc_t));
+	map->npcData = (npcEntry_t*)malloc(npcCnt*sizeof(npcEntry_t));
 	map->npcAlloced = true;
 
 	for(int i=0; i<npcCnt; i++) {
@@ -137,14 +146,14 @@ void pk_setTileColData(int cnt, unsigned char *data, map_t* map) {
 	map->tileColCnt = cnt;
 }
 
-door_t pk_isOnDoor(int x, int y, map_t* map) {
+doorEntry_t pk_isOnDoor(int x, int y, map_t* map) {
 	for(int i=0; i<map->doorCnt; i++) {
 		if(map->doorData[i].x == x && map->doorData[i].y == y) {
 			return map->doorData[i];
 		}
 	}
 
-	door_t out;
+	doorEntry_t out;
 	out.dest = 255;
 	return out;
 }

@@ -8,24 +8,11 @@
 #ifndef FILEHEADERS_H
 #define FILEHEADERS_H
 
-// --- Monsters
-
-typedef struct {
-	int count;
-} monHeader_f;
-
-typedef struct {
-	int value;
-	char name[12];
-	int hp, att, def, spAtt, spDef, speed;
-} monEntry_f;
-
 // --- Types
-
 #define TYPEFILE_VERSION		2
 
-#define INV_YES			1
-#define INV_NO			0
+#define INV_YES					1
+#define INV_NO					0
 
 typedef struct {
 	int version;
@@ -47,37 +34,38 @@ typedef struct {
 	int type;
 } weakEntry_f;
 
-// --- Maps
 
-#define MAPFILE_VERSION			3
+// --- Moves
+#define MOVES_VERSION			2
 
 typedef struct {
 	int version;
 	int count;
-	int tileColCnt;
-} mapHeader_f;
+} moveHeader_f;
 
 typedef struct {
-	unsigned char value;
-} mapTileCol_f;
+	char name[12];
+	int type;
+	int pp;
+	int scriptLen;
+} moveEntry_f;
 
-typedef struct {
-	char value;
-	int music;
-	int w, h;
-} roomHeader_f;
+#endif
 
+
+// --- Monsters (VERY INDEV)
 typedef struct {
 	int count;
-} npcListHeader_f;
+} monHeader_f;
 
 typedef struct {
-	char value;
-	int x, y;
-} npcEntry_f;
+	int value;
+	char name[12];
+	int hp, att, def, spAtt, spDef, speed;
+} monEntry_f;
+
 
 // --- NPCs (VERY INDEV)
-
 typedef struct {
 	int count;
 } npcFileHeader_f;
@@ -95,21 +83,3 @@ typedef struct {
 	char msg2[128];
 	char msg3[128];
 } npc_f;
-
-// --- Moves
-
-#define MOVES_VERSION		2
-
-typedef struct {
-	int version;
-	int count;
-} moveHeader_f;
-
-typedef struct {
-	char name[12];
-	int type;
-	int pp;
-	int scriptLen;
-} moveEntry_f;
-
-#endif

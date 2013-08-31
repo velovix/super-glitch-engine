@@ -17,18 +17,7 @@
 #include <stdbool.h>
 
 #include "../constants.h"
-
-typedef struct {
-	char dest;
-	int x,y;
-	int destX, destY;
-	int type;
-} door_t;
-
-typedef struct {
-	int val;
-	int x, y;
-} mapNpc_t;
+#include "../../common/mapFile.h"
 
 typedef struct {
 	bool left, right, up, down;
@@ -41,8 +30,8 @@ typedef struct {
 
 	// Advanced map data
 	unsigned char *tileColData;
-	door_t* doorData;
-	mapNpc_t* npcData;
+	doorEntry_t* doorData;
+	npcEntry_t* npcData;
 	int doorCnt, npcCnt, tileColCnt;
 
 	// Keeps track of whether or not this map object has had data allocated
@@ -55,9 +44,10 @@ col_t pk_findCols(map_t map, int x, int y);
 void pk_buildColMapM(map_t* map);
 void pk_clearColMap(map_t* map);
 bool pk_isSolid(int val, map_t* map);
-void pk_setDoorData(int doorCnt, door_t* doorData, map_t* map);
-void pk_setNpcData(int npcCnt, mapNpc_t *npcData, map_t* map);
+void pk_setTileData(char *data, map_t* map);
+void pk_setDoorData(int doorCnt, doorEntry_t* doorData, map_t* map);
+void pk_setNpcData(int npcCnt, npcEntry_t *npcData, map_t* map);
 void pk_setTileColData(int cnt, unsigned char *data, map_t* map);
-door_t pk_isOnDoor(int x, int y, map_t* map);
+doorEntry_t pk_isOnDoor(int x, int y, map_t* map);
 
 #endif

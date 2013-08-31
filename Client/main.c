@@ -17,6 +17,7 @@
 #include <stdbool.h>
 
 #include "fileheaders.h"
+#include "../common/mapFile.h"
 
 #include "sge.h"
 
@@ -60,87 +61,25 @@ int init()
 	return 0;
 }
 
-void loadMap(int val)
+void loadMap(char *filename, int val)
 {
-	FILE * fMap;
-	mapHeader_f header;
-	fMap = fopen("../resources/maps/map.pke", "r");
-	if(fMap == NULL) {
-		printf("[ERROR] Missing map.pke in resources/maps folder\n");
+	mapFile_t mapFile;
+
+	if(pk_openMapFile(&mapFile, filename, val) != 0) {
+		printf("[ERROR] Something happened!\n");
 	}
 
-	fread(&header.version, sizeof(int), 1, fMap);
-	if(header.version != MAPFILE_VERSION) {
-		printf("[ERROR] map.pke is V%i, but V%i is expected!\n",
-			header.version, MAPFILE_VERSION);
-		exit(1);
-	}
-	fread(&header.count, sizeof(int), 1, fMap);
+	pk_freeMap(&ses.map);
+	pk_initMap(mapFile.rooms[val].header.w, mapFile.rooms[val].header.h, &ses.map);
 
-	fread(&header.tileColCnt, sizeof(int), 1, fMap);
-	unsigned char tileColData[header.tileColCnt];
-	for(int i=0; i<header.tileColCnt; i++) {
-		fread(&tileColData[i], sizeof(char), 1, fMap);
-	}
-
-	int doorCnt = 0;
-	roomHeader_f rHeader[header.count];
-	for(int i=0; i<=val; i++) {
-		fread(&rHeader[i].value, sizeof(char), 1, fMap);
-		fread(&rHeader[i].music, sizeof(int), 1, fMap);
-		fread(&rHeader[i].w, sizeof(int), 1, fMap);
-		fread(&rHeader[i].h, sizeof(int), 1, fMap);
-
-		if(rHeader[i].value < 0 || rHeader[i].value > header.count) {
-			printf("[ERROR] Map value is higher than room count!\n");
-			exit(1);
-		}
-
-
-		if(i==val) {
-			pk_freeMap(&ses.map);
-			pk_initMap(rHeader[i].w, rHeader[i].h, &ses.map);
-			for(int j=0; j<rHeader[i].w*rHeader[i].h; j++) {
-				fread(&ses.map.data[j], sizeof(char), 1, fMap);
-			}
-
-		} else {
-			fseek(fMap, rHeader[i].w*rHeader[i].h*sizeof(char), SEEK_CUR);
-			fread(&doorCnt, sizeof(int), 1, fMap);
-			fseek(fMap, (sizeof(char)+(sizeof(int)*4))*doorCnt, SEEK_CUR);
-			int npcCnt;
-			fread(&npcCnt, sizeof(int), 1, fMap);
-			fseek(fMap, (sizeof(int)*3)*npcCnt, SEEK_CUR);
-		}
-	}
-
-	fread(&doorCnt, sizeof(int), 1, fMap);
-	door_t doorData[doorCnt];
-	for(int i=0; i<doorCnt; i++) {
-		fread(&doorData[i].dest, sizeof(char), 1, fMap);
-		fread(&doorData[i].x, sizeof(int), 1, fMap);
-		fread(&doorData[i].y, sizeof(int), 1, fMap);
-		fread(&doorData[i].destX, sizeof(int), 1, fMap);
-		fread(&doorData[i].destY, sizeof(int), 1, fMap);
-	}
-
-	int npcCnt;
-	fread(&npcCnt, sizeof(int), 1, fMap);
-	mapNpc_t npcData[npcCnt];
-	for(int i=0; i<npcCnt; i++) {
-		fread(&npcData[i].val, sizeof(int), 1, fMap);
-		fread(&npcData[i].x, sizeof(int), 1, fMap);
-		fread(&npcData[i].y, sizeof(int), 1, fMap);
-	}
-
-	fclose(fMap);
-
-
-	pk_setNpcData(npcCnt, npcData, &ses.map);
-	pk_setTileColData(header.tileColCnt, tileColData, &ses.map);
-	pk_setDoorData(doorCnt, doorData, &ses.map);
+	pk_setTileData(mapFile.rooms[val].mapData, &ses.map);
+	pk_setTileColData(mapFile.mapHeader.tileColCnt, mapFile.tileCols, &ses.map);
+	pk_setNpcData(mapFile.rooms[val].header.npcCnt, mapFile.rooms[val].npcData, &ses.map);
+	pk_setDoorData(mapFile.rooms[val].header.doorCnt, mapFile.rooms[val].doorData, &ses.map);
 
 	pk_spruneNpcs(&ses);
+
+	pk_freeMapFile(&mapFile, val);
 }
 
 void loadTypes()
@@ -594,7 +533,7 @@ void checkKeys(Uint8 *keyStates)
 			int room = 0;
 			printf("Room? ");
 			scanf("%i", &room);
-			loadMap(room);
+			loadMap("../resources/maps/map.pke", room);
 			keyStatesBuf[SDLK_r] = true;
 		}
 	} else {
@@ -757,7 +696,7 @@ void physics()
 	pk_updateChar(&ses.p1.mover);
 
 	if(pk_isFinishedMoving(ses.p1.mover) && ses.p1.mover.animCycle > 0) {
-		door_t door;
+		doorEntry_t door;
 		switch(ses.p1.mover.dir) {
 		case LEFT:
 			door = pk_isOnDoor((ses.p1.mover.x)/BLOCK_SIZE-1, (ses.p1.mover.y)/BLOCK_SIZE, &ses.map);
@@ -773,16 +712,16 @@ void physics()
 			break;
 		}
 		if(door.dest != 255) {
-			loadMap(door.dest);
+			loadMap("../resources/maps/map.pke", door.dest);
 			ses.p1.mover.x = ses.p1.mover.nextX = ses.p1.mover.lastX = door.destX*BLOCK_SIZE;
 			ses.p1.mover.y = ses.p1.mover.nextY = ses.p1.mover.lastY = door.destY*BLOCK_SIZE;
 		}
 	}
 
-	door_t door = pk_isOnDoor(ses.p1.mover.x/BLOCK_SIZE, ses.p1.mover.y/BLOCK_SIZE, &ses.map);
+	doorEntry_t door = pk_isOnDoor(ses.p1.mover.x/BLOCK_SIZE, ses.p1.mover.y/BLOCK_SIZE, &ses.map);
 	if(door.dest != 255 && door.type == DT_WALKINTO) {
 		if(pk_isFinishedMoving(ses.p1.mover)) {
-			loadMap(door.dest);
+			loadMap("../resources/maps/map.pke", door.dest);
 			ses.p1.mover.x = ses.p1.mover.nextX = ses.p1.mover.lastX = door.destX*BLOCK_SIZE;
 			ses.p1.mover.y = ses.p1.mover.nextY = ses.p1.mover.lastY = door.destY*BLOCK_SIZE;
 		}
@@ -825,7 +764,7 @@ int main(int argc, char **argv)
 	loadMonsters();
 	setPlayer();
 	loadNpcs();
-	loadMap(0);
+	loadMap("../resources/maps/map.pke", 0);
 
 	ftime(&lastTime);
 
