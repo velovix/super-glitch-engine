@@ -14,35 +14,31 @@ battles.
 
 
 ###Features
- - Overworld
-     - NPC AI (Incomplete)
-     - Tile mapping
- - Window system
-     - Dialog with NPCs and in battle (Incomplete)
-     - Menu (Incomplete)
-     - Options
- - Battles
-     - Battle menu (Incomplete)
-     - Moves menu (Incomplete)
-     - Typing
-     - Wild battles (Incomplete)
+ - A nearly fully featured overworld that can be edited easily
+ in the map editor
+ - Interactable NPCs that you can talk to or battle
+ - Menues that will soon be scriptable for easier access to
+ features
+ - Easy-to-use GUI editors for all finished parts of SGE!
+ (Types, moves, and maps)
+ - MUCH more to come
 
 
 ###Todo
-This part is pretty vague, but these are some of the milestones
-I want to hit.
+Super Glitch Engine will have reached it's stable 1.0 phase
+once the entirity of Pokemon Yellow could be created on it.
+Anything that can't be done yet (and there's a lot) will be
+added before the project is considered finished.
 
- - Complete battle system
- - Complex dialog options
- - Graphical splendor (Battle effects, overworld effects)
- - Basic scripting language for moves
-
-The following are some very distant milestons I would like to
-hit, but I'm still very far off from and can't confirm.
+The following are some features I want to add that move beyond
+the criteria I set for myself above.
 
  - Online multiplayer functionality
     - Potentially in and out of battle
  - Full replica of Pokemon Yellow for an example
- - More advanced scripting language for glitching, etc
+ - More advanced scripting language for advanced events
+ - Pokemon Gold/Silver features that can't be scripted in
 
 Have questions/comments/concerns? Email me at xaviosx@gmail.com
+
+I'd love to hear from you!
