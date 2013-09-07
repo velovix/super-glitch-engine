@@ -3,8 +3,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
-#define MAPFILE_VERSION			3
+#define MAPFILE_VERSION			4
 
 // Errors
 #define PK_MF_FILE				1
@@ -13,41 +14,40 @@
 
 // File Headers
 typedef struct {
-	int version;
-	int count;
-	int tileColCnt;
+	uint32_t	version;
+	uint32_t	count;
 } mapHeader_f;
 
 typedef struct {
-	char value;
-	int music;
-	int w, h;
-	int tileColCnt, doorCnt, npcCnt;
+	uint8_t		value;
+	uint32_t	music;
+	uint32_t	w, h;
+	uint32_t	tileColCnt, doorCnt, npcCnt;
 } roomHeader_f;
 
 typedef struct {
-	char dest;
-	int x,y;
-	int destX, destY;
-	int type;
+	uint8_t		dest;
+	uint32_t	x,y;
+	uint32_t	destX, destY;
+	uint32_t	type;
 } doorEntry_t;
 
 typedef struct {
-	char value;
-	int x, y;
+	uint8_t		value;
+	uint32_t	x, y;
 } npcEntry_t;
 
 // Object Return Header
 typedef struct {
 	roomHeader_f header;
-	char *mapData;
-	doorEntry_t *doorData;
-	npcEntry_t *npcData;
+	uint8_t 	*tileColData;
+	uint8_t		*mapData;
+	doorEntry_t	*doorData;
+	npcEntry_t	*npcData;
 } roomFileObj_t;
 
 typedef struct {
-	mapHeader_f mapHeader;
-	char *tileCols;
+	mapHeader_f	mapHeader;
 	roomFileObj_t *rooms;
 } mapFile_t;
 
