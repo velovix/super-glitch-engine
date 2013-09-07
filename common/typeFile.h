@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #define TYPEFILE_VERSION		2
 
@@ -15,28 +16,28 @@
 
 // File headers
 typedef struct {
-	int version;
-	int count;
+	uint32_t	version;
+	uint32_t	count;
 } typeHeader_f;
 
 typedef struct {
-	char name[8];
-	int resCnt;
-	int weakCnt;
+	uint8_t		name[8];
+	uint32_t	resCnt;
+	uint32_t 	weakCnt;
 } typeEntry_f;
 
 typedef struct {
-	int type;
-	char inv;
+	uint32_t	type;
+	uint8_t		inv;
 } resEntry_f;
 
 typedef struct {
-	int type;
+	uint32_t	type;
 } weakEntry_f;
 
 // Object return headers
 typedef struct {
-	int val;
+	uint32_t	val;
 	typeEntry_f header;
 	resEntry_f *res;
 	weakEntry_f *weak;

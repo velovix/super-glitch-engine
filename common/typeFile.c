@@ -9,11 +9,11 @@ int pk_openTypeFile(typeFile_t *obj, char* filename) {
 	}
 
 	// Read file headers
-	fread(&obj->header.version, sizeof(int), 1, fTypes);
+	fread(&obj->header.version, sizeof(uint32_t), 1, fTypes);
 	if(obj->header.version != TYPEFILE_VERSION) {
 		return PK_TF_VERSION;
 	}
-	fread(&obj->header.count, sizeof(int), 1, fTypes);
+	fread(&obj->header.count, sizeof(uint32_t), 1, fTypes);
 
 	// Load type information
 	obj->types = (typeFileObj_t*)malloc(obj->header.count*sizeof(typeFileObj_t));
@@ -21,22 +21,22 @@ int pk_openTypeFile(typeFile_t *obj, char* filename) {
 		obj->types[i].val = i;
 
 		// Read type header
-		fread(&obj->types[i].header.name, sizeof(char[8]), 1, fTypes);
-		fread(&obj->types[i].header.resCnt, sizeof(int), 1, fTypes);
-		fread(&obj->types[i].header.weakCnt, sizeof(int), 1, fTypes);
+		fread(&obj->types[i].header.name, sizeof(uint8_t[8]), 1, fTypes);
+		fread(&obj->types[i].header.resCnt, sizeof(uint32_t), 1, fTypes);
+		fread(&obj->types[i].header.weakCnt, sizeof(uint32_t), 1, fTypes);
 
 		obj->types[i].res = (resEntry_f*)malloc(obj->types[i].header.resCnt*sizeof(resEntry_f));
 		obj->types[i].weak = (weakEntry_f*)malloc(obj->types[i].header.weakCnt*sizeof(weakEntry_f));
 
 		// Load resistances
 		for(int j=0; j<obj->types[i].header.resCnt; j++) {
-			fread(&obj->types[i].res[j].type, sizeof(int), 1, fTypes);
-			fread(&obj->types[i].res[j].inv, sizeof(char), 1, fTypes);
+			fread(&obj->types[i].res[j].type, sizeof(uint32_t), 1, fTypes);
+			fread(&obj->types[i].res[j].inv, sizeof(uint8_t), 1, fTypes);
 		}
 
 		// Load weaknesses
 		for(int j=0; j<obj->types[i].header.weakCnt; j++) {
-			fread(&obj->types[i].weak[j].type, sizeof(int), 1, fTypes);
+			fread(&obj->types[i].weak[j].type, sizeof(uint32_t), 1, fTypes);
 		}
 	}
 
