@@ -3,12 +3,10 @@
 #include <stdbool.h>
 #include <gtk/gtk.h>
 
-#include "headers.h"
+#include "../common/moveFile.h"
+#include "../common/typeFile.h"
 
-int moveCnt = 0;
 int currMove = -1;
-
-char moveList[100][13];
 
 GtkWidget *cbt_move;
 GtkWidget *cbt_type;
@@ -17,7 +15,7 @@ GtkWidget *tv_script;
 GtkWidget *b_update;
 GtkWidget *sb_pp;
 
-moveObj_t moves[50];
+moveFile_t moveFile;
 
 void toggleEditable(gboolean editable)
 {
@@ -28,31 +26,38 @@ void toggleEditable(gboolean editable)
 	gtk_widget_set_sensitive(GTK_WIDGET(sb_pp), editable);
 }
 
-void clearMoves()
+void newMapFile()
 {
-	moveCnt = 0;
-	currMove = -1;
-	for(int i=0; i<100; i++) {
-		for(int j=0; j<12; j++) {
-			moveList[i][j] = ' ';
-		}
-	}
+	moveFile.header.version = MOVEFILE_VERSION;
+	moveFile.header.count = 0;
+
+	moveFile.moves = NULL;
 }
 
 void newMove(char* name)
 {
 	bool fill = false;
+
+	// Allocate more move space
+	moveFile.moves =
+		(moveEntry_f*)realloc(moveFile.moves, sizeof(moveEntry_f)*(moveFile.header.count+1));
+
+	moveFile.moves[moveFile.header.count].scriptLen = 0;
+	moveFile.moves[moveFile.header.count].type = 0;
+	moveFile.moves[moveFile.header.count].pp = 0;
+	moveFile.moves[moveFile.header.count].script = NULL;
+
 	for(int i=0; i<12; i++) {
 		if(name[i] == ' ' && name[i+1] == ' ') {
 			fill = true;
 		}
 		if(fill) {
-			moveList[moveCnt][i] = ' ';
+			moveFile.moves[moveFile.header.count].name[i] = ' ';
 		} else {
-			moveList[moveCnt][i] = name[i];
+			moveFile.moves[moveFile.header.count].name[i] = name[i];
 		}
 	}
-	moveCnt++;
+	moveFile.header.count++;
 }
 
 void editMove(char* name, int val)
@@ -63,9 +68,9 @@ void editMove(char* name, int val)
 			fill = true;
 		}
 		if(fill) {
-			moveList[val][i] = ' ';
+			moveFile.moves[val].name[i] = ' ';
 		} else {
-			moveList[val][i] = name[i];
+			moveFile.moves[val].name[i] = name[i];
 		}
 	}
 }
@@ -73,53 +78,26 @@ void editMove(char* name, int val)
 void updateMoves()
 {
 	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(cbt_move));
-	for(int i=0; i<moveCnt; i++) {
+	for(int i=0; i<moveFile.header.count; i++) {
 		gtk_combo_box_text_insert_text(GTK_COMBO_BOX_TEXT(cbt_move), currMove,
-			moveList[i]);
+			moveFile.moves[i].name);
 	}
 }
 
 void loadTypes(char *filename)
 {
+	typeFile_t typeFile;
+
 	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(cbt_type));
 
-	printf("Loading types..\n");
-	FILE * file;
-	file = fopen(filename, "r");
+	pk_openTypeFile(&typeFile, filename);
 
-	if(file == NULL) {
-		printf("[ERROR] Missing types.pke file!\n");
-		return;
-	}
-
-	typeHeader_f header;
-	fread(&header.version, sizeof(int), 1, file);
-	if(header.version != TYPE_VERSION) {
-		printf("[ERROR] types.pke is V%i, but V%i is expected!\n",
-			header.version, TYPE_VERSION);
-		return;
-	}
-	fread(&header.count, sizeof(int), 1, file);
-	
-	for(int i=0; i<header.count; i++) {
-		char tmpChar[8];
-		int resCnt, weakCnt;
-		fread(&tmpChar[0], sizeof(char[8]), 1, file);
-		fread(&resCnt, sizeof(int), 1, file);
-		fread(&weakCnt, sizeof(int), 1, file);
-
+	for(int i=0; i<typeFile.header.count; i++) {
 		gtk_combo_box_text_insert_text(GTK_COMBO_BOX_TEXT(cbt_type), i,
-			tmpChar);
-
-		printf("   %s\n", tmpChar);
-
-		fseek(file, resCnt*(sizeof(int)+sizeof(char))+weakCnt*sizeof(int),
-			SEEK_CUR);
+			typeFile.types[i].header.name);
 	}
 
-	fclose(file);
-
-	printf("done!\n");
+	pk_freeTypeFile(&typeFile);
 }
 
 char *getTextViewText(GtkWidget *object)
@@ -158,19 +136,19 @@ void cbt_move_changed(GtkWidget *obj, gpointer user_data)
 		
 	gtk_entry_set_text(GTK_ENTRY(e_name), 
 		gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(obj)));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(cbt_type), moves[currMove].info.type);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cbt_type), moveFile.moves[currMove].type);
 
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(sb_pp), moves[currMove].info.pp);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(sb_pp), moveFile.moves[currMove].pp);
 
-	if(moves[currMove].script != NULL) {
+	if(moveFile.moves[currMove].script != NULL) {
 		gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(tv_script)),
-			moves[currMove].script,	moves[currMove].info.scriptLen);
+			moveFile.moves[currMove].script, moveFile.moves[currMove].scriptLen);
 	}
 }
 
 void cbt_type_changed(GtkWidget *obj, gpointer user_data)
 {
-	moves[currMove].info.type =
+	moveFile.moves[currMove].type =
 		gtk_combo_box_get_active(GTK_COMBO_BOX(cbt_type));
 }
 
@@ -181,8 +159,8 @@ void b_update_clicked(GtkWidget *obj, gpointer user_data)
 	}
 
 	// Set script text
-	moves[currMove].script = getTextViewText(tv_script);
-	moves[currMove].info.scriptLen = getTextViewLen(tv_script);
+	moveFile.moves[currMove].script = getTextViewText(tv_script);
+	moveFile.moves[currMove].scriptLen = getTextViewLen(tv_script);
 
 	// Gtk sets currMove to -1 when entries are removed
 	int tmpCurrMove = currMove;
@@ -196,7 +174,7 @@ void b_update_clicked(GtkWidget *obj, gpointer user_data)
 
 void sb_pp_changed(GtkWidget *obj, gpointer user_data)
 {
-	moves[currMove].info.pp =
+	moveFile.moves[currMove].pp =
 		gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sb_pp));
 }
 
@@ -208,92 +186,20 @@ void b_newmove_clicked(GtkWidget *obj, gpointer user_data)
 
 void b_load_clicked(GtkWidget *obj, gpointer user_data)
 {
-	clearMoves();
-	printf("Loading..\n");
-	FILE * file;
-	file = fopen("../resources/data/moves.pke", "r");
+	pk_freeMoveFile(&moveFile);
 
-	if(file == NULL) {
-		printf("[ERROR] Missing types.pke file!\n");
-		return;
-	}
-
-	moveHeader_f header;
-	fread(&header.version, sizeof(int), 1, file);
-	if(header.version != CURRVERSION) {
-		printf("[ERROR] moves.pke is V%i, but V%i is expected!\n",
-			header.version, CURRVERSION);
-		return;
-	}
-	fread(&header.count, sizeof(int), 1, file);
-	
-	for(int i=0; i<header.count; i++) {
-		char tmpChar[12];
-		fread(&tmpChar[0], sizeof(char[12]), 1, file);
-		newMove(tmpChar);
-		fread(&moves[i].info.type, sizeof(int), 1, file);
-		fread(&moves[i].info.pp, sizeof(int), 1, file);
-		fread(&moves[i].info.scriptLen, sizeof(int), 1, file);
-
-		printf("   %s\n", moveList[i]);
-
-		printf("   Type          : %i\n", moves[i].info.type);
-		printf("   PP            : %i\n", moves[i].info.pp);
-		printf("   Script Length : %i\n", moves[i].info.scriptLen);
-
-		moves[i].script = (char*)malloc(sizeof(char)*moves[i].info.scriptLen);
-		fread(moves[i].script, sizeof(char), moves[i].info.scriptLen, file);
-	}
-
-	fclose(file);
-
+	pk_openMoveFile(&moveFile, "../resources/data/moves.pke");
 	updateMoves();
-	printf("done!\n");
 }
 
 void b_save_clicked(GtkWidget *obj, gpointer user_data)
 {
-	printf("Start\n");
-	FILE * file;
-	file = fopen("../resources/data/moves.pke", "wb");
-
-	if(file == NULL) {
-		printf("[ERROR] Creating moves.pke file!\n");
-		return;
-	}
-
-	moveHeader_f header;
-	header.version = CURRVERSION;
-	header.count = moveCnt;
-
-	fwrite(&header.version, sizeof(int), 1, file);
-	fwrite(&header.count, sizeof(int), 1, file);
-
-	for(int i=0; i<moveCnt; i++) {
-		for(int j=0; j<12; j++) {
-			moves[i].info.name[j] = moveList[i][j];
-		}
-		fwrite(&moves[i].info.name, sizeof(char), 12, file);
-
-		printf("   Saving %s...\n", moves[i].info.name);
-
-		printf("   Type: %i\n", moves[i].info.type);
-		printf("   PP: %i\n", moves[i].info.pp);
-		printf("   Script Length: %i\n", moves[i].info.scriptLen);
-
-		fwrite(&moves[i].info.type, sizeof(int), 1, file);
-		fwrite(&moves[i].info.pp, sizeof(int), 1, file);
-		fwrite(&moves[i].info.scriptLen, sizeof(int), 1, file);
-
-		fwrite(moves[i].script, sizeof(char), moves[i].info.scriptLen, file);
-	}
-
-	fclose(file);
-
-	printf("done!\n\n");
+	pk_saveMoveFile(&moveFile, "../resources/data/moves.pke");
 }
 
 int main(int argc, char **argv) {
+
+	newMapFile();
 
 	GtkBuilder *builder;
 	GtkWidget *window;
@@ -326,6 +232,7 @@ int main(int argc, char **argv) {
 	gtk_widget_show(window);
 	gtk_main();
 
+	pk_freeMoveFile(&moveFile);
 	return 0;
 }
 
