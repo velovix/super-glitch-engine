@@ -88,11 +88,9 @@
                 <child>
                   <object class="GtkButton" id="b_newtype">
                     <property name="label" translatable="yes">New Type</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
                     <signal name="clicked" handler="b_newtype_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -129,7 +127,6 @@
                         <property name="progress_fraction">0.019999999552965164</property>
                         <property name="progress_pulse_step">0.079999998211860657</property>
                         <property name="placeholder_text">New Type</property>
-                        <signal name="changed" handler="e_typename_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -140,12 +137,10 @@
                     <child>
                       <object class="GtkButton" id="b_update">
                         <property name="label" translatable="yes">Update</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <signal name="clicked" handler="b_update_clicked" swapped="no"/>
                       </object>
                       <packing>
@@ -337,12 +332,10 @@
                         <child>
                           <object class="GtkCheckButton" id="cb_immunity">
                             <property name="label" translatable="yes">Immunity</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="xalign">0</property>
                             <property name="yalign">0.47999998927116394</property>
                             <property name="draw_indicator">True</property>
@@ -379,11 +372,9 @@
                     <child>
                       <object class="GtkButton" id="b_load">
                         <property name="label" translatable="yes">Load</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <signal name="clicked" handler="b_load_clicked" swapped="no"/>
                       </object>
                       <packing>
@@ -395,11 +386,9 @@
                     <child>
                       <object class="GtkButton" id="b_save">
                         <property name="label" translatable="yes">Save</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <signal name="clicked" handler="b_save_clicked" swapped="no"/>
                       </object>
                       <packing>
