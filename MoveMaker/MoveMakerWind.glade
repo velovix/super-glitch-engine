@@ -8,6 +8,7 @@
   </object>
   <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
+    <signal name="destroy" handler="on_window_destroy" swapped="no"/>
     <child>
       <object class="GtkBox" id="box1">
         <property name="visible">True</property>
@@ -52,11 +53,9 @@
                 <child>
                   <object class="GtkButton" id="b_newmove">
                     <property name="label" translatable="yes">New Move</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
                     <signal name="clicked" handler="b_newmove_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -225,11 +224,9 @@
                 <child>
                   <object class="GtkButton" id="b_update">
                     <property name="label" translatable="yes">Update</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
                     <signal name="clicked" handler="b_update_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -246,11 +243,9 @@
                     <child>
                       <object class="GtkButton" id="b_load">
                         <property name="label" translatable="yes">Load</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <signal name="clicked" handler="b_load_clicked" swapped="no"/>
                       </object>
                       <packing>
@@ -262,11 +257,9 @@
                     <child>
                       <object class="GtkButton" id="b_save">
                         <property name="label" translatable="yes">Save</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <signal name="clicked" handler="b_save_clicked" swapped="no"/>
                       </object>
                       <packing>
