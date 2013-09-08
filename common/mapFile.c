@@ -1,7 +1,6 @@
 #include "mapFile.h"
 
 int pk_openMapFile(mapFile_t *obj, char *filename, int room) {
-	printf("Opening Mapfile!\n");
 	// Load map file
 	FILE * fMap;
 	fMap = fopen(filename, "r");
@@ -18,13 +17,10 @@ int pk_openMapFile(mapFile_t *obj, char *filename, int room) {
 	if(room != -1 && (room > obj->mapHeader.count || room < 0)) {
 		return PK_MF_BADMOVEREQ;
 	}
-	printf("-V:  %i\n", obj->mapHeader.version);
-	printf("-#R: %i\n", obj->mapHeader.count);
 
 	// Find desired room or load all rooms
 	obj->rooms = (roomFileObj_t*)malloc(obj->mapHeader.count*sizeof(roomFileObj_t));
 	for(int i=0; i<obj->mapHeader.count; i++) {
-		printf("-Loading Room %i\n", i);
 		// Load room headers
 		fread(&obj->rooms[i].header.value, sizeof(uint8_t), 1, fMap);
 		fread(&obj->rooms[i].header.music, sizeof(uint32_t), 1, fMap);
@@ -33,25 +29,37 @@ int pk_openMapFile(mapFile_t *obj, char *filename, int room) {
 		fread(&obj->rooms[i].header.tileColCnt, sizeof(uint32_t), 1, fMap);
 		fread(&obj->rooms[i].header.doorCnt, sizeof(uint32_t), 1, fMap);
 		fread(&obj->rooms[i].header.npcCnt, sizeof(uint32_t), 1, fMap);
-		printf("--Tile Cnt: %i\n", obj->rooms[i].header.tileColCnt);
-		printf("--Door Cnt: %i\n", obj->rooms[i].header.doorCnt);
-		printf("--Npc  Cnt: %i\n", obj->rooms[i].header.npcCnt);
 
 		if(i==room || room == -1) {
 			// Load the room if it's the requested one or if all rooms are to be loaded
 			// Load tile collision data
-			obj->rooms[i].tileColData = (uint8_t*)malloc(obj->rooms[i].header.tileColCnt*sizeof(uint8_t));
+			if(obj->rooms[i].header.tileColCnt != 0) {
+				obj->rooms[i].tileColData = (uint8_t*)malloc(obj->rooms[i].header.tileColCnt*sizeof(uint8_t));
+			} else {
+				// Give the pointer some data, to avoid undefined behavior
+				obj->rooms[i].tileColData = (uint8_t*)malloc(sizeof(uint8_t));
+			}
 			for(int j=0; j<obj->rooms[i].header.tileColCnt; j++) {
 				fread(&obj->rooms[i].tileColData[j], sizeof(uint8_t), 1, fMap);
 			}
 			// Load the tile data
-			obj->rooms[i].mapData = (uint8_t*)malloc(obj->rooms[i].header.w*obj->rooms[i].header.h*sizeof(uint8_t));
+			if(obj->rooms[i].header.w*obj->rooms[i].header.h != 0) {
+				obj->rooms[i].mapData = (uint8_t*)malloc(obj->rooms[i].header.w*obj->rooms[i].header.h*sizeof(uint8_t));
+			} else {
+				// Give the pointer some data, to avoid undefined behavior
+				obj->rooms[i].mapData = (uint8_t*)malloc(sizeof(uint8_t));
+			}
 			for(int j=0; j<obj->rooms[i].header.w*obj->rooms[i].header.h; j++) {
 				fread(&obj->rooms[i].mapData[j], sizeof(uint8_t), 1, fMap);
 			}
 
 			// Load door data
-			obj->rooms[i].doorData = (doorEntry_t*)malloc(obj->rooms[i].header.doorCnt*sizeof(doorEntry_t));
+			if(obj->rooms[i].header.doorCnt != 0) {
+				obj->rooms[i].doorData = (doorEntry_t*)malloc(obj->rooms[i].header.doorCnt*sizeof(doorEntry_t));
+			} else {
+				// Give the pointer some data, to avoid undefined behavior
+				obj->rooms[i].doorData = (doorEntry_t*)malloc(sizeof(doorEntry_t));
+			}
 			for(int j=0; j<obj->rooms[i].header.doorCnt; j++) {
 				fread(&obj->rooms[i].doorData[j].dest, sizeof(uint8_t), 1, fMap);
 				fread(&obj->rooms[i].doorData[j].x, sizeof(uint32_t), 1, fMap);
@@ -61,9 +69,14 @@ int pk_openMapFile(mapFile_t *obj, char *filename, int room) {
 			}
 
 			// Load NPC data
-			obj->rooms[i].npcData = (npcEntry_t*)malloc(obj->rooms[i].header.npcCnt*sizeof(npcEntry_t));
+			if(obj->rooms[i].header.npcCnt != 0) {
+				obj->rooms[i].npcData = (npcEntry_t*)malloc(obj->rooms[i].header.npcCnt*sizeof(npcEntry_t));
+			} else {
+				// Give the pointer some data to avoid undefined behavior
+				obj->rooms[i].npcData = (npcEntry_t*)malloc(sizeof(npcEntry_t));
+			}
 			for(int j=0; j<obj->rooms[i].header.npcCnt; j++) {
-				fread(&obj->rooms[i].npcData[j].value, sizeof(uint32_t), 1, fMap);
+				fread(&obj->rooms[i].npcData[j].value, sizeof(uint8_t), 1, fMap);
 				fread(&obj->rooms[i].npcData[j].x, sizeof(uint32_t), 1, fMap);
 				fread(&obj->rooms[i].npcData[j].y, sizeof(uint32_t), 1, fMap);
 			}
@@ -77,8 +90,8 @@ int pk_openMapFile(mapFile_t *obj, char *filename, int room) {
 			// If this is the wrong room, skip through it
 			fseek(fMap, obj->rooms[i].header.tileColCnt*sizeof(uint8_t), SEEK_CUR);
 			fseek(fMap, obj->rooms[i].header.w*obj->rooms[i].header.h*sizeof(uint8_t), SEEK_CUR);
-			fseek(fMap, sizeof(doorEntry_t)*obj->rooms[i].header.doorCnt, SEEK_CUR);
-			fseek(fMap, sizeof(npcEntry_t)*obj->rooms[i].header.npcCnt, SEEK_CUR);
+			fseek(fMap, (sizeof(uint8_t)+sizeof(uint32_t)*4)*obj->rooms[i].header.doorCnt, SEEK_CUR);
+			fseek(fMap, (sizeof(uint8_t)+sizeof(uint32_t)*2)*obj->rooms[i].header.npcCnt, SEEK_CUR);
 		}
 	}
 
@@ -88,7 +101,7 @@ int pk_openMapFile(mapFile_t *obj, char *filename, int room) {
 }
 
 int pk_saveMapFile(mapFile_t *obj, char *filename) {
-	printf("Saving Mapfile!\n");
+	printf("Saving Map file...\n");
 	// Load map file location
 	FILE * fMap;
 	fMap = fopen(filename, "w");
@@ -99,12 +112,9 @@ int pk_saveMapFile(mapFile_t *obj, char *filename) {
 	// Write file headers
 	fwrite(&obj->mapHeader.version, sizeof(uint32_t), 1, fMap);
 	fwrite(&obj->mapHeader.count, sizeof(uint32_t), 1, fMap);
-	printf("-V:  %i\n", obj->mapHeader.version);
-	printf("-#R: %i\n", obj->mapHeader.count);
 
 	// Save rooms
 	for(int i=0; i<obj->mapHeader.count; i++) {
-		printf("-Saving Room %i\n", i);
 		// Save room headers
 		fwrite(&obj->rooms[i].header.value, sizeof(uint8_t), 1, fMap);
 		fwrite(&obj->rooms[i].header.music, sizeof(uint32_t), 1, fMap);
@@ -120,9 +130,6 @@ int pk_saveMapFile(mapFile_t *obj, char *filename) {
 		fwrite(&obj->rooms[i].header.tileColCnt, sizeof(uint32_t), 1, fMap);
 		fwrite(&obj->rooms[i].header.doorCnt, sizeof(uint32_t), 1, fMap);
 		fwrite(&obj->rooms[i].header.npcCnt, sizeof(uint32_t), 1, fMap);
-		printf("--Tile Cnt: %i\n", obj->rooms[i].header.tileColCnt);
-		printf("--Door Cnt: %i\n", obj->rooms[i].header.doorCnt);
-		printf("--Npc  Cnt: %i\n", obj->rooms[i].header.npcCnt);
 
 
 		// Save tile collision data
@@ -149,7 +156,7 @@ int pk_saveMapFile(mapFile_t *obj, char *filename) {
 
 		// Save NPC data
 		for(int j=0; j<obj->rooms[i].header.npcCnt; j++) {
-			fwrite(&obj->rooms[i].npcData[j].value, sizeof(uint32_t), 1, fMap);
+			fwrite(&obj->rooms[i].npcData[j].value, sizeof(uint8_t), 1, fMap);
 			fwrite(&obj->rooms[i].npcData[j].x, sizeof(uint32_t), 1, fMap);
 			fwrite(&obj->rooms[i].npcData[j].y, sizeof(uint32_t), 1, fMap);
 		}
@@ -157,6 +164,7 @@ int pk_saveMapFile(mapFile_t *obj, char *filename) {
 
 	fclose(fMap);
 
+	printf("--done.\n");
 	return 0;
 }
 

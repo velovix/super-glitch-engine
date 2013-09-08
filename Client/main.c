@@ -75,7 +75,7 @@ void loadMap(char *filename, int val)
 	pk_initMap(mapFile.rooms[val].header.w, mapFile.rooms[val].header.h, &ses.map);
 
 	pk_setTileData(mapFile.rooms[val].mapData, &ses.map);
-	pk_setTileColData(mapFile.mapHeader.tileColCnt, mapFile.tileCols, &ses.map);
+	pk_setTileColData(mapFile.rooms[val].header.tileColCnt, mapFile.rooms[val].tileColData, &ses.map);
 	pk_setNpcData(mapFile.rooms[val].header.npcCnt, mapFile.rooms[val].npcData, &ses.map);
 	pk_setDoorData(mapFile.rooms[val].header.doorCnt, mapFile.rooms[val].doorData, &ses.map);
 
@@ -206,7 +206,7 @@ void loadNpcs()
 
 void setPlayer()
 {
-	ses.p1 = pk_pinit(6*BLOCK_SIZE,11*BLOCK_SIZE, C_PLAYER);
+	ses.p1 = pk_pinit(2*BLOCK_SIZE,2*BLOCK_SIZE, C_PLAYER);
 
 	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[1], false, 
 		ses.bMons[1].bs), &ses.p1);

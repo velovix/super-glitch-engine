@@ -20,7 +20,7 @@ SDL_Rect clipTiles[50];
 
 int curX, curY;
 int lastCurX, lastCurY;
-unsigned char curVal;
+uint8_t curVal;
 int camX, camY;
 int width, height;
 int currRoom;
@@ -94,10 +94,8 @@ void load() {
 }
 
 void fillRoom(char tile) {
-	for(int i=0; i<MAX_ROOMS; i++) {
-		for(int j=0; j<map.rooms[i].header.w*map.rooms[i].header.h; j++) {
-			map.rooms[i].mapData[j] = tile;
-		}
+	for(int j=0; j<map.rooms[currRoom].header.w*map.rooms[currRoom].header.h; j++) {
+		map.rooms[currRoom].mapData[j] = tile;
 	}
 }
 
@@ -112,7 +110,6 @@ int hasDoor(int x, int y, int r) {
 }
 
 void saveMap(char *filename) {
-	printf("%i, %i\n", map.mapHeader.version, map.mapHeader.count);
 	int err = pk_saveMapFile(&map, filename);
 	if(err != 0) {
 		printf("[ERROR] Saving map file! %i\n", err);
@@ -121,10 +118,23 @@ void saveMap(char *filename) {
 }
 
 void loadMap(char *filename) {
+	pk_freeMapFile(&map, -1);
 	int err = pk_openMapFile(&map, filename, -1);
 	if(err != 0) {
 		printf("[ERROR] Loading map file! %i\n", err);
 		exit(1);
+	}
+}
+
+void newMap() {
+	map.mapHeader.version = MAPFILE_VERSION;
+	map.mapHeader.count = 3;
+	map.rooms = (roomFileObj_t*)malloc(3*sizeof(roomFileObj_t));
+	for(int i=0; i<map.mapHeader.count; i++) {
+		map.rooms[i].tileColData = (uint8_t*)malloc(1*sizeof(uint8_t));
+		map.rooms[i].mapData = (uint8_t*)malloc(1*1*sizeof(uint8_t));
+		map.rooms[i].doorData = (doorEntry_t*)malloc(1*sizeof(doorEntry_t));
+		map.rooms[i].npcData = (npcEntry_t*)malloc(1*sizeof(npcEntry_t));
 	}
 }
 
@@ -194,7 +204,9 @@ void checkKeys(Uint8 *keyStates) {
 			printf("Height: ");
 			scanf("%d", &map.rooms[currRoom].header.h);
 
-			map.rooms[currRoom].mapData = (char*)malloc(map.rooms[currRoom].header.w*map.rooms[currRoom].header.h);
+			map.rooms[currRoom].mapData = (uint8_t*)realloc(map.rooms[currRoom].mapData,
+				map.rooms[currRoom].header.w*map.rooms[currRoom].header.h*sizeof(uint8_t));
+
 			fillRoom(CLEAR);
 			keyStatesBuf[SDLK_d] = true;
 		}
@@ -206,23 +218,30 @@ void checkKeys(Uint8 *keyStates) {
 		if(!keyStatesBuf[SDLK_p]) {
 			if(chooseRoom) {
 				int orDoor = hasDoor(lastCurX, lastCurY, origRoom);
+				// Represents the door of interest
 				doorEntry_t* door;
 				if(orDoor == -1) {
+					// Create a new door
+					// Allocate more door data
+					map.rooms[origRoom].doorData = (doorEntry_t*)realloc( map.rooms[origRoom].doorData,
+						(map.rooms[origRoom].header.doorCnt+1)*sizeof(doorEntry_t) );
+
 					door = &map.rooms[origRoom].doorData[map.rooms[origRoom].header.doorCnt];
 					printf("   Created door %i\n", map.rooms[origRoom].header.doorCnt);
 					map.rooms[origRoom].header.doorCnt++;
 				} else {
-					door = &map.rooms[origRoom].doorData[map.rooms[orDoor].header.doorCnt];
+					// Change an old one
+					door = &map.rooms[origRoom].doorData[orDoor];
 					printf("   Edited old door %i\n", orDoor);
 				}
-				door->dest = (char)currRoom;
+				door->dest = (uint8_t)currRoom;
 				door->x = lastCurX;
 				door->y = lastCurY;
 				door->destX = curX;
 				door->destY = curY;
 
-				printf("   You chose room: %i\n", (int)map.rooms[origRoom]. \
-					doorData[map.rooms[currRoom].header.doorCnt].dest);
+				printf("   You chose room: %i\n", (uint32_t)map.rooms[origRoom]. \
+					doorData[map.rooms[currRoom].header.doorCnt-1].dest);
 				chooseRoom = false;
 
 				currRoom = origRoom;
@@ -242,7 +261,6 @@ void checkKeys(Uint8 *keyStates) {
 	if(keyStates[SDLK_s]) {
 		if(!keyStatesBuf[SDLK_s]) {
 			saveMap("../resources/maps/map.pke");
-			printf("Saved!\n");
 			keyStatesBuf[SDLK_s] = true;
 		}
 	} else {
@@ -252,6 +270,7 @@ void checkKeys(Uint8 *keyStates) {
 	if(keyStates[SDLK_c]) {
 		if(!keyStatesBuf[SDLK_c]) {
 			map.rooms[currRoom].header.doorCnt = 0;
+			map.rooms[currRoom].header.npcCnt = 0;
 			keyStatesBuf[SDLK_c] = true;
 		}
 	} else {
@@ -270,7 +289,6 @@ void checkKeys(Uint8 *keyStates) {
 	if(keyStates[SDLK_l]) {
 		if(!keyStatesBuf[SDLK_l]) {
 			loadMap("../resources/maps/map.pke");
-			printf("Loaded map.pke\n");
 			keyStatesBuf[SDLK_l] = true;
 		}
 	} else {
@@ -279,7 +297,7 @@ void checkKeys(Uint8 *keyStates) {
 
 	if(keyStates[SDLK_PAGEUP]) {
 		if(!keyStatesBuf[SDLK_PAGEUP]) {
-			if(currRoom < MAX_ROOMS) {
+			if(currRoom < map.mapHeader.count-1) {
 				currRoom++;
 			}
 			keyStatesBuf[SDLK_PAGEUP] = true;
@@ -304,7 +322,11 @@ void checkKeys(Uint8 *keyStates) {
 			printf("Enter the NPC value: ");
 			int npcValBuffer;
 			scanf("%i", &npcValBuffer);
-			map.rooms[currRoom].npcData[map.rooms[currRoom].header.npcCnt].value = (char)npcValBuffer;
+			// Allocate more NPC space
+			map.rooms[currRoom].npcData =
+				(npcEntry_t*)realloc(map.rooms[currRoom].npcData, (map.rooms[currRoom].header.npcCnt+1)*sizeof(npcEntry_t) );
+
+			map.rooms[currRoom].npcData[map.rooms[currRoom].header.npcCnt].value = (uint8_t)npcValBuffer;
 			map.rooms[currRoom].npcData[map.rooms[currRoom].header.npcCnt].x = curX;
 			map.rooms[currRoom].npcData[map.rooms[currRoom].header.npcCnt].y = curY;
 			map.rooms[currRoom].header.npcCnt++;
@@ -327,18 +349,25 @@ void checkKeys(Uint8 *keyStates) {
 	if(keyStates[SDLK_u]) {
 		if(!keyStatesBuf[SDLK_u]) {
 			bool new = true;
-			for(int i=0; i<map.mapHeader.tileColCnt; i++) {
+			for(int i=0; i<map.rooms[currRoom].header.tileColCnt; i++) {
 				if(map.rooms[currRoom].mapData[curX+(curY*map.rooms[currRoom].header.w)] == 
-					map.tileCols[i]) {
+					map.rooms[currRoom].tileColData[i]) {
 					new = false;
-					map.tileCols[i] = 255;
+					map.rooms[currRoom].tileColData[i] = 255;
 				}
 			}
 			if(new) {
 				printf("De-registered %i as collision\n", 
 					map.rooms[currRoom].mapData[curX+(curY*map.rooms[currRoom].header.w)]);
-				map.tileCols[map.mapHeader.tileColCnt] = map.rooms[currRoom].mapData[curX+(curY*map.rooms[currRoom].header.w)];
-				map.mapHeader.tileColCnt++;
+
+				// Allocate more collision space
+				map.rooms[currRoom].tileColData =
+					(uint8_t*)realloc(map.rooms[currRoom].tileColData,
+					(map.rooms[currRoom].header.tileColCnt+1)*sizeof(uint8_t));
+				// Save new collision data
+				map.rooms[currRoom].tileColData[map.rooms[currRoom].header.tileColCnt] =
+					map.rooms[currRoom].mapData[curX+(curY*map.rooms[currRoom].header.w)];
+				map.rooms[currRoom].header.tileColCnt++;
 			} else {
 				printf("Re-registered %i as collision\n",
 					map.rooms[currRoom].mapData[curX+(curY*map.rooms[currRoom].header.w)]);
@@ -354,7 +383,7 @@ void loop() {
 	for(int x=0; x<map.rooms[currRoom].header.w; x++) {
 		for(int y=map.rooms[currRoom].header.h-1; y>=0; y--) {
 			apply_surface(x*BLOCK_SIZE, y*BLOCK_SIZE, s_mapTile, s_screen,
-				&clipTiles[map.rooms[currRoom].mapData[x+(y*map.rooms[currRoom].header.w)]], true);
+				&clipTiles[(int)map.rooms[currRoom].mapData[x+(y*map.rooms[currRoom].header.w)]], true);
 		}
 	}
 
@@ -379,7 +408,7 @@ void loop() {
 
 int main(int argc, char** argv) {
 
-	loadMap("../resources/maps/map.pke");
+	newMap();
 
 	curX = curY = 1;
 	camX = camY = 0;
