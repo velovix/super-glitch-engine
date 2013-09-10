@@ -24,6 +24,7 @@ int pk_openMapFile(mapFile_t *obj, char *filename, int room) {
 		// Load room headers
 		fread(&obj->rooms[i].header.value, sizeof(uint8_t), 1, fMap);
 		fread(&obj->rooms[i].header.music, sizeof(uint32_t), 1, fMap);
+		fread(&obj->rooms[i].header.palette, sizeof(uint32_t), 1, fMap);
 		fread(&obj->rooms[i].header.w, sizeof(uint32_t), 1, fMap);
 		fread(&obj->rooms[i].header.h, sizeof(uint32_t), 1, fMap);
 		fread(&obj->rooms[i].header.tileColCnt, sizeof(uint32_t), 1, fMap);
@@ -110,6 +111,7 @@ int pk_saveMapFile(mapFile_t *obj, char *filename) {
 	}
 
 	// Write file headers
+	obj->mapHeader.version = MAPFILE_VERSION;
 	fwrite(&obj->mapHeader.version, sizeof(uint32_t), 1, fMap);
 	fwrite(&obj->mapHeader.count, sizeof(uint32_t), 1, fMap);
 
@@ -118,6 +120,7 @@ int pk_saveMapFile(mapFile_t *obj, char *filename) {
 		// Save room headers
 		fwrite(&obj->rooms[i].header.value, sizeof(uint8_t), 1, fMap);
 		fwrite(&obj->rooms[i].header.music, sizeof(uint32_t), 1, fMap);
+		fwrite(&obj->rooms[i].header.palette, sizeof(uint32_t), 1, fMap);
 		fwrite(&obj->rooms[i].header.w, sizeof(uint32_t), 1, fMap);
 		fwrite(&obj->rooms[i].header.h, sizeof(uint32_t), 1, fMap);
 		// Find out how many real tile collisions there are

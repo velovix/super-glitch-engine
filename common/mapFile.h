@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define MAPFILE_VERSION			4
+#define MAPFILE_VERSION			5
 
 // Errors
 #define PK_MF_FILE				1
@@ -21,6 +21,7 @@ typedef struct {
 typedef struct {
 	uint8_t		value;
 	uint32_t	music;
+	uint32_t	palette;
 	uint32_t	w, h;
 	uint32_t	tileColCnt, doorCnt, npcCnt;
 } roomHeader_f;

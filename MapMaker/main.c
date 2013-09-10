@@ -3,8 +3,8 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
-#include "constants.h"
 #include "../common/mapFile.h"
+#include "../common/media/palette.h"
 
 bool quit = false;
 
@@ -13,6 +13,7 @@ SDL_Surface* s_mapTile = NULL;
 SDL_Surface* s_cursor = NULL;
 SDL_Surface* s_door = NULL;
 SDL_Surface* s_npc = NULL;
+SDL_Surface* s_palette = NULL;
 
 SDL_Event event;
 
@@ -28,8 +29,11 @@ int origRoom = 0;
 bool chooseRoom = false;
 
 mapFile_t map;
+paletteMan_t paletteMan;
 
 bool keyStatesBuf[256];
+
+int blockSize = 0;
 
 int init()
 {
@@ -79,6 +83,7 @@ void load() {
 	if(s_mapTile == NULL) {
 		printf("[ERROR] Could not find resources/sprites/tiles.png!\n");
 	}
+	blockSize = s_mapTile->w;
 	s_cursor = load_image("../resources/sprites/cursor.png");
 	if(s_cursor == NULL) {
 		printf("[ERROR] Could not find resources/sprites/cursor.png!\n");
@@ -90,6 +95,10 @@ void load() {
 	s_npc = load_image("../resources/sprites/npc.png");
 	if(s_npc == NULL) {
 		printf("[ERROR] Could not find resources/sprites/npc.png!\n");
+	}
+	s_palette = load_image("../resources/sprites/palettes.png");
+	if(s_palette == NULL) {
+		printf("[ERROR] Could not find resources/sprites/palettes.png!\n");
 	}
 }
 
@@ -177,10 +186,10 @@ void checkKeys(Uint8 *keyStates) {
 
 	if(keyStates[SDLK_x]) {
 		if(!keyStatesBuf[SDLK_x]) {
-			if(curVal < CLIFF_MIDDLE+15) {
+			if(curVal < s_mapTile->h/s_mapTile->w) {
 				curVal++;
 			} else {
-				curVal = GRASS;
+				curVal = 0;
 			}
 			keyStatesBuf[SDLK_x] = true;
 		}
@@ -207,11 +216,24 @@ void checkKeys(Uint8 *keyStates) {
 			map.rooms[currRoom].mapData = (uint8_t*)realloc(map.rooms[currRoom].mapData,
 				map.rooms[currRoom].header.w*map.rooms[currRoom].header.h*sizeof(uint8_t));
 
-			fillRoom(CLEAR);
+			fillRoom(0);
 			keyStatesBuf[SDLK_d] = true;
 		}
 	} else {
 		keyStatesBuf[SDLK_d] = false;
+	}
+
+	if(keyStates[SDLK_r]) {
+		if(!keyStatesBuf[SDLK_r]) {
+			printf("Enter the palette: ");
+			scanf("%d", &map.rooms[currRoom].header.palette);
+
+			pk_switchPalette(map.rooms[currRoom].header.palette, &paletteMan);
+
+			keyStatesBuf[SDLK_r] = true;
+		} else {
+			keyStatesBuf[SDLK_r] = false;
+		}
 	}
 
 	if(keyStates[SDLK_p]) {
@@ -299,6 +321,7 @@ void checkKeys(Uint8 *keyStates) {
 		if(!keyStatesBuf[SDLK_PAGEUP]) {
 			if(currRoom < map.mapHeader.count-1) {
 				currRoom++;
+				pk_switchPalette(map.rooms[currRoom].header.palette, &paletteMan);
 			}
 			keyStatesBuf[SDLK_PAGEUP] = true;
 		}
@@ -310,6 +333,7 @@ void checkKeys(Uint8 *keyStates) {
 		if(!keyStatesBuf[SDLK_PAGEDOWN]) {
 			if(currRoom > 0) {
 				currRoom--;
+				pk_switchPalette(map.rooms[currRoom].header.palette, &paletteMan);
 			}
 			keyStatesBuf[SDLK_PAGEDOWN] = true;
 		}
@@ -382,25 +406,25 @@ void checkKeys(Uint8 *keyStates) {
 void loop() {
 	for(int x=0; x<map.rooms[currRoom].header.w; x++) {
 		for(int y=map.rooms[currRoom].header.h-1; y>=0; y--) {
-			apply_surface(x*BLOCK_SIZE, y*BLOCK_SIZE, s_mapTile, s_screen,
+			apply_surface(x*blockSize, y*blockSize, s_mapTile, s_screen,
 				&clipTiles[(int)map.rooms[currRoom].mapData[x+(y*map.rooms[currRoom].header.w)]], true);
 		}
 	}
 
 	for(int i=0; i<map.rooms[currRoom].header.doorCnt; i++) {
-		apply_surface(map.rooms[currRoom].doorData[i].x*BLOCK_SIZE,
-			map.rooms[currRoom].doorData[i].y*BLOCK_SIZE, s_door, s_screen, 0, true);
+		apply_surface(map.rooms[currRoom].doorData[i].x*blockSize,
+			map.rooms[currRoom].doorData[i].y*blockSize, s_door, s_screen, 0, true);
 	}
 
 	for(int i=0; i<map.rooms[currRoom].header.npcCnt; i++) {
-		apply_surface(map.rooms[currRoom].npcData[i].x*BLOCK_SIZE,
-			map.rooms[currRoom].npcData[i].y*BLOCK_SIZE, s_npc, s_screen, 0, true);
+		apply_surface(map.rooms[currRoom].npcData[i].x*blockSize,
+			map.rooms[currRoom].npcData[i].y*blockSize, s_npc, s_screen, 0, true);
 	}
 
-	apply_surface(curX*BLOCK_SIZE, ((map.rooms[currRoom].header.h)-(map.rooms[currRoom].header.h-curY))
-		*BLOCK_SIZE, s_mapTile, s_screen, &clipTiles[curVal], true);
-	apply_surface(curX*BLOCK_SIZE, ((map.rooms[currRoom].header.h)-(map.rooms[currRoom].header.h-curY))
-		*BLOCK_SIZE, s_cursor, s_screen, &clipTiles[0], true);
+	apply_surface(curX*blockSize, ((map.rooms[currRoom].header.h)-(map.rooms[currRoom].header.h-curY))
+		*blockSize, s_mapTile, s_screen, &clipTiles[curVal], true);
+	apply_surface(curX*blockSize, ((map.rooms[currRoom].header.h)-(map.rooms[currRoom].header.h-curY))
+		*blockSize, s_cursor, s_screen, &clipTiles[0], true);
 
 	Uint8 *keystates = SDL_GetKeyState(NULL);
 	checkKeys(keystates);
@@ -408,24 +432,27 @@ void loop() {
 
 int main(int argc, char** argv) {
 
+	if(init() == -1) {
+		return 1;
+	}
+
+	load();
+
 	newMap();
 
 	curX = curY = 1;
 	camX = camY = 0;
 
 	for(int i=0; i<50; i++) {
-		clipTiles[i].w = clipTiles[i].h = BLOCK_SIZE;
+		clipTiles[i].w = clipTiles[i].h = blockSize;
 		clipTiles[i].x = 0;
-		clipTiles[i].y = i*BLOCK_SIZE;
+		clipTiles[i].y = i*blockSize;
 	}
 
 	printf("SGE Map Maker: Mockup Version\n");
 
-	if(init() == -1) {
-		return 1;
-	}
-
-	load();
+	pk_initPaletteMan(s_palette, &paletteMan);
+	pk_addPaletteManSurface(s_mapTile, &paletteMan);
 
 	while(!quit) {
 		while(SDL_PollEvent(&event)) {
