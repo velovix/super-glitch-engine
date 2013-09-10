@@ -25,8 +25,8 @@ typedef struct {
 
 typedef struct {
 	int width, height;
-	char *data;
-	char *cData;
+	unsigned char *data;
+	unsigned char *cData;
 
 	// Advanced map data
 	unsigned char *tileColData;
@@ -44,7 +44,7 @@ col_t pk_findCols(map_t map, int x, int y);
 void pk_buildColMapM(map_t* map);
 void pk_clearColMap(map_t* map);
 bool pk_isSolid(int val, map_t* map);
-void pk_setTileData(char *data, map_t* map);
+void pk_setTileData(unsigned char *data, map_t* map);
 void pk_setDoorData(int doorCnt, doorEntry_t* doorData, map_t* map);
 void pk_setNpcData(int npcCnt, npcEntry_t *npcData, map_t* map);
 void pk_setTileColData(int cnt, unsigned char *data, map_t* map);

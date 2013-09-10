@@ -20,7 +20,7 @@ monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bo
 	return out;
 }
 
-baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, char* name) {
+baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, unsigned char* name) {
 	baseMonster_t out;
 	out.bs = baseStats;
 	out.ev = baseEVs;

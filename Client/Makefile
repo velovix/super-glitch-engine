@@ -1,4 +1,4 @@
-OBJ = main.o mapman.o npc.o sessionman.o charmover.o window.o monsters.o stats.o player.o moves.o mapFile.o typeFile.o moveFile.o
+OBJ = main.o mapman.o npc.o sessionman.o charmover.o window.o monsters.o stats.o player.o moves.o mapFile.o typeFile.o moveFile.o palette.o
 LIB = -lSDL -lSDL_image -lSDL_mixer -lm
 OFLAGS = -std=gnu99 -funsigned-char
 COMP = gcc
@@ -7,7 +7,7 @@ all: $(OBJ)
 	$(COMP) -o sge $(OBJ) $(LIB)
 
 main.o: main.c
-	$(COMP) -c main.c $(OFLAGS)
+	$(COMP) -c -Wall main.c $(OFLAGS)
 
 mapman.o: general/mapman.h general/mapman.c
 	$(COMP) -c general/mapman.c $(OFLAGS)
@@ -44,6 +44,9 @@ typeFile.o: ../common/typeFile.h ../common/typeFile.c
 
 moveFile.o: ../common/moveFile.h ../common/moveFile.c
 	$(COMP) -c ../common/moveFile.c $(OFLAGS)
+
+palette.o: ../common/media/palette.h ../common/media/palette.c
+	$(COMP) -c -Wall ../common/media/palette.c $(OFLAGS)
 
 clean:
 	rm *.o

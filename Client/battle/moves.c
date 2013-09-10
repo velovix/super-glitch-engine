@@ -1,6 +1,6 @@
 #include "moves.h"
 
-move_t pk_initMove(int s_cpp, int s_bpp, char* name, int type) {
+move_t pk_initMove(int s_cpp, int s_bpp, unsigned char* name, int type) {
 	move_t out;
 	out.bpp = s_bpp;
 	out.type = type;
@@ -12,7 +12,7 @@ move_t pk_initMove(int s_cpp, int s_bpp, char* name, int type) {
 	return out;
 }
 
-bool pk_parseMoveScript(char *script, int scriptLen, move_t *obj) {
+bool pk_parseMoveScript(unsigned char *script, int scriptLen, move_t *obj) {
 	// If script appears to be null
 	if(script[0] == ' ') {
 		return false;

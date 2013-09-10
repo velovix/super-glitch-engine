@@ -20,8 +20,8 @@ typedef struct {
 } move_t;
 
 // Initializers
-move_t pk_initMove(int s_cpp, int s_bpp, char* name, int type);
+move_t pk_initMove(int s_cpp, int s_bpp, unsigned char* name, int type);
 
-bool pk_parseMoveScript(char *script, int scriptLen, move_t *obj);
+bool pk_parseMoveScript(unsigned char *script, int scriptLen, move_t *obj);
 
 #endif

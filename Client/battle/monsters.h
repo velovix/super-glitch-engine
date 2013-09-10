@@ -50,7 +50,7 @@ typedef struct {
 
 // Initializers
 monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bool s_shiny, stats_t s_stats);
-baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, char* name);
+baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, unsigned char* name);
 
 void pk_doMoveEvent(moveEvent_t event, monster_t* a, monster_t* d);
 

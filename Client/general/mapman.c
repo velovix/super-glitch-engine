@@ -84,7 +84,7 @@ void pk_clearColMap(map_t* map) {
 	}
 }
 
-void pk_setTileData(char *data, map_t* map) {
+void pk_setTileData(unsigned char *data, map_t* map) {
 	// This should only be called after initializing the map
 	for(int i=0; i<map->width*map->height; i++) {
 		map->data[i] = data[i];

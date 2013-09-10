@@ -20,6 +20,7 @@
 #include "../common/mapFile.h"
 #include "../common/typeFile.h"
 #include "../common/moveFile.h"
+#include "../common/media/palette.h"
 
 #include "sge.h"
 
@@ -27,6 +28,7 @@ bool quit = false;
 
 // PokeEngine stuff
 sessionMan_t ses;
+paletteMan_t paletteMan;
 
 // Framerate stuff
 struct timeb lastTime, lastTimeS;
@@ -40,6 +42,7 @@ SDL_Surface* s_npc = NULL;
 SDL_Surface* s_chars = NULL;
 SDL_Surface* s_fPkmn = NULL;
 SDL_Surface* s_bPkmn = NULL;
+SDL_Surface* s_palette = NULL;
 
 // SDL Clippers
 SDL_Rect clipTiles[50];
@@ -80,6 +83,7 @@ void loadMap(char *filename, int val)
 	pk_setDoorData(mapFile.rooms[val].header.doorCnt, mapFile.rooms[val].doorData, &ses.map);
 
 	pk_spruneNpcs(&ses);
+	pk_switchPalette(mapFile.rooms[val].header.palette, &paletteMan);
 
 	pk_freeMapFile(&mapFile, val);
 }
@@ -132,7 +136,7 @@ void loadMonsters()
 	for(int i=0; i<header.count; i++) {
 		fread(&mons[i], sizeof(monEntry_f), 1, fMons);
 		ses.bMons[mons[i].value] = pk_initBaseMonster(pk_initStats(30, mons[i].att, mons[i].def, mons[i].spAtt, mons[i].spDef,
-			mons[i].speed), pk_initStats(0,0,0,0,0,0), mons[i].value, mons[i].name);
+			mons[i].speed), pk_initStats(0,0,0,0,0,0), mons[i].value, (unsigned char*)mons[i].name);
 	}
 
 	fclose(fMons);
@@ -304,6 +308,10 @@ void loadSprites()
 	s_bPkmn = load_image("../resources/sprites/BackPkmn.png");
 	if(s_bPkmn == NULL) {
 		printf("[ERROR] Couldn't load back pokemon sprites!\n");
+	}
+	s_palette = load_image("../resources/sprites/palettes.png");
+	if(s_palette == NULL) {
+		printf("[ERROR] Couldn't load palettes sprite!\n");
 	}
 }
 
@@ -707,6 +715,14 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	loadSprites();
+	setClips();
+
+	pk_initPaletteMan(s_palette, &paletteMan);
+	pk_addPaletteManSurface(s_player, &paletteMan);
+	pk_addPaletteManSurface(s_npc, &paletteMan);
+	pk_addPaletteManSurface(s_mapTile, &paletteMan);
+
 	pk_initSMan(SES_OVERWORLD, &ses);
 	loadTypes("../resources/data/types.pke");
 	loadMoves("../resources/data/moves.pke");
@@ -716,9 +732,6 @@ int main(int argc, char **argv)
 	loadMap("../resources/maps/map.pke", 0);
 
 	ftime(&lastTime);
-
-	loadSprites();
-	setClips();
 
 	if(SDL_Flip(s_screen) == -1) {
 		return 1;
