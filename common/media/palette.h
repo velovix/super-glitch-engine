@@ -20,9 +20,6 @@ typedef struct {
 
 void pk_initPaletteMan(SDL_Surface *palette, paletteMan_t *obj);
 
-void pk_addPaletteManPattern(int cnt, uint32_t *colors, paletteMan_t *obj);
-void pk_addPaletteManPalette(uint32_t *pColors, paletteMan_t *obj);
-
 void pk_addPaletteManSurface(SDL_Surface *surface, paletteMan_t *obj);
 
 void pk_switchPalette(int paletteVal, paletteMan_t *obj);
