@@ -16,11 +16,17 @@ typedef struct {
 
 	SDL_Surface *s_palette;
 
+	int *effect;
+
 } paletteMan_t;
 
 void pk_initPaletteMan(SDL_Surface *palette, paletteMan_t *obj);
 
 void pk_addPaletteManSurface(SDL_Surface *surface, paletteMan_t *obj);
+
+int pk_getPaletteEffectRealColor(int val, paletteMan_t *obj);
+void pk_changePaletteEffect(int origVal, int newVal, paletteMan_t *obj);
+void pk_resetPaletteEffect(paletteMan_t *obj);
 
 void pk_switchPalette(int paletteVal, paletteMan_t *obj);
 

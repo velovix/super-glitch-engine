@@ -83,6 +83,7 @@ void loadMap(char *filename, int val)
 	pk_setDoorData(mapFile.rooms[val].header.doorCnt, mapFile.rooms[val].doorData, &ses.map);
 
 	pk_spruneNpcs(&ses);
+
 	pk_switchPalette(mapFile.rooms[val].header.palette, &paletteMan);
 
 	pk_freeMapFile(&mapFile, val);
