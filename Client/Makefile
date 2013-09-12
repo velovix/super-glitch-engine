@@ -1,4 +1,4 @@
-OBJ = main.o mapman.o npc.o sessionman.o charmover.o window.o monsters.o stats.o player.o moves.o mapFile.o typeFile.o moveFile.o palette.o
+OBJ = main.o mapman.o npc.o sessionman.o charmover.o window.o monsters.o stats.o player.o moves.o mapFile.o typeFile.o moveFile.o palette.o monFile.o
 LIB = -lSDL -lSDL_image -lSDL_mixer -lm
 OFLAGS = -std=gnu99 -funsigned-char
 COMP = gcc
@@ -47,6 +47,9 @@ moveFile.o: ../common/moveFile.h ../common/moveFile.c
 
 palette.o: ../common/media/palette.h ../common/media/palette.c
 	$(COMP) -c -Wall ../common/media/palette.c $(OFLAGS)
+
+monFile.o: ../common/monFile.h ../common/monFile.c
+	$(COMP) -c -Wall ../common/monFile.c $(OFLAGS)
 
 clean:
 	rm *.o

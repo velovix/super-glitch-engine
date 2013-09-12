@@ -8,17 +8,6 @@
 #ifndef FILEHEADERS_H
 #define FILEHEADERS_H
 
-// --- Monsters (VERY INDEV)
-typedef struct {
-	int count;
-} monHeader_f;
-
-typedef struct {
-	int value;
-	char name[12];
-	int hp, att, def, spAtt, spDef, speed;
-} monEntry_f;
-
 
 // --- NPCs (VERY INDEV)
 typedef struct {

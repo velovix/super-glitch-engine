@@ -14,19 +14,37 @@ monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bo
 	}
 
 	for(int i=0; i<12; i++) {
-		out.name[i] = s_id->name[i];
+		out.name[i] = s_id->basic.name[i];
 	}
 
 	return out;
 }
 
-baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, unsigned char* name) {
+baseMonster_t pk_initBaseMonster(monFileObj_t obj) {
 	baseMonster_t out;
-	out.bs = baseStats;
-	out.ev = baseEVs;
-	out.frntSpr = out.backSpr = out.iconSpr = gID;
-	for(int i=0; i<12; i++) {
-		out.name[i] = name[i];
+
+	out = (baseMonster_t)obj;
+
+	return out;
+}
+
+stats_t pk_baseMonsterGetStats(bool ev, baseMonster_t *obj) {
+	stats_t out;
+
+	if(ev) {
+		out.hp  = obj->stats.ev_hp;
+		out.att = obj->stats.ev_att;
+		out.def = obj->stats.ev_def;
+		out.spAtt = obj->stats.ev_spAtt;
+		out.spDef = obj->stats.ev_spDef;
+		out.speed = obj->stats.ev_speed;
+	} else {
+		out.hp  = obj->stats.b_hp;
+		out.att = obj->stats.b_att;
+		out.def = obj->stats.b_def;
+		out.spAtt = obj->stats.b_spAtt;
+		out.spDef = obj->stats.b_spDef;
+		out.speed = obj->stats.b_speed;
 	}
 
 	return out;

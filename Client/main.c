@@ -21,6 +21,7 @@
 #include "../common/typeFile.h"
 #include "../common/moveFile.h"
 #include "../common/media/palette.h"
+#include "../common/monFile.h"
 
 #include "sge.h"
 
@@ -126,87 +127,14 @@ void loadMoves(char *filename)
 // Object Loading Functions
 void loadMonsters()
 {
-	FILE * fMons;
-	monHeader_f header;
-	fMons = fopen("../resources/data/pk.pke", "r");
-	if(fMons == NULL) {
-		printf("[ERROR] Missing pk.pke in resources/data folder!\n");
-	}
-	fread(&header.count, sizeof(int), 1, fMons);
-	monEntry_f mons[header.count];
-	for(int i=0; i<header.count; i++) {
-		fread(&mons[i], sizeof(monEntry_f), 1, fMons);
-		ses.bMons[mons[i].value] = pk_initBaseMonster(pk_initStats(30, mons[i].att, mons[i].def, mons[i].spAtt, mons[i].spDef,
-			mons[i].speed), pk_initStats(0,0,0,0,0,0), mons[i].value, (unsigned char*)mons[i].name);
+	monFile_t monFile;
+	pk_openMonFile(&monFile, "../resources/data/mons.pke");
+
+	for(int i=0; i<monFile.header.count; i++) {
+		ses.bMons[i] = pk_initBaseMonster(monFile.mons[i]);
 	}
 
-	fclose(fMons);
-}
-
-void loadNpcs()
-{
-	FILE * fNpcs;
-	fNpcs = fopen("../resources/data/npc.pke", "r");
-	if(fNpcs == NULL) {
-		printf("[ERROR] Missing npc.pke in resources/data folder!\n");
-	}
-
-	npcFileHeader_f header;
-	fread(&header.count, sizeof(int), 1, fNpcs);
-
-	npc_f npc[header.count];
-	for(int i=0; i<header.count; i++) {
-		fread(&npc[i].aiType, sizeof(int), 1, fNpcs);
-
-		fread(&npc[i].destX, sizeof(int), 1, fNpcs);
-		fread(&npc[i].destY, sizeof(int), 1, fNpcs);
-
-		fread(&npc[i].sprite, sizeof(int), 1, fNpcs);
-		fread(&npc[i].reach, sizeof(int), 1, fNpcs);
-
-		fread(&npc[i].fightable, sizeof(bool), 1, fNpcs);
-		for(int j=0; j<6; j++) {
-			fread(&npc[i].monsters[j], sizeof(int), 1, fNpcs);
-		}
-
-		fread(&npc[i].msg1, sizeof(char), 128, fNpcs);
-		fread(&npc[i].msg2, sizeof(char), 128, fNpcs);
-		fread(&npc[i].msg3, sizeof(char), 128, fNpcs);
-
-		for(int j=0; j<128; j++) {
-			if(npc[i].msg1[j] == '_') {
-				npc[i].msg1[j] = ' ';
-			}
-			if(npc[i].msg2[j] == '_') {
-				npc[i].msg2[j] = ' ';
-			}
-			if(npc[i].msg3[j] == '_') {
-				npc[i].msg3[j] = ' ';
-			}
-		}
-
-		ses.npcs[i] = pk_initNpc(BLOCK_SIZE*0, BLOCK_SIZE*0,
-			BLOCK_SIZE*npc[i].destX, BLOCK_SIZE*npc[i].destY, npc[i].reach,
-			npc[i].sprite, LEFT, npc[i].aiType, !npc[i].fightable);
-
-		for(int j=0; j<6; j++) {
-			pk_setNpcMonster(pk_initMonster(25, 50, &ses.bMons[npc[i].monsters[j]], false, 
-				ses.bMons[npc[i].monsters[j]].bs), &ses.npcs[i]);
-			for(int k=0; k<4; k++) {
-				pk_setMove(0, ses.moves[0].bpp, ses.moves[0].bpp, k, &ses.npcs[i].monsters[j]);
-			}
-		}
-
-		pk_initWindow(0, SCREEN_HEIGHT-(6*CHAR_SIZE), WIND_WIDTH*2, 6, true, false, &ses.npcs[i].dialog);
-
-		pk_setMessage(1, &npc[i].msg1[0], &ses.npcs[i]);
-		pk_setMessage(2, &npc[i].msg2[0], &ses.npcs[i]);
-		pk_setMessage(3, &npc[i].msg3[0], &ses.npcs[i]);
-
-		pk_switchMessage(1, &ses.npcs[i]);
-	}
-
-	fclose(fNpcs);
+	pk_freeMonFile(&monFile);
 }
 
 void setPlayer()
@@ -214,7 +142,7 @@ void setPlayer()
 	ses.p1 = pk_pinit(2*BLOCK_SIZE,2*BLOCK_SIZE, C_PLAYER);
 
 	pk_psetMonster(pk_initMonster(20, 2, &ses.bMons[1], false, 
-		ses.bMons[1].bs), &ses.p1);
+		pk_baseMonsterGetStats(false, &ses.bMons[1])), &ses.p1);
 
 	for(int i=0; i<4; i++) {
 		if(i == 3) {
@@ -457,7 +385,7 @@ void checkKeys(Uint8 *keyStates)
 		}
 	}
 
-	if(keyStates[SDLK_b]) {
+	/*if(keyStates[SDLK_b]) {
 		if(keyStatesBuf[SDLK_b] == false && ses.mode == SES_OVERWORLD) {
 			pk_sstartBattleW(ses.npcs[1].monsters[ses.npcs[1].currMon], &ses);
 			keyStatesBuf[SDLK_b] = true;
@@ -468,7 +396,7 @@ void checkKeys(Uint8 *keyStates)
 		}
 	} else {
 		keyStatesBuf[SDLK_b] = false;
-	}
+	}*/
 
 	if(keyStates[SDLK_m]) {
 		if(keyStatesBuf[SDLK_m] == false && pk_isFinishedMoving(ses.p1.mover)) {
@@ -576,9 +504,9 @@ void drawBattle() {
 	draw_rect(8*4+3, 8*2+3, 46*((double)ses.attMon.stats.mHp/(double)ses.attMon.stats.hp), 2, 254);
 
 	apply_surface(0, SCREEN_HEIGHT-(PKMN_SIZE)-(6*CHAR_SIZE), s_bPkmn, s_screen,
-		&clipPkmn[ses.p1.monsters[ses.p1.currMon].id->backSpr], false);
+		&clipPkmn[ses.p1.monsters[ses.p1.currMon].id->aesthetics.battleSprite], false);
 	apply_surface(SCREEN_WIDTH-PKMN_SIZE, 0, s_fPkmn, s_screen,
-		&clipPkmn[ses.npcs[1].monsters[ses.npcs[1].currMon].id->backSpr], false);
+		&clipPkmn[0], false);
 }
 
 void graphics()
@@ -729,7 +657,6 @@ int main(int argc, char **argv)
 	loadMoves("../resources/data/moves.pke");
 	loadMonsters();
 	setPlayer();
-	loadNpcs();
 	loadMap("../resources/maps/map.pke", 0);
 
 	ftime(&lastTime);

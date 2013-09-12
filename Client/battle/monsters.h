@@ -22,24 +22,18 @@
 #include "../constants.h"
 #include "stats.h"
 #include "moves.h"
+#include "../../common/monFile.h"
 
 typedef struct {
 	int cpp, bpp;
 	int value;
 } moveMask_t;
 
-typedef struct {
-	int frntSpr, backSpr, iconSpr;
-	stats_t bs;
-	stats_t ev;
-
-	char name [12];
-
-} baseMonster_t;
+typedef monFileObj_t baseMonster_t;
 
 typedef struct {
 	int experience, type1, type2;
-	char name [12];
+	char name [10];
 	baseMonster_t* id;
 	bool shiny;
 	stats_t stats;
@@ -48,9 +42,12 @@ typedef struct {
 
 } monster_t;
 
-// Initializers
+// Base monster
+baseMonster_t pk_initBaseMonster(monFileObj_t obj);
+stats_t pk_baseMonsterGetStats(bool ev, baseMonster_t *obj);
+
+// Monster
 monster_t pk_initMonster(int s_health, int s_experience, baseMonster_t* s_id, bool s_shiny, stats_t s_stats);
-baseMonster_t pk_initBaseMonster(stats_t baseStats, stats_t baseEVs, int gID, unsigned char* name);
 
 void pk_doMoveEvent(moveEvent_t event, monster_t* a, monster_t* d);
 
