@@ -36,6 +36,41 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="adj_alot_ability">
+    <property name="upper">999</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_alot_battlesprite">
+    <property name="upper">9999</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_alot_bodystyle">
+    <property name="upper">9999</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_alot_cry">
+    <property name="upper">9999</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_alot_footprint">
+    <property name="upper">9999</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_alot_helditem">
+    <property name="upper">999</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_alot_icon">
+    <property name="upper">9999</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkAdjustment" id="adj_ev_att">
     <property name="upper">3</property>
     <property name="step_increment">1</property>
@@ -73,6 +108,13 @@
     <property name="step_increment">0.01</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="adj_level_evolevel">
+    <property name="lower">1</property>
+    <property name="upper">100</property>
+    <property name="value">1</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkAdjustment" id="adj_m_height">
     <property name="lower">0.01</property>
     <property name="upper">999.99000000000001</property>
@@ -100,15 +142,10 @@
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkBox" id="box34">
+              <object class="GtkLabel" id="label29">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
+                <property name="label" translatable="yes">Battle Sprite</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -117,16 +154,79 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="sb_battlesprite">
+              <object class="GtkBox" id="box34">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="invisible_char">●</property>
-                <property name="invisible_char_set">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkScrolledWindow" id="scrolledwindow1">
+                    <property name="height_request">128</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkViewport" id="viewport1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkBox" id="box39">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="homogeneous">True</property>
+                            <child>
+                              <object class="GtkImage" id="image3">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="pixbuf">../resources/sprites/FrontPkmn.png</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkImage" id="image4">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="pixbuf">../resources/sprites/BackPkmn.png</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="sb_battlesprite">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">●</property>
+                <property name="invisible_char_set">True</property>
+                <property name="adjustment">adj_alot_battlesprite</property>
+                <signal name="value-changed" handler="sb_battlesprite_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -212,6 +312,8 @@
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
+                    <property name="adjustment">adj_alot_cry</property>
+                    <signal name="value-changed" handler="sb_cry_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -220,11 +322,13 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="sb_pokeicon">
+                  <object class="GtkSpinButton" id="sb_icon">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
+                    <property name="adjustment">adj_alot_icon</property>
+                    <signal name="value-changed" handler="sb_icon_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -238,6 +342,8 @@
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
+                    <property name="adjustment">adj_alot_bodystyle</property>
+                    <signal name="value-changed" handler="sb_bodystyle_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -251,6 +357,8 @@
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
+                    <property name="adjustment">adj_alot_footprint</property>
+                    <signal name="value-changed" handler="sb_footprint_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -329,6 +437,7 @@
                     <property name="can_focus">False</property>
                     <property name="entry_text_column">0</property>
                     <property name="id_column">1</property>
+                    <signal name="changed" handler="cbt_evomon_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -369,6 +478,8 @@
                     <property name="can_focus">False</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
+                    <property name="adjustment">adj_level_evolevel</property>
+                    <signal name="value-changed" handler="sb_evolevel_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -428,6 +539,7 @@
                 <property name="xalign">0</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="rb_erratic_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -444,6 +556,7 @@
                 <property name="xalign">0</property>
                 <property name="draw_indicator">True</property>
                 <property name="group">rb_erratic</property>
+                <signal name="toggled" handler="rb_fast_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -460,6 +573,7 @@
                 <property name="xalign">0</property>
                 <property name="draw_indicator">True</property>
                 <property name="group">rb_erratic</property>
+                <signal name="toggled" handler="rb_medfast_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -476,6 +590,7 @@
                 <property name="xalign">0</property>
                 <property name="draw_indicator">True</property>
                 <property name="group">rb_erratic</property>
+                <signal name="toggled" handler="rb_medslow_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -492,6 +607,7 @@
                 <property name="xalign">0</property>
                 <property name="draw_indicator">True</property>
                 <property name="group">rb_erratic</property>
+                <signal name="toggled" handler="rb_slow_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -508,6 +624,7 @@
                 <property name="xalign">0</property>
                 <property name="draw_indicator">True</property>
                 <property name="group">rb_erratic</property>
+                <signal name="toggled" handler="rb_fluctuating_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -674,6 +791,7 @@
                         <property name="can_focus">False</property>
                         <property name="entry_text_column">0</property>
                         <property name="id_column">1</property>
+                        <signal name="changed" handler="cbt_type1_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -688,6 +806,7 @@
                         <property name="can_focus">False</property>
                         <property name="entry_text_column">0</property>
                         <property name="id_column">1</property>
+                        <signal name="changed" handler="cbt_type2_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -733,6 +852,7 @@
                             <property name="invisible_char_set">True</property>
                             <property name="adjustment">adj_m_height</property>
                             <property name="digits">2</property>
+                            <signal name="value-changed" handler="sb_height_changed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -773,6 +893,7 @@
                             <property name="invisible_char_set">True</property>
                             <property name="adjustment">adj_lbs_weight</property>
                             <property name="digits">2</property>
+                            <signal name="value-changed" handler="sb_weight_changed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -956,6 +1077,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="receives_default">True</property>
+                        <signal name="clicked" handler="b_load_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -970,6 +1092,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="receives_default">True</property>
+                        <signal name="clicked" handler="b_save_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1007,19 +1130,44 @@
     <property name="resizable">False</property>
     <property name="type_hint">utility</property>
     <child>
-      <object class="GtkBox" id="box46">
+      <object class="GtkBox" id="box31">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkBox" id="box47">
+          <object class="GtkBox" id="box46">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
             <child>
-              <object class="GtkLabel" id="label25">
+              <object class="GtkBox" id="box47">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Naturally Learned: </property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel" id="label25">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Naturally Learned: </property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkTextView" id="tv_nmoves">
+                    <property name="width_request">200</property>
+                    <property name="height_request">200</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -1028,16 +1176,53 @@
               </packing>
             </child>
             <child>
-              <object class="GtkTextView" id="tv_nmoves">
-                <property name="width_request">200</property>
-                <property name="height_request">200</property>
+              <object class="GtkSeparator" id="separator4">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
               </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox" id="box48">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel" id="label26">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">TM Learned:</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkTextView" id="tv_tmmoves">
+                    <property name="width_request">200</property>
+                    <property name="height_request">200</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="accepts_tab">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -1048,10 +1233,19 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSeparator" id="separator4">
+          <object class="GtkScrolledWindow" id="scrolledwindow2">
+            <property name="width_request">400</property>
+            <property name="height_request">100</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkTextView" id="tv_showmoves">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="editable">False</property>
+              </object>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -1060,36 +1254,12 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="box48">
+          <object class="GtkButton" id="b_moves_save">
+            <property name="label" translatable="yes">Save</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkLabel" id="label26">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">TM Learned:</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkTextView" id="tv_tmmoves">
-                <property name="width_request">200</property>
-                <property name="height_request">200</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="accepts_tab">False</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="b_moves_save_clicked" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -1148,6 +1318,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="b_others_save_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -1191,6 +1362,7 @@
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
                     <property name="adjustment">adj_perc_gender</property>
+                    <signal name="value-changed" handler="sb_genderratio_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1251,6 +1423,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
+                <property name="adjustment">adj_alot_ability</property>
+                <signal name="value-changed" handler="sb_ability_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -1289,6 +1463,7 @@
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
                 <property name="adjustment">adj_1b_catchrate</property>
+                <signal name="value-changed" handler="sb_catchrate_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -1325,6 +1500,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
+                <property name="adjustment">adj_alot_helditem</property>
+                <signal name="value-changed" handler="sb_helditem_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -1384,6 +1561,7 @@
                         <property name="can_focus">False</property>
                         <property name="invisible_char">●</property>
                         <property name="adjustment">adj_1b_hp</property>
+                        <signal name="value-changed" handler="sb_hp_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1421,6 +1599,7 @@
                         <property name="can_focus">False</property>
                         <property name="invisible_char">●</property>
                         <property name="adjustment">adj_1b_def</property>
+                        <signal name="value-changed" handler="sb_def_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1458,6 +1637,7 @@
                         <property name="can_focus">False</property>
                         <property name="invisible_char">●</property>
                         <property name="adjustment">adj_1b_spdef</property>
+                        <signal name="value-changed" handler="sb_spdef_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1507,6 +1687,7 @@
                         <property name="can_focus">False</property>
                         <property name="invisible_char">●</property>
                         <property name="adjustment">adj_1b_att</property>
+                        <signal name="value-changed" handler="sb_att_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1544,6 +1725,7 @@
                         <property name="can_focus">False</property>
                         <property name="invisible_char">●</property>
                         <property name="adjustment">adj_1b_spatt</property>
+                        <signal name="value-changed" handler="sb_spatt_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1581,6 +1763,7 @@
                         <property name="can_focus">False</property>
                         <property name="invisible_char">●</property>
                         <property name="adjustment">adj_1b_speed</property>
+                        <signal name="value-changed" handler="sb_speed_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1667,6 +1850,7 @@
                         <property name="invisible_char">●</property>
                         <property name="invisible_char_set">True</property>
                         <property name="adjustment">adj_ev_hp</property>
+                        <signal name="value-changed" handler="sb_ehp_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1705,6 +1889,7 @@
                         <property name="invisible_char">●</property>
                         <property name="invisible_char_set">True</property>
                         <property name="adjustment">adj_ev_def</property>
+                        <signal name="value-changed" handler="sb_edef_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1743,6 +1928,7 @@
                         <property name="invisible_char">●</property>
                         <property name="invisible_char_set">True</property>
                         <property name="adjustment">adj_ev_spdef</property>
+                        <signal name="value-changed" handler="sb_espdef_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1793,6 +1979,7 @@
                         <property name="invisible_char">●</property>
                         <property name="invisible_char_set">True</property>
                         <property name="adjustment">adj_ev_att</property>
+                        <signal name="value-changed" handler="sb_eatt_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1831,6 +2018,7 @@
                         <property name="invisible_char">●</property>
                         <property name="invisible_char_set">True</property>
                         <property name="adjustment">adj_ev_spatt</property>
+                        <signal name="value-changed" handler="sb_espatt_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1869,6 +2057,7 @@
                         <property name="invisible_char">●</property>
                         <property name="invisible_char_set">True</property>
                         <property name="adjustment">adj_ev_speed</property>
+                        <signal name="value-changed" handler="sb_espeed_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>

@@ -2,8 +2,14 @@
 #define monFILE_H
 
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#define monFILE_VERSION		1
+#define MONFILE_VERSION		1
+
+// Errors
+#define PK_MNF_FILE			1
+#define PK_MNF_VERSION		2
 
 /* -- Header -- */
 typedef struct {
@@ -52,6 +58,13 @@ typedef struct {
 } monMovelist_f;
 
 /* -- Experience -- */
+#define EXP_ERRATIC		1
+#define EXP_FAST		2
+#define EXP_MEDFAST		3
+#define EXP_MEDSLOW		4
+#define EXP_SLOW 		5
+#define EXP_FLUCTUATING	6
+
 typedef struct {
 	uint8_t type;
 } monExperience_f;
@@ -69,6 +82,7 @@ typedef struct {
 	uint32_t icon;
 	uint32_t body;
 	uint32_t footprint;
+	uint32_t cry;
 } monAesthetics_f;
 
 /* -- Others -- */
@@ -96,5 +110,10 @@ typedef struct {
 	monHeader_f header;
 	monFileObj_t *mons;
 } monFile_t;
+
+int pk_openMonFile(monFile_t *obj, char* filename);
+int pk_saveMonFile(monFile_t *obj, char* filename);
+
+void pk_freeMonFile(monFile_t *obj);
 
 #endif
